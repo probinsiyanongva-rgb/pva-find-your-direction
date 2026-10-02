@@ -245,29 +245,33 @@
           box.appendChild(el('div', { 'class': 's4-actions' })).appendChild(refBtn);
           box.appendChild(refWrap);
         }
+        /* Tool question (Design Brief v0.3 §8): shown only AFTER the learner has
+           tagged the task, and only for a flagged prompt or when the learner ticks
+           that their own task uses a tool. Display-only; nothing is stored. */
+        var q = el('p', { 'class': 'tip s4-toolq', 'aria-live': 'polite' }, '<strong>Would this kind of task still make sense if the tool or system were different?</strong>');
+        var namesTool = function () { return prompt ? prompt.tool : !!toolTicks[t.id]; };
+        function syncToolQ() { q.hidden = !(namesTool() && t.patternTags.length > 0); }
+        if (!prompt) {
+          var tid = t.id + '-tool';
+          var lab = el('label', { 'class': 'choice s4-tooltick', 'for': tid });
+          var cb = el('input', { type: 'checkbox', id: tid });
+          lab.appendChild(cb); lab.appendChild(el('span', null, 'This task uses a specific tool or system'));
+          box.appendChild(lab);
+          cb.checked = !!toolTicks[t.id];
+          cb.addEventListener('change', function () { toolTicks[t.id] = cb.checked; syncToolQ(); });
+        }
+        if (prompt ? prompt.tool : true) box.appendChild(q);
+
         function syncRefBtn() { if (refBtn) refBtn.disabled = t.patternTags.length === 0; }
         grid.addEventListener('change', function () {
           var tags = $all('input:checked', grid).map(function (c) { return c.value; });
           S.updateTask(x.id, t.id, { patternTags: tags });
           t = S.findExperience(x.id).tasks.filter(function (z) { return z.id === t.id; })[0] || t;
           syncRefBtn();
+          syncToolQ();
         });
         syncRefBtn();
-
-        var q = el('p', { 'class': 'tip s4-toolq' }, '<strong>Would this kind of task still make sense if the tool or system were different?</strong>');
-        if (prompt) {
-          if (prompt.tool) box.appendChild(q);
-        } else {
-          var tid = t.id + '-tool';
-          var lab = el('label', { 'class': 'choice s4-tooltick', 'for': tid });
-          var cb = el('input', { type: 'checkbox', id: tid });
-          lab.appendChild(cb); lab.appendChild(el('span', null, 'This task uses a specific tool or system'));
-          box.appendChild(lab);
-          q.hidden = !toolTicks[t.id];
-          cb.checked = !!toolTicks[t.id];
-          cb.addEventListener('change', function () { toolTicks[t.id] = cb.checked; q.hidden = !cb.checked; });
-          box.appendChild(q);
-        }
+        syncToolQ();
         card.appendChild(box);
       });
       host.appendChild(card);

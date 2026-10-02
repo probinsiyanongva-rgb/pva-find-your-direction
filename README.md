@@ -1,4 +1,4 @@
-# PVA Academy — Stage 4: Find Your Direction · 4.1 v1.1 · 4.2 v1.0
+# PVA Academy — Stage 4: Find Your Direction · 4.1 v1.1 · 4.2 v1.1
 
 Stage 4 of the PVA Beginner VA Journey. **One integrated Stage 4 course** that will hold
 4.1–4.4. Only Module 4.1 (Understanding VA Work Directions) is built; 4.2–4.4 show as
@@ -68,10 +68,10 @@ Headless Chromium against the Build Brief §31 checklist: 78 functional/state ch
 all learner-facing lines of Production Specification v1.1. See `BUILD_REPORT.md`. See the build notes in the conversation record.
 
 
-## Module 4.2 — Looking at Yourself as a VA (v1.0)
+## Module 4.2 — Looking at Yourself as a VA (v1.1)
 - Page: `public/4-2/index.html`; logic `public/shared/m42.js`; content `public/shared/m42-data.js`
   (task prompts, reference tags and explanations are **DRAFT pending owner approval**).
-- Sources: `PVA_Module_4.2_Build_Brief_v1.0.md` (Design Brief v0.3 LOCKED was not supplied to this build).
+- Sources: `PVA_Module_4.2_Design_Brief_v0.3_LOCKED_FINAL.md` (design) and `PVA_Module_4.2_Build_Brief_v1.0.md` (implementation).
 - State: schema v2. `modules["4-2"] = { lastSection, snapshotReached, completedAt, experiences: [{ id, source, note,
   tasks: [{ id, label, promptId|null, patternTags[], evidence|null, note }] }] }`. Evidence values are the named strings
   `regularly | done_before | some_exposure | not_done_yet`. Nothing derived is stored.

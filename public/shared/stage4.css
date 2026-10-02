@@ -208,3 +208,6 @@ blockquote p{margin:0}
 a.s4-next-live{text-decoration:none;color:inherit;border-style:solid;border-color:var(--green)}
 a.s4-next-live:hover{background:var(--green-soft)}
 .s4-next-go{font-weight:800;color:var(--green)}
+.s4-progression-list{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0 4px}
+.s4-progression-list dt{font:700 .9rem Fraunces,Georgia,serif;color:var(--green)}
+.s4-progression-list dd{margin:0}
