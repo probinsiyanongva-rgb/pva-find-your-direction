@@ -1,4 +1,4 @@
-# PVA Academy — Stage 4: Find Your Direction · v1.1 (Module 4.1) — locked for deployment
+# PVA Academy — Stage 4: Find Your Direction · 4.1 v1.1 · 4.2 v1.0
 
 Stage 4 of the PVA Beginner VA Journey. **One integrated Stage 4 course** that will hold
 4.1–4.4. Only Module 4.1 (Understanding VA Work Directions) is built; 4.2–4.4 show as
@@ -66,3 +66,17 @@ Enable the `workers.dev` route under **Domains** if the dashboard shows "No URLs
 Headless Chromium against the Build Brief §31 checklist: 78 functional/state checks, responsive checks at
 390 / 820 / 1366 / 1600 px (no horizontal overflow), keyboard and drawer checks, and a verbatim content check of
 all learner-facing lines of Production Specification v1.1. See `BUILD_REPORT.md`. See the build notes in the conversation record.
+
+
+## Module 4.2 — Looking at Yourself as a VA (v1.0)
+- Page: `public/4-2/index.html`; logic `public/shared/m42.js`; content `public/shared/m42-data.js`
+  (task prompts, reference tags and explanations are **DRAFT pending owner approval**).
+- Sources: `PVA_Module_4.2_Build_Brief_v1.0.md` (Design Brief v0.3 LOCKED was not supplied to this build).
+- State: schema v2. `modules["4-2"] = { lastSection, snapshotReached, completedAt, experiences: [{ id, source, note,
+  tasks: [{ id, label, promptId|null, patternTags[], evidence|null, note }] }] }`. Evidence values are the named strings
+  `regularly | done_before | some_exposure | not_done_yet`. Nothing derived is stored.
+- Migration: v1 data and v1 backups load and restore unchanged (4.1 fields untouched). Backup wrapper version 2;
+  versions 1–2 accepted, newer rejected. Invalid 4.2 records are dropped field by field; valid 4.1 data is kept.
+- Completion (`completedAt`, kept once set): ≥1 experience, ≥1 task, every task has evidence, ≥1 learner-chosen
+  pattern tag, snapshot reached.
+- Work Clues appear in 4.2 only in the final section, read-only (no sidebar clue panel in 4.2).
