@@ -1,4 +1,4 @@
-# PVA Academy — Stage 4: Find Your Direction · v1.1 (Module 4.1)
+# PVA Academy — Stage 4: Find Your Direction · v1.1 (Module 4.1) — locked for deployment
 
 Stage 4 of the PVA Beginner VA Journey. **One integrated Stage 4 course** that will hold
 4.1–4.4. Only Module 4.1 (Understanding VA Work Directions) is built; 4.2–4.4 show as

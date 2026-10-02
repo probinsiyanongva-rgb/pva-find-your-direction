@@ -6,7 +6,9 @@
   - "Work may follow Australian business hours, depending on the client and role."
 - **Source documents synchronized:** `docs/PVA_Module_4.1_Production_Specification_v1.1.md` and `docs/PVA_Module_4.1_Build_Brief_v1.1.md`.
 - **Final QA:** 78/78 functional and state checks; responsive, keyboard and accessibility checks pass; content fidelity against Spec v1.1 shows no copy differences.
-- **Open flag:** two NDIS lines still mention claims ("…documentation, and claims-related tasks" under "What does the work involve?", and "the claims process" under "What would you need to learn?"). Unchanged pending the owner's decision.
+- **NDIS final alignment (owner-approved):** "What does the work involve?" now ends "…documentation, and client-record tasks." "What would you need to learn?" now reads "…privacy and documentation requirements, and the specific administrative workflows used by the provider." Applied identically in the build and Spec v1.1. The old wording is gone from both; no other NDIS text changed.
+- **Regression after final alignment:** 78/78 checks pass. Responsive, keyboard and accessibility checks pass. The content-fidelity result is identical to the previous run (only documentation notes, tag-rendered pattern lists, one heading fragment and the conditional note label are not rendered verbatim).
+- **Status: Module 4.1 v1.1 content/build package LOCKED for deployment** (2 Oct 2026). Not yet pushed or deployed.
 - Sections 1–5 below are the v1.1 review report as approved.
 
 

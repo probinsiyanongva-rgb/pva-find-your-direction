@@ -806,7 +806,7 @@ The specific platforms involved, such as WordPress, CRM systems, automation tool
 
 ### What does the work involve?
 
-Supporting Australian disability service providers that work under the National Disability Insurance Scheme (NDIS) with administrative, scheduling, documentation, and claims-related tasks.
+Supporting Australian disability service providers that work under the National Disability Insurance Scheme (NDIS) with administrative, scheduling, documentation, and client-record tasks.
 
 ### Examples of tasks
 
@@ -842,7 +842,7 @@ Organization, attention to detail, written communication, confidentiality, and f
 
 ### What would you need to learn?
 
-NDIS terminology, the provider’s systems and procedures, the claims process, and privacy and documentation requirements.
+NDIS terminology, the provider’s systems and procedures, privacy and documentation requirements, and the specific administrative workflows used by the provider.
 
 ---
 

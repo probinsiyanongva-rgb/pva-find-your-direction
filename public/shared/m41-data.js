@@ -223,7 +223,7 @@
     {
       /* Added in v1.1 (owner-approved 2 Oct 2026); Production Specification v1.1 card 11. */
       id: 'dir-ndis', num: '11', name: 'NDIS VA',
-      involves: 'Supporting Australian disability service providers that work under the National Disability Insurance Scheme (NDIS) with administrative, scheduling, documentation, and claims-related tasks.',
+      involves: 'Supporting Australian disability service providers that work under the National Disability Insurance Scheme (NDIS) with administrative, scheduling, documentation, and client-record tasks.',
       tasks: ['Maintaining participant and service records', 'Scheduling and rostering support workers', 'Preparing and organizing service documents', 'Supporting administrative tasks related to invoicing and client records', 'Following up with participants, families, or support workers', 'Keeping records accurate for compliance checks', 'Updating the provider’s client management system'],
       patterns: ['ORGANIZE', 'OPERATE', 'COMMUNICATE'],
       environment: 'Usually admin-heavy and process-driven, inside the provider’s systems. Work may follow Australian business hours, depending on the client and role.',
@@ -231,7 +231,7 @@
       path: 'Often entered with related experience',
       pathNote: 'Administrative, healthcare, or disability-support experience can be useful preparation.',
       skills: 'Organization, attention to detail, written communication, confidentiality, and following procedures.',
-      learn: 'NDIS terminology, the provider’s systems and procedures, the claims process, and privacy and documentation requirements.'
+      learn: 'NDIS terminology, the provider’s systems and procedures, privacy and documentation requirements, and the specific administrative workflows used by the provider.'
     }
   ];
 
