@@ -1,0 +1,164 @@
+/* PVA Academy — Stage 4 additions on top of course.css (shared with Parts 2–5).
+   Uses the same tokens; adds the Stage 4 shell (sidebar / mobile drawer),
+   selection chips, reaction controls, job posts and Direction Cards.
+   Pattern tags are plain descriptive text tags: no colors, no badges. */
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:0}
+
+/* ---------- shell ---------- */
+.s4-shell{display:grid;grid-template-columns:290px minmax(0,1fr);gap:0;max-width:1240px;margin:0 auto;align-items:start}
+.s4-main{max-width:none;margin:0;padding:26px 28px 90px;min-width:0}
+.s4-main > section,.s4-main > footer{max-width:860px}
+.s4-side{position:sticky;top:48px;max-height:calc(100vh - 48px);overflow-y:auto;padding:22px 16px 28px 20px;border-right:1px solid var(--line);background:#FBF9F1}
+.s4-side-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.s4-close{display:none;background:none;border:0;font-size:1.8rem;line-height:1;color:var(--green);cursor:pointer;padding:2px 8px;border-radius:8px}
+.s4-stagehome{display:inline-block;font-weight:700;font-size:.9rem;margin:2px 0 12px}
+.s4-modules,.s4-sections{list-style:none;margin:0;padding:0}
+.s4-mod{margin:0 0 12px}
+.s4-mod-name{display:block;font-weight:700;color:var(--green);font-size:.92rem;line-height:1.35}
+.s4-mod-num{display:inline-block;font:700 .82rem Fraunces,Georgia,serif;background:var(--green);color:#fff;border-radius:6px;padding:1px 6px;margin-right:4px}
+.s4-mod.later .s4-mod-name{color:var(--muted);font-weight:600}
+.s4-mod.later .s4-mod-num{background:var(--cream-deep);color:var(--muted)}
+.s4-mod.later .stamp{margin:4px 0 0 34px}
+.s4-sections{margin:8px 0 0 12px;padding-left:12px;border-left:2px solid var(--line)}
+.s4-sections a{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:6px 8px;border-radius:8px;text-decoration:none;color:var(--charcoal);font-size:.87rem;line-height:1.35}
+.s4-sections a:hover{background:var(--cream-deep)}
+.s4-sections a[aria-current="step"]{background:var(--green-soft);color:var(--green);font-weight:700}
+.s4-status{font-size:.7rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.s4-status.done{color:var(--green)}
+.s4-modprogress{font-size:.78rem;color:var(--muted);margin:6px 0 0 24px}
+
+.s4-cluepanel{margin:16px 0;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.s4-cluepanel h2{font-size:1.05rem;margin:0 0 8px}
+.s4-pgroup h3{font:700 .78rem Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--charcoal);margin:10px 0 4px}
+.s4-pgroup ul{margin:0 0 4px;padding-left:18px;font-size:.85rem;line-height:1.45}
+.s4-cluepanel .btn{margin-top:8px}
+.s4-tools .progress-tools{margin:6px 0}
+.s4-tools .save-state{display:block;margin:0}
+
+.s4-mobilebar,.s4-backdrop{display:none}
+@media(max-width:959px){
+  .s4-shell{display:block}
+  .s4-main{padding:18px 16px 80px}
+  .s4-mobilebar{display:flex;gap:8px;position:sticky;top:44px;z-index:40;background:var(--cream);padding:8px 16px;border-bottom:1px solid var(--line)}
+  .s4-mobilebar .btn{flex:1;font-size:.84rem;padding:9px 10px;min-height:44px}
+  .clue-count{display:inline-block;min-width:1.5em;background:var(--card);color:var(--green);border-radius:999px;padding:0 6px;margin-left:4px}
+  .s4-side{position:fixed;top:0;left:0;bottom:0;max-height:none;width:min(340px,90vw);z-index:70;transform:translateX(-100%);transition:transform .2s ease;visibility:hidden;border-right:0}
+  .s4-side.open{transform:none;visibility:visible;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+  .s4-close{display:block}
+  .s4-backdrop.show{display:block;position:fixed;inset:0;background:rgba(15,42,29,.45);z-index:65}
+  body.drawer-open{overflow:hidden}
+}
+@media(prefers-reduced-motion:reduce){.s4-side{transition:none}}
+
+/* ---------- sections ---------- */
+.s4-section[hidden]{display:none}
+.s4-section .course-header{margin-bottom:0}
+.s4-support{margin:12px 0 0}
+.s4-continue{display:flex;justify-content:flex-end;margin:6px 0 10px}
+.s4-continue .btn{min-height:44px}
+.s4-keyidea-title{margin:0 0 6px;font-size:1.05rem}
+blockquote{margin:12px 0;padding:10px 16px;border-left:4px solid var(--yellow);background:#FBF6E6;border-radius:0 10px 10px 0}
+blockquote p{margin:0}
+
+/* ---------- job posts ---------- */
+.s4-post{padding:18px 0;border-top:1px solid var(--line)}
+.s4-post:first-child{border-top:0;padding-top:4px}
+.s4-post-label{font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.s4-jobpost{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.s4-jobpost h3{font:800 .92rem Inter,system-ui,sans-serif;letter-spacing:.04em;color:var(--green);margin:0 0 6px}
+.s4-jobpost p{margin:0}
+
+/* ---------- chips (checkbox choices) ---------- */
+.s4-pick legend{font-weight:700;margin-bottom:2px}
+.s4-pick-hint{margin:0 0 8px}
+.s4-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.s4-chips-patterns{grid-template-columns:repeat(auto-fill,minmax(172px,1fr))}
+.s4-chip{align-items:center;min-height:44px;font-size:.92rem}
+.s4-chip input{margin-top:0}
+.s4-chip:has(input:checked){border-color:var(--green);background:var(--green-soft);font-weight:600}
+.s4-chip:focus-within{outline:3px solid var(--yellow);outline-offset:2px}
+.s4-chips-patterns .s4-chip span{font-weight:700;letter-spacing:.04em}
+.s4-actions{margin:12px 0 0}
+.s4-actions .btn{min-height:44px}
+.s4-yousaw{font-size:.88rem;color:var(--muted);margin:0 0 6px}
+.s4-yousaw span{font-weight:700;color:var(--charcoal)}
+.feedback p{margin:0 0 4px}
+
+/* ---------- scenarios ---------- */
+.s4-scn-title{margin-top:0}
+.s4-reveal{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.s4-mainly{font:700 1.15rem Fraunces,Georgia,serif;color:var(--green);margin:4px 0 6px}
+.s4-mainly:focus,.s4-section h1[tabindex="-1"]:focus,.s4-section h2[tabindex="-1"]:focus,.s4-cluepanel h2[tabindex="-1"]:focus{outline:none}
+.s4-thinkof{margin:10px 0 0}
+.distinction h4{margin:0 0 8px;font-size:1.05rem}
+.distinction p,.distinction ul{margin:0 0 6px}
+.s4-patternref{margin:0}
+.s4-patternref dt{font-weight:800;letter-spacing:.05em;color:var(--green);margin-top:10px}
+.s4-patternref dd{margin:2px 0 0}
+
+/* ---------- reaction control (optional, neutral) ---------- */
+.s4-reaction{margin:14px 0 0;padding:12px 14px;background:var(--cream-deep);border-radius:12px}
+.s4-reaction legend{font-weight:700;font-size:.95rem;float:left;width:100%;margin-bottom:8px}
+.s4-rx-row{clear:both;display:flex;flex-wrap:wrap;gap:8px}
+.s4-rx{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;font-size:.9rem;font-weight:600;color:var(--charcoal)}
+.s4-rx input{position:absolute;opacity:0;width:1px;height:1px}
+.s4-rx:has(input:checked){border-color:var(--green);background:var(--green);color:#fff}
+.s4-rx:has(input:checked)::before{content:"✓ ";margin-right:4px}
+.s4-rx:has(input:focus-visible){outline:3px solid var(--yellow);outline-offset:2px}
+.s4-rx-note{margin:6px 0 0}
+
+/* ---------- Direction Cards ---------- */
+.s4-dirlist .card{margin:16px 0}
+.s4-dir-head{display:flex;gap:14px;align-items:flex-start}
+.s4-dir-num{flex:0 0 auto;font:700 1rem Fraunces,Georgia,serif;color:var(--green);background:var(--cream-deep);border-radius:8px;padding:4px 8px}
+.s4-dir-headtext{min-width:0}
+.s4-dir h3{margin:2px 0 8px}
+.s4-field{font:800 .72rem Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px}
+.s4-dir p{margin:0 0 6px}
+.s4-dir ul{margin:0 0 6px}
+.s4-tags{list-style:none;display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:2px 0 6px}
+.s4-tags li{font-size:.75rem;font-weight:700;letter-spacing:.06em;color:var(--charcoal);border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 8px}
+.s4-dir-toggle{margin:12px 0 0;min-height:44px}
+.s4-dir-details{margin-top:6px;padding-top:4px;border-top:1px dashed var(--line)}
+.s4-path{margin-bottom:2px}
+.s4-related{font-size:.9rem;margin:12px 0 0}
+@media(max-width:600px){.s4-dir-head{display:block}.s4-dir-num{display:inline-block;margin-bottom:6px}}
+
+/* ---------- Work Clues review ---------- */
+.s4-group-title{font:800 .85rem Inter,system-ui,sans-serif;letter-spacing:.1em;color:var(--green);margin:0 0 4px}
+.s4-clue-list{list-style:none;margin:10px 0 0;padding:0}
+.s4-clue{border-top:1px solid var(--line);padding:14px 0}
+.s4-clue:first-child{border-top:0}
+.s4-clue-name{font-weight:700;margin:0}
+.s4-kind{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.s4-clue .s4-reaction{background:transparent;padding:6px 0 0;margin-top:4px}
+.s4-clue .s4-reaction legend{font-weight:600;font-size:.82rem;color:var(--muted)}
+.s4-note{min-height:64px}
+.s4-remove{margin-top:8px;min-height:40px}
+.s4-none{color:var(--muted);font-size:.9rem;margin:6px 0 0}
+.s4-empty{border-style:dashed}
+
+/* ---------- wrap-up ---------- */
+.s4-synth{margin:0 0 6px}
+.s4-checklist{list-style:none;padding:0;margin:8px 0}
+.s4-checklist li{display:flex;gap:10px;align-items:baseline;padding:6px 0}
+.s4-mark{font-weight:800;color:var(--muted);width:1.2em}
+.s4-checklist li.ok .s4-mark{color:var(--green)}
+.s4-next{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border:1px dashed var(--line);border-radius:12px;padding:14px 16px;margin:14px 0 6px}
+.s4-next-label{font-weight:800;letter-spacing:.06em;color:var(--green)}
+.s4-workme{font:700 1.1rem Fraunces,Georgia,serif;color:var(--green);margin:10px 0 0}
+
+/* ---------- Stage 4 home ---------- */
+.s4-homemods{list-style:none;padding:0;margin:0}
+.s4-homemods li{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--line)}
+.s4-homemods li:first-child{border-top:0}
+.s4-homemods .num{flex:0 0 auto;font:700 1rem Fraunces,Georgia,serif;background:var(--green);color:#fff;border-radius:8px;padding:6px 9px}
+.s4-homemods li.later .num{background:var(--cream-deep);color:var(--muted)}
+.s4-homemods .txt{flex:1;min-width:0}
+.s4-homemods .txt b{display:block;color:var(--green);font-size:1.02rem}
+.s4-homemods li.later .txt b{color:var(--charcoal)}
+.s4-homemods .txt span{display:block;color:var(--muted);font-size:.92rem;font-style:italic}
+.s4-progression{font:700 1.15rem Fraunces,Georgia,serif;color:var(--green);letter-spacing:.04em;margin:12px 0 0}
