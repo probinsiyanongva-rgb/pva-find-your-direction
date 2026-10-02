@@ -51,21 +51,21 @@
 
   var SCENARIOS = [
     {
-      id: 'scn-organizing-information', num: 1, title: 'Organizing Information',
+      id: 'scn-organizing-information', num: 1, title: 'The Client’s Shared Drive',
       body: 'A client sends you several folders of documents. Some files are duplicated, some have unclear names, and others are in the wrong folders. Your task is to clean them up and arrange them so the team can find what they need.',
       mainly: 'ORGANIZE',
       explanation: 'The main job is arranging information so other people can find and use it easily.',
       thinkOf: { name: 'ORGANIZE', text: 'Making information orderly and usable.' }
     },
     {
-      id: 'scn-customer-communication', num: 2, title: 'Customer Communication',
+      id: 'scn-customer-communication', num: 2, title: 'A Question About an Order',
       body: 'A customer sends a question about an order. You check the support guidelines, respond clearly, document the interaction, and follow up when the issue needs another team’s help.',
       mainly: 'COMMUNICATE',
       explanation: 'Communication is central because the work helps information move clearly between the customer and the business. It also touches ORGANIZE and OPERATE because the interaction must be documented and the support process followed.',
       thinkOf: { name: 'COMMUNICATE', text: 'Helping information move clearly between people.' }
     },
     {
-      id: 'scn-research-analysis', num: 3, title: 'Research and Analysis',
+      id: 'scn-research-analysis', num: 3, title: 'Several Competitors',
       body: 'A client wants to compare several competitors. You gather information from their websites, organize the findings, compare prices and product features, and highlight changes that may matter to the client.',
       mainly: 'RESEARCH',
       explanation: 'The work involves finding, checking, comparing, and analyzing information so the client can make a decision.',
@@ -73,14 +73,14 @@
       extra: '<p>Numbers can be part of this work. Basic reporting and noticing changes in business numbers also belong here.</p>'
     },
     {
-      id: 'scn-creating-content', num: 4, title: 'Creating Content',
+      id: 'scn-creating-content', num: 4, title: 'Next Month’s Topics',
       body: 'A client gives you next month’s content topics. You prepare simple graphics, format captions, organize the content calendar, and prepare the files for review.',
       mainly: 'CREATE',
       explanation: 'Producing the content is the main task. The work also involves ORGANIZE because the materials need to be arranged and prepared properly.',
       thinkOf: { name: 'CREATE', text: 'Producing useful content or visual material.' }
     },
     {
-      id: 'scn-keeping-process-running', num: 5, title: 'Keeping a Process Running',
+      id: 'scn-keeping-process-running', num: 5, title: 'Orders Throughout the Day',
       body: 'A client receives online orders throughout the day. You process the orders in the store system, check inventory information, update order statuses, and flag problems that need attention.',
       mainly: 'OPERATE',
       explanation: 'The main job is keeping an ongoing business process moving correctly inside the tools the business uses.',
@@ -128,7 +128,7 @@
       patterns: ['OPERATE', 'ORGANIZE', 'COMMUNICATE', 'RESEARCH'],
       environment: 'Usually system-heavy and process-oriented. Some tasks are async; others depend on store schedules and business needs.',
       demanding: 'Small errors can affect orders, inventory, listings, or customer experience. Accuracy and consistency matter.',
-      path: 'Possible starting direction with relevant skills',
+      path: 'Often entered with related experience',
       pathNote: 'The exact starting point depends on the systems and responsibilities involved.',
       skills: 'Organization, attention to detail, spreadsheets, communication, and comfort working inside business systems.',
       learn: 'The client’s store platform, product workflow, order process, inventory process, and reporting tools.',
@@ -141,7 +141,7 @@
       patterns: ['OPERATE', 'ORGANIZE', 'RESEARCH', 'COMMUNICATE'],
       environment: 'System-heavy and detail-oriented. Responsibilities vary significantly between clients.',
       demanding: 'Amazon has many interconnected systems and rules. Accuracy, attention to detail, and continued learning are important.',
-      path: 'Possible starting direction with relevant preparation',
+      path: 'Often entered with related experience',
       pathNote: 'Some responsibilities are beginner-accessible; specialized work may require additional training and practice.',
       skills: 'Organization, spreadsheets, research, communication, attention to detail, and comfort learning business systems.',
       learn: 'Amazon Seller Central and the specific workflows assigned by the client.',
@@ -154,7 +154,7 @@
       patterns: ['RESEARCH', 'ORGANIZE', 'OPERATE'],
       environment: 'Usually detail-heavy and numbers-focused. Much of the work can be async, although deadlines and reporting schedules matter.',
       demanding: 'Accuracy is critical. Small errors can affect financial records and reports.',
-      path: 'Often entered with relevant experience or training',
+      path: 'Often entered with related experience',
       pathNote: 'Accounting or bookkeeping background can provide useful preparation.',
       skills: 'Numerical accuracy, organization, spreadsheets, attention to detail, and basic accounting knowledge.',
       learn: 'The client’s accounting software, chart of accounts, procedures, and reporting requirements.'
@@ -166,7 +166,7 @@
       patterns: ['CREATE', 'ORGANIZE', 'COMMUNICATE', 'RESEARCH'],
       environment: 'A mix of creative production, planning, and communication. Some work follows a content schedule; some is reactive.',
       demanding: 'The work can require both creativity and consistency. Content deadlines can be frequent.',
-      path: 'Often entered directly with relevant skills',
+      path: 'Often entered directly',
       pathNote: 'Prior content, communication, or social media experience can help.',
       skills: 'Writing, visual judgment, organization, communication, basic design, and content planning.',
       learn: 'The client’s brand, content process, platforms, scheduling tools, and reporting approach.'
@@ -178,7 +178,7 @@
       patterns: ['ORGANIZE', 'COMMUNICATE', 'RESEARCH'],
       environment: 'Often closely connected to one person’s schedule and priorities. Some roles require availability during specific hours.',
       demanding: 'Priorities can change quickly. Discretion, reliability, and good judgment are important.',
-      path: 'Possible starting direction with relevant experience',
+      path: 'Often entered with related experience',
       pathNote: 'Administrative or coordination experience can be useful preparation.',
       skills: 'Organization, communication, calendar management, judgment, discretion, and follow-through.',
       learn: 'The client’s priorities, communication preferences, systems, and working style.'
@@ -190,7 +190,7 @@
       patterns: ['ORGANIZE', 'COMMUNICATE', 'RESEARCH', 'OPERATE'],
       environment: 'A combination of administrative, communication, and system-based work. Some responsibilities may be time-sensitive.',
       demanding: 'Accuracy and timely follow-up matter because transactions can involve many moving parts.',
-      path: 'Possible starting direction with relevant preparation',
+      path: 'Often entered with related experience',
       pathNote: 'Administrative, sales, or customer-service experience may transfer well.',
       skills: 'Organization, communication, research, attention to detail, and CRM familiarity.',
       learn: 'The client’s real estate workflow, CRM, transaction process, and terminology.'
@@ -202,7 +202,7 @@
       patterns: ['RESEARCH', 'COMMUNICATE', 'ORGANIZE', 'OPERATE'],
       environment: 'Often communication-heavy and process-driven. Some roles involve targets, scheduled outreach, or live communication.',
       demanding: 'Repeated outreach and follow-up can be tiring. Rejection and performance expectations can be part of the work.',
-      path: 'Often entered directly with relevant communication skills',
+      path: 'Often entered directly',
       pathNote: 'Sales or BPO experience can be useful preparation.',
       skills: 'Research, written communication, follow-up, organization, confidence, and CRM use.',
       learn: 'The client’s target market, CRM, outreach process, qualification rules, and appointment workflow.'
@@ -215,10 +215,24 @@
       patternsNote: 'Some specialized work also involves CREATE or COMMUNICATE.',
       environment: 'Usually system-heavy and detail-oriented. Work may be asynchronous, but some roles require quick response to technical issues.',
       demanding: 'The tools can be complex, and mistakes can affect business systems. Continuous learning is often part of the work.',
-      path: 'Often developed after relevant experience or training',
+      path: 'Often developed after related experience',
       pathNote: 'Some technical support roles can be entry points, but many specialized responsibilities require additional preparation.',
       skills: 'Problem-solving, attention to detail, system thinking, documentation, and comfort learning software.',
       learn: 'The specific platforms involved, such as WordPress, CRM systems, automation tools, or other client-specific software.'
+    },
+    {
+      /* NOT in the Production Specification v1 — drafted for v1.1 at the owner's request
+         (Build Brief §15 coverage). Pending owner approval; see BUILD_REPORT.md. */
+      id: 'dir-ndis', num: '11', name: 'NDIS VA', drafted: true,
+      involves: 'Supporting Australian disability service providers that work under the National Disability Insurance Scheme (NDIS) with administrative, scheduling, documentation, and claims-related tasks.',
+      tasks: ['Maintaining participant and service records', 'Scheduling and rostering support workers', 'Preparing and organizing service documents', 'Supporting invoicing and claims processes', 'Following up with participants, families, or support workers', 'Keeping records accurate for compliance checks', 'Updating the provider’s client management system'],
+      patterns: ['ORGANIZE', 'OPERATE', 'COMMUNICATE'],
+      environment: 'Usually admin-heavy and process-driven, inside the provider’s systems. Work often follows Australian business hours.',
+      demanding: 'Participant information is private and sensitive, and the scheme has detailed rules for documentation and claims. Accuracy and careful handling of information are important.',
+      path: 'Often entered with related experience',
+      pathNote: 'Administrative, healthcare, or disability-support experience can be useful preparation.',
+      skills: 'Organization, attention to detail, written communication, confidentiality, and following procedures.',
+      learn: 'NDIS terminology, the provider’s systems and procedures, the claims process, and privacy and documentation requirements.'
     }
   ];
 

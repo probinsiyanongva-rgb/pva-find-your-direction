@@ -1,4 +1,4 @@
-# PVA Academy — Stage 4: Find Your Direction · v1.0 (Module 4.1)
+# PVA Academy — Stage 4: Find Your Direction · v1.1 (Module 4.1)
 
 Stage 4 of the PVA Beginner VA Journey. **One integrated Stage 4 course** that will hold
 4.1–4.4. Only Module 4.1 (Understanding VA Work Directions) is built; 4.2–4.4 show as
@@ -62,7 +62,7 @@ Deploy command: npx wrangler deploy
 ```
 Enable the `workers.dev` route under **Domains** if the dashboard shows "No URLs enabled".
 
-## QA (v1.0)
+## QA (v1.1)
 Headless Chromium against the Build Brief §31 checklist: 63 functional/state checks, responsive checks at
 390 / 820 / 1366 / 1600 px (no horizontal overflow), keyboard and drawer checks, and a verbatim content check of
 all 388 learner-facing lines of the Production Specification. See the build notes in the conversation record.

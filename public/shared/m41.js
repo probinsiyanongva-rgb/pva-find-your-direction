@@ -55,9 +55,13 @@
 
   /* ---------- reaction control (shared by scenarios, cards and review) ---------- */
   var rxSeq = 0;
-  function reactionControl(sourceType, sourceId, legend, optionalNote) {
+  /* One learner-facing question everywhere (v1.1). `context` is read only by
+     screen readers, so each control's name says which work it belongs to. */
+  var RX_QUESTION = 'Would you want to explore this kind of work?';
+  var RX_OPTIONAL = 'This reaction is optional.';
+  function reactionControl(sourceType, sourceId, context, showNote) {
     var fs = el('fieldset', { 'class': 's4-reaction', 'data-rx-type': sourceType, 'data-rx-id': sourceId });
-    fs.appendChild(el('legend', null, esc(legend)));
+    fs.appendChild(el('legend', null, esc(RX_QUESTION) + (context ? '<span class="sr-only"> (' + esc(context) + ')</span>' : '')));
     var row = el('div', { 'class': 's4-rx-row' });
     var name = 'rx-' + sourceType + '-' + sourceId + '-' + (++rxSeq);
     S.REACTIONS.forEach(function (r) {
@@ -69,7 +73,7 @@
       row.appendChild(lab);
     });
     fs.appendChild(row);
-    if (optionalNote) fs.appendChild(el('p', { 'class': 'small s4-rx-note' }, esc(optionalNote)));
+    if (showNote) fs.appendChild(el('p', { 'class': 'small s4-rx-note' }, RX_OPTIONAL));
     syncReaction(fs);
     return fs;
   }
@@ -174,7 +178,7 @@
           '<p class="s4-thinkof"><strong>Think of ' + esc(s.thinkOf.name) + ' as:</strong></p>' +
           '<blockquote><p>' + esc(s.thinkOf.text) + '</p></blockquote>' +
           (s.extra || '');
-        reveal.appendChild(reactionControl('scenario', s.id, 'Would you want to explore this kind of work?', 'This reaction is optional.'));
+        reveal.appendChild(reactionControl('scenario', s.id, 'Scenario ' + s.num + ': ' + s.title, true));
         reveal.classList.remove('hidden');
         btn.classList.add('hidden');
       }
@@ -244,7 +248,7 @@
         toggle.textContent = open ? 'Show tasks, demands and path' : 'Hide details';
         if (open) det.setAttribute('hidden', ''); else { det.removeAttribute('hidden'); S.markExplored(d.id); }
       });
-      card.appendChild(reactionControl('direction', d.id, 'How does this kind of work feel to you?', 'Optional.'));
+      card.appendChild(reactionControl('direction', d.id, d.name, true));
       host.appendChild(card);
     });
 
@@ -279,7 +283,7 @@
       items.forEach(function (c) {
         var li = el('li', { 'class': 's4-clue' });
         li.appendChild(el('p', { 'class': 's4-clue-name' }, '<span class="s4-kind">' + sourceKind(c) + '</span> ' + esc(sourceLabel(c))));
-        li.appendChild(reactionControl(c.sourceType, c.sourceId, 'My reaction to ' + sourceLabel(c)));
+        li.appendChild(reactionControl(c.sourceType, c.sourceId, sourceLabel(c), false));
         var noteId = 'note-' + c.sourceType + '-' + c.sourceId;
         li.appendChild(el('label', { 'class': 'field-label', 'for': noteId }, 'Why did you react this way? <span class="small">(optional)</span>'));
         var ta = el('textarea', { 'class': 'response s4-note', id: noteId, rows: '2', maxlength: '1000' });
