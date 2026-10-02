@@ -9,8 +9,8 @@ No login. Progress is saved in the learner's browser only (`pva-stage4-progress`
 with Export / Restore / Clear. Expected URL: `https://pva-find-your-direction.probinsiyanongva.workers.dev/`
 
 ## Source of truth (locked)
-- Learning content and copy: `PVA_Module_4.1_Production_Specification_v1.md`
-- Implementation requirements: `PVA_Module_4.1_Build_Brief_v1.md`
+- Learning content and copy: `docs/PVA_Module_4.1_Production_Specification_v1.1.md`
+- Implementation requirements: `docs/PVA_Module_4.1_Build_Brief_v1.1.md`
 - Learner-facing 4.1 copy is transcribed verbatim into `public/shared/m41-data.js` and `public/4-1/index.html`.
 - The Stage 4 home page (`public/index.html`) is structural: its text reuses approved phrases (stage and module
   core questions, WORK → ME → MATCH → DIRECTION, standard storage warnings).
@@ -63,6 +63,6 @@ Deploy command: npx wrangler deploy
 Enable the `workers.dev` route under **Domains** if the dashboard shows "No URLs enabled".
 
 ## QA (v1.1)
-Headless Chromium against the Build Brief §31 checklist: 63 functional/state checks, responsive checks at
+Headless Chromium against the Build Brief §31 checklist: 78 functional/state checks, responsive checks at
 390 / 820 / 1366 / 1600 px (no horizontal overflow), keyboard and drawer checks, and a verbatim content check of
-all 388 learner-facing lines of the Production Specification. See the build notes in the conversation record.
+all learner-facing lines of Production Specification v1.1. See `BUILD_REPORT.md`. See the build notes in the conversation record.

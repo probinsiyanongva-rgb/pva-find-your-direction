@@ -1,5 +1,15 @@
 # PVA Stage 4 · Module 4.1 — v1.1 Build & QA Report
 
+## Final status (2 Oct 2026, after owner approval)
+- **Approved as reported:** neutral scenario titles, Typical path mapping, and the NDIS card, with two wording changes applied:
+  - "Supporting administrative tasks related to invoicing and client records";
+  - "Work may follow Australian business hours, depending on the client and role."
+- **Source documents synchronized:** `docs/PVA_Module_4.1_Production_Specification_v1.1.md` and `docs/PVA_Module_4.1_Build_Brief_v1.1.md`.
+- **Final QA:** 78/78 functional and state checks; responsive, keyboard and accessibility checks pass; content fidelity against Spec v1.1 shows no copy differences.
+- **Open flag:** two NDIS lines still mention claims ("…documentation, and claims-related tasks" under "What does the work involve?", and "the claims process" under "What would you need to learn?"). Unchanged pending the owner's decision.
+- Sections 1–5 below are the v1.1 review report as approved.
+
+
 **Build:** `pva-find-your-direction` v1.1 (local commit only — **not pushed, not deployed**)
 **Sources:** `PVA_Module_4.1_Production_Specification_v1.md` (learner copy) · `PVA_Module_4.1_Build_Brief_v1.md` (implementation) · v1.1 correction instructions (2 Oct 2026)
 **QA run:** 2 Oct 2026, headless Chromium, local server

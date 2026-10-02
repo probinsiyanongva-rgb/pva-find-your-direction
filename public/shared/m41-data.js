@@ -221,13 +221,12 @@
       learn: 'The specific platforms involved, such as WordPress, CRM systems, automation tools, or other client-specific software.'
     },
     {
-      /* NOT in the Production Specification v1 — drafted for v1.1 at the owner's request
-         (Build Brief §15 coverage). Pending owner approval; see BUILD_REPORT.md. */
-      id: 'dir-ndis', num: '11', name: 'NDIS VA', drafted: true,
+      /* Added in v1.1 (owner-approved 2 Oct 2026); Production Specification v1.1 card 11. */
+      id: 'dir-ndis', num: '11', name: 'NDIS VA',
       involves: 'Supporting Australian disability service providers that work under the National Disability Insurance Scheme (NDIS) with administrative, scheduling, documentation, and claims-related tasks.',
-      tasks: ['Maintaining participant and service records', 'Scheduling and rostering support workers', 'Preparing and organizing service documents', 'Supporting invoicing and claims processes', 'Following up with participants, families, or support workers', 'Keeping records accurate for compliance checks', 'Updating the provider’s client management system'],
+      tasks: ['Maintaining participant and service records', 'Scheduling and rostering support workers', 'Preparing and organizing service documents', 'Supporting administrative tasks related to invoicing and client records', 'Following up with participants, families, or support workers', 'Keeping records accurate for compliance checks', 'Updating the provider’s client management system'],
       patterns: ['ORGANIZE', 'OPERATE', 'COMMUNICATE'],
-      environment: 'Usually admin-heavy and process-driven, inside the provider’s systems. Work often follows Australian business hours.',
+      environment: 'Usually admin-heavy and process-driven, inside the provider’s systems. Work may follow Australian business hours, depending on the client and role.',
       demanding: 'Participant information is private and sensitive, and the scheme has detailed rules for documentation and claims. Accuracy and careful handling of information are important.',
       path: 'Often entered with related experience',
       pathNote: 'Administrative, healthcare, or disability-support experience can be useful preparation.',
