@@ -1,0 +1,109 @@
+# Module 4.3 · Step A (test preparation) · run against UNCHANGED application code
+# app files identical to main 75ad730: yes · node v22.22.0 · 2026-10-14T22:36:23Z
+
+> test
+> node --test --test-reporter=spec "unit/*.test.mjs" "pages/*.test.mjs"
+
+▶ BASELINE · Stage 4 hub and Progress page
+  ✔ P1 hub, new learner: nothing started, Start Module 4.1, 4.3/4.4 coming later (142.714741ms)
+  ✔ P2 hub, 4.1 and 4.2 complete: both Complete, Review Module 4.2 (53.662347ms)
+  ✔ P3 Progress page, 4.1 complete only (v1 data): Start Module 4.2 (51.084551ms)
+  ✔ P4 hub Export button downloads a backup (57.546429ms)
+✔ BASELINE · Stage 4 hub and Progress page (306.208171ms)
+▶ BASELINE · Module 4.1
+  ✔ P5 renders 4 job posts, 5 scenarios and the 11 Direction Cards in canonical order (358.914111ms)
+  ✔ P6 a new learner completes 4.1 through the page controls, and it stays complete on reopen (1357.137013ms)
+  ✔ P7 opening a Direction Card records it as explored (never used for completion) (183.943425ms)
+  ✔ P8 returning learner: saved reactions and the Work Clues review are shown (180.140855ms)
+✔ BASELINE · Module 4.1 (2080.676392ms)
+▶ BASELINE · Module 4.2
+  ✔ P9 a new learner completes 4.2 through the page controls (144.605651ms)
+  ✔ P10 handoff shows 4.1 Work Clues read-only, grouped by reaction (32.398405ms)
+  ✔ P11 deleting an experience from the page (after confirming) removes it and its tasks; completion stays (40.413395ms)
+  ✔ P12 cancelling the delete keeps the experience (33.592898ms)
+✔ BASELINE · Module 4.2 (251.425797ms)
+▶ GUARD · every page leaves newer saved data alone
+  ✔ P13 index: opening the page with newer saved data does not overwrite it, and offers Download saved data (16.021717ms)
+  ✔ P13 progress: opening the page with newer saved data does not overwrite it, and offers Download saved data (11.691455ms)
+  ✔ P13 4-1: opening the page with newer saved data does not overwrite it, and offers Download saved data (123.699474ms)
+  ✔ P13 4-2: opening the page with newer saved data does not overwrite it, and offers Download saved data (31.758151ms)
+  ✔ P14 4.1: working through the page while blocked still never overwrites the newer data (263.489241ms)
+  ✔ P16 index: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (18.698091ms)
+  ✔ P16 progress: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (12.189541ms)
+  ✔ P16 4-1: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (124.250056ms)
+  ✔ P16 4-2: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (26.871209ms)
+  ✔ P17 4.1: working through the page with an empty-string saved value never overwrites it (172.698326ms)
+  ✔ P15 4.2: adding an experience while blocked never overwrites the newer data (31.818398ms)
+✔ GUARD · every page leaves newer saved data alone (833.889998ms)
+▶ HARNESS
+  ✔ H1 scriptSources strips version query strings and keeps page order (2.369323ms)
+  ✔ H2 every script on every existing page resolves to a file in public/ (1.402947ms)
+  ✔ H3 golden snapshots are the original schema-2 files; goldenNow changes only schemaVersion (1.533771ms)
+✔ HARNESS (6.77279ms)
+▶ BASELINE · loading and migration
+  ✔ B1 v1 profile loads exactly as the unchanged code loaded it (golden) (65.328401ms)
+  ✔ B2 full v2 profile (4.1 + 4.2 complete) loads unchanged (golden) (13.193112ms)
+  ✔ B3 tampered v2 profile: invalid records dropped field by field, valid data kept (golden) (10.405609ms)
+  ✔ B4 empty storage starts fresh with no banner; first save writes schema v2 (38.506573ms)
+✔ BASELINE · loading and migration (128.503249ms)
+▶ BASELINE · saving keeps existing learner data
+  ✔ B5 saving a v2 profile keeps 4.1 and 4.2 exactly, adds only the change (18.820585ms)
+  ✔ B6 saving a v1 profile writes v2 with 4.1 untouched (12.053915ms)
+  ✔ B7 Work Clues: one clue per source, the only reaction store (10.606231ms)
+✔ BASELINE · saving keeps existing learner data (41.993797ms)
+▶ BASELINE · 4.2 experiences and tasks
+  ✔ B8 task IDs are unique across experiences (11.153ms)
+  ✔ B9 deleting a task removes only that task; deleting an experience removes its tasks (15.086649ms)
+  ✔ B10 module completion is kept after deleting all 4.2 data (11.623746ms)
+✔ BASELINE · 4.2 experiences and tasks (38.191953ms)
+▶ BASELINE · Export / Restore / Clear
+  ✔ B11 v1 and v2 backups validate to the same data as the unchanged code (golden) (9.085631ms)
+  ✔ B12 other-course, newer-wrapper, newer-data and empty backups are rejected with clear messages (14.633331ms)
+  ✔ B13 restoring a rejected file (otherCourse) changes nothing and asks nothing (260.01698ms)
+  ✔ B13 restoring a rejected file (futureWrapper) changes nothing and asks nothing (259.635537ms)
+  ✔ B13 restoring a rejected file (futureData) changes nothing and asks nothing (258.102895ms)
+  ✔ B13 restoring a rejected file (notJson) changes nothing and asks nothing (258.829558ms)
+  ✔ B14 restoring a valid backup asks first; Cancel keeps current progress (262.8726ms)
+  ✔ B15 restoring a valid backup with OK replaces progress with the backup (11.284911ms)
+  ✔ B16 export produces the documented backup format containing the current data (10.807037ms)
+  ✔ B17 Clear asks first; Cancel keeps progress, OK removes it (14.883858ms)
+✔ BASELINE · Export / Restore / Clear (1360.947318ms)
+▶ BASELINE · storage unavailable
+  ✔ B18 blocked site data: course still works in memory and shows the existing banner (9.337853ms)
+✔ BASELINE · storage unavailable (9.502451ms)
+▶ GUARD · saved progress that cannot be read is never overwritten
+  ✔ G1 newer schema: stays byte-identical after the learner keeps working (12.841534ms)
+  ✔ G1 malformed JSON: stays byte-identical after the learner keeps working (11.79249ms)
+  ✔ G1 schemaVersion is a string: stays byte-identical after the learner keeps working (22.199826ms)
+  ✔ G1 schemaVersion 0: stays byte-identical after the learner keeps working (10.622593ms)
+  ✔ G1 schemaVersion 2.5: stays byte-identical after the learner keeps working (11.060194ms)
+  ✔ G1 not an object: stays byte-identical after the learner keeps working (8.932538ms)
+  ✔ G2 the page says why saving is paused and offers "Download saved data" (11.860086ms)
+  ✔ G3 malformed data gets the "could not be read" wording (10.503074ms)
+  ✔ G4 "Download saved data" for newer data gives a backup a newer version can restore (31.077529ms)
+  ✔ G5 "Download saved data" for unreadable text keeps the exact stored text (10.859721ms)
+  ✔ G6 another tab (or newer version) writes newer data mid-session: this tab stops saving instead of overwriting (13.385703ms)
+  ✔ G7 Clear while blocked warns about the unreadable data; Cancel keeps it (10.63881ms)
+  ✔ G8 Clear while blocked with OK removes it, lifts the guard, and saving resumes (9.803082ms)
+  ✔ G9 Restore while blocked warns before replacing; Cancel keeps the unreadable data (261.516314ms)
+  ✔ G10 Restore while blocked with OK replaces it and saving resumes (21.295951ms)
+  ✔ G11 a second tab opened later is also blocked and also leaves the data alone (22.301198ms)
+  ✔ G12 Export Progress while blocked hands over the protected saved data, not an empty page state (11.051021ms)
+  ✔ G13 Clear after another tab saved newer data shows the guard warning, not the ordinary one (10.889258ms)
+  ✔ G15 key present with an empty string at load: treated as unreadable, kept, guard shown, download offered (12.678071ms)
+  ✔ G16 stored value changes to an empty string before a save: this tab stops instead of overwriting it (10.726492ms)
+  ✔ G17 Clear with an empty-string value shows the guard warning; Cancel keeps it (9.5603ms)
+  ✔ G14 a browser with readable v1/v2 data never sees the guard (33.400688ms)
+✔ GUARD · saved progress that cannot be read is never overwritten (570.45592ms)
+▶ GUARD · each save writes once
+  ✔ W1 one save = exactly one write of the key, and the stored text is what this tab last wrote (12.805041ms)
+  ✔ W2 a failed write leaves stored data unchanged and shows the existing cannot-save banner (not the guard) (7.837384ms)
+✔ GUARD · each save writes once (20.783762ms)
+ℹ tests 71
+ℹ suites 12
+ℹ pass 71
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8757.597344

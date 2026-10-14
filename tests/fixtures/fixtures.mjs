@@ -6,6 +6,12 @@
    unchanged code (see tools/make-golden.mjs). */
 
 export const STORAGE_KEY = 'pva-stage4-progress';
+
+/* The schema and backup-wrapper versions the code under test is expected to use.
+   Changing these is a deliberate, reviewed step (e.g. the 4.3 release moves both to 3).
+   Golden files are never regenerated: tests compare against the golden output with only
+   schemaVersion replaced by EXPECTED.schema (see goldenNow in helpers/golden.mjs). */
+export const EXPECTED = { schema: 2, backup: 2 };
 export const BACKUP_FORMAT = 'pva-stage4-progress-backup';
 
 const POSTS = ['post-a', 'post-b', 'post-c', 'post-d'];
@@ -92,9 +98,10 @@ export const profileV2Tampered = {
   _meta: { updatedAt: '2026-10-05T00:00:00.000Z' }
 };
 
-/* What a future v3 build would store (shape is illustrative; only the version matters). */
-export const profileV3Future = {
-  schemaVersion: 3,
+/* Saved data from a version NEWER than any released code (shape is illustrative; only the
+   version matters). Uses schema 4 so it stays "newer" after the 4.3 release (schema 3). */
+export const profileNewer = {
+  schemaVersion: 4,
   ...m41Complete(),
   modules: {
     '4-1': { lastSection: 'wrap-up', directionsReviewed: true, completedAt: '2026-10-01T02:10:00.000Z' },
@@ -106,7 +113,7 @@ export const profileV3Future = {
 
 /* Raw strings as they could sit in localStorage. Byte-exact; used by the overwrite tests. */
 export const RAW = {
-  v3: JSON.stringify(profileV3Future),
+  newer: JSON.stringify(profileNewer),
   malformed: '{"schemaVersion":2,"workClues":[{"sourceType":"direction"',
   versionString: JSON.stringify({ ...profileV2Full, schemaVersion: '2' }),
   versionZero: JSON.stringify({ ...profileV2Full, schemaVersion: 0 }),
@@ -123,8 +130,8 @@ export const backups = {
   v1: wrap(1, profileV1),
   v2: wrap(2, profileV2Full),
   otherCourse: { ...wrap(2, profileV2Full), format: 'pva-email-management-progress-backup' },
-  futureWrapper: wrap(3, profileV2Full),
-  futureData: wrap(2, profileV3Future),
+  futureWrapper: wrap(4, profileV2Full),
+  futureData: wrap(2, profileNewer),
   missingData: wrap(2, undefined),
   notJson: '{ this is not json'
 };

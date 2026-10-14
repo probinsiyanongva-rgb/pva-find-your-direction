@@ -102,17 +102,17 @@ test.describe('GUARD · newer saved progress is protected in a real browser', ()
   for (const [name, url] of PAGES) {
     test(`E6 ${name}: opening with newer data leaves it untouched and shows Download saved data`, async ({ page }) => {
       const errors = trackErrors(page);
-      await seed(page, F.RAW.v3);
+      await seed(page, F.RAW.newer);
       await page.goto(url);
       await expect(page.locator('#storageBanner')).toBeVisible();
       await expect(page.locator('#storageBanner')).toContainText('newer version');
       await expect(page.getByRole('button', { name: 'Download saved data' })).toBeVisible();
-      expect(await stored(page)).toBe(F.RAW.v3);
+      expect(await stored(page)).toBe(F.RAW.newer);
       expect(errors).toEqual([]);
     });
   }
   test('E7 the Download saved data button is reachable by keyboard and downloads the exact data', async ({ page }) => {
-    await seed(page, F.RAW.v3);
+    await seed(page, F.RAW.newer);
     await page.goto('/');
     const btn = page.getByRole('button', { name: 'Download saved data' });
     await btn.focus();
@@ -120,17 +120,17 @@ test.describe('GUARD · newer saved progress is protected in a real browser', ()
     const [dl] = await Promise.all([page.waitForEvent('download'), page.keyboard.press('Enter')]);
     expect(dl.suggestedFilename()).toMatch(/^Find-Your-Direction-saved-data-\d{4}-\d\d-\d\d\.json$/);
     const b = JSON.parse(readFileSync(await dl.path(), 'utf8'));
-    expect(b.data).toEqual(F.profileV3Future);
+    expect(b.data).toEqual(F.profileNewer);
   });
   test('E8 working through 4.1 while blocked never writes, even after a reload', async ({ page }) => {
-    await seed(page, F.RAW.v3);
+    await seed(page, F.RAW.newer);
     await page.goto('/4-1/#directions');
     await page.locator('#dir-amazon fieldset.s4-reaction input[value=explore]').check();
     await page.reload();
-    expect(await stored(page)).toBe(F.RAW.v3);
+    expect(await stored(page)).toBe(F.RAW.newer);
   });
   test('E9 guard banner fits at 390px', async ({ page }) => {
-    await seed(page, F.RAW.v3);
+    await seed(page, F.RAW.newer);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/4-2/');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

@@ -46,7 +46,7 @@ describe('BASELINE · Stage 4 hub and Progress page', () => {
     p.click('[data-export]');
     const b = JSON.parse(await p.downloadText(0));
     assert.equal(b.format, F.BACKUP_FORMAT);
-    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, experiences: 2, schemaVersion: 2 });
+    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, experiences: 2, schemaVersion: F.EXPECTED.schema });
   });
 });
 
@@ -74,7 +74,7 @@ describe('BASELINE · Module 4.1', () => {
     noErrors(p);
     assert.equal(text(p, '#moduleProgress'), 'Module 4.1 complete');
     const s = p.stored();
-    assert.equal(s.schemaVersion, 2);
+    assert.equal(s.schemaVersion, F.EXPECTED.schema);
     assert.match(s.modules['4-1'].completedAt, /^\d{4}-/);
     assert.deepEqual(s.workClues.map((c) => [c.id, c.reaction]), [['direction:dir-bookkeeping', 'not_for_me']]);
     const again = p.reopen('4-1');
@@ -148,20 +148,20 @@ describe('BASELINE · Module 4.2', () => {
 describe('GUARD · every page leaves newer saved data alone', () => {
   for (const page of ['index', 'progress', '4-1', '4-2']) {
     test(`P13 ${page}: opening the page with newer saved data does not overwrite it, and offers Download saved data`, () => {
-      const p = openPage({ page, storage: { [KEY]: F.RAW.v3 } });
+      const p = openPage({ page, storage: { [KEY]: F.RAW.newer } });
       noErrors(p);
-      assert.equal(p.raw(), F.RAW.v3, 'unchanged right after opening');
+      assert.equal(p.raw(), F.RAW.newer, 'unchanged right after opening');
       assert.equal(p.bannerVisible(), true);
       assert.ok(p.$$('#storageBanner button').some((b) => /Download saved data/.test(b.textContent)));
     });
   }
   test('P14 4.1: working through the page while blocked still never overwrites the newer data', () => {
-    const p = openPage({ page: '4-1', storage: { [KEY]: F.RAW.v3 } });
+    const p = openPage({ page: '4-1', storage: { [KEY]: F.RAW.newer } });
     const post = p.$('#postList article.s4-post');
     p.check(post.querySelector('input[type=checkbox]'));
     post.querySelector('.s4-actions button').click();
     p.check(p.$('#dir-amazon fieldset.s4-reaction input[value=explore]'));
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
   });
   for (const page of ['index', 'progress', '4-1', '4-2']) {
     test(`P16 ${page}: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data`, () => {
@@ -180,9 +180,9 @@ describe('GUARD · every page leaves newer saved data alone', () => {
     assert.equal(p.raw(), '');
   });
   test('P15 4.2: adding an experience while blocked never overwrites the newer data', () => {
-    const p = openPage({ page: '4-2', storage: { [KEY]: F.RAW.v3 } });
+    const p = openPage({ page: '4-2', storage: { [KEY]: F.RAW.newer } });
     p.check(p.$('input[name=new-source][value=family]'));
     p.click('#addExperience');
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
   });
 });
