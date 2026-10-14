@@ -76,7 +76,7 @@ No 4.1 or 4.2 learning activity, learner-facing copy or stored data changed. The
 3. Both **Examine another direction** and **Review my directions** go to the direction list. The spec names both actions but gives them no distinct destination.
 4. All 4.3 text fields use the standard cleaning (`cleanText`). That includes "What may be new for me", so line breaks become spaces there as well as in reasons.
 5. An invalid stored judgment becomes "no judgment"; the learner's text is kept. If undecided and a selection are both stored, the selection stands, `undecided` is cleared, and the note is kept.
-6. Opening 4.3 marks it "In progress" on the hub, the same convention as 4.1 and 4.2.
+6. Opening 4.3 marks it "In progress" on the hub, the same convention as 4.1 and 4.2 (via the saved `lastSection`). **Correction (15 Oct):** when 4.3 progress is saved without a valid `lastSection`, the hub now also counts *any* saved 4.3 progress: Work Clues or evidence reviewed, a direction examined, the decision reached, undecided chosen, or a selection. Before, it counted only explorations, so it could show "Not started" / "Start Module 4.3". Tests S1–S3 (`tests/results/14`, 168/168); S2 ×4 failed on the previous code.
 
 ## 6. Limitations
 - **Not yet checked in a real browser:**

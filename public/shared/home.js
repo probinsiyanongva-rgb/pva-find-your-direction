@@ -15,7 +15,10 @@
       if (st.workClues.length || st.jobPostObservations.length || st.scenarioObservations.length) return 'progress';
     }
     if (id === '4-2' && m.experiences && m.experiences.length) return 'progress';
-    if (id === '4-3' && m.directionExplorations && m.directionExplorations.length) return 'progress';
+    /* 4.3: any saved 4.3 progress counts, not only explorations (e.g. Work Clues or evidence
+       reviewed, but no direction examined yet), also when lastSection is missing. */
+    if (id === '4-3' && (m.reviewedWorkClues || m.reviewedEvidence || m.decisionReached || m.undecided ||
+        (m.examinedDirectionIds || []).length || (m.directionExplorations || []).length || (m.selectedDirectionIds || []).length)) return 'progress';
     return 'none';
   }
   function word(s) { return s === 'complete' ? 'complete' : s === 'progress' ? 'in progress' : 'not started yet'; }

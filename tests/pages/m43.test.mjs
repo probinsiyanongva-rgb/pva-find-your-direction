@@ -476,3 +476,39 @@ describe('4.3 · navigation (Step E)', () => {
     assert.equal(text(p, '#m42Status'), 'Complete');
   });
 });
+
+describe('4.3 · hub status for a learner who started 4.3 but has not examined a direction (correction)', () => {
+  test('S1 reviewed Work Clues and evidence through the page, no direction yet → In progress, Continue at the saved section', () => {
+    const p = openPage({ page: '4-3', storage: seed(F.profileV2Full) });
+    p.click('a[data-nav="clues"].btn'); p.click('#cluesContinue'); p.click('#evidenceContinue');
+    assert.deepEqual(m43(p).directionExplorations, []);
+    assert.deepEqual(m43(p).examinedDirectionIds, []);
+    for (const [page, base] of [['index', './'], ['progress', '../']]) {
+      const h = p.reopen(page);
+      assert.equal(text(h, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 in progress · 4 Work Clues saved');
+      if (page === 'index') assert.equal(text(h, '#stamp43'), 'In progress');
+      assert.equal(text(h, '#continueBtn'), 'Continue Module 4.3');
+      assert.equal(h.$('#continueBtn').getAttribute('href'), base + '4-3/#directions');
+    }
+  });
+  const savedProgress = (fields) => {
+    const prof = JSON.parse(JSON.stringify(F.profileV2Full)); prof.schemaVersion = 3;
+    prof.modules['4-3'] = { lastSection: null, reviewedWorkClues: false, reviewedEvidence: false, examinedDirectionIds: [], directionExplorations: [],
+      decisionReached: false, undecided: false, undecidedNote: '', selectedDirectionIds: [], completedAt: null, ...fields };
+    return prof;
+  };
+  for (const [label, fields] of [['Work Clues reviewed', { reviewedWorkClues: true }], ['evidence reviewed', { reviewedEvidence: true }],
+    ['a direction examined', { examinedDirectionIds: ['dir-ndis'] }], ['undecided chosen', { undecided: true }]]) {
+    test(`S2 saved 4.3 progress without a lastSection (${label}) → In progress, Continue Module 4.3`, () => {
+      const h = openPage({ page: 'index', storage: seed(savedProgress(fields)) });
+      assert.equal(text(h, '#stamp43'), 'In progress');
+      assert.equal(text(h, '#continueBtn'), 'Continue Module 4.3');
+      assert.equal(h.$('#continueBtn').getAttribute('href'), './4-3/');
+    });
+  }
+  test('S3 an empty 4.3 block (nothing saved) is still Not started → Start Module 4.3', () => {
+    const h = openPage({ page: 'index', storage: seed(savedProgress({})) });
+    assert.equal(text(h, '#stamp43'), 'Not started');
+    assert.equal(text(h, '#continueBtn'), 'Start Module 4.3');
+  });
+});
