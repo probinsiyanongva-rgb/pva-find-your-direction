@@ -278,7 +278,7 @@
   function storedChangedToUnreadable() {
     var current;
     try { current = localStorage.getItem(STORAGE_KEY); } catch (e) { return false; }
-    if (current === null || current === '' || current === lastSeenRaw) return false;
+    if (current === null || current === lastSeenRaw) return false;   // '' is unreadable data, not "nothing saved"
     var c = classify(current);
     if (c.data) return false;          // readable data from another tab: existing last-save-wins behaviour
     block(c.reason, current);
@@ -311,7 +311,7 @@
       localStorage.removeItem(probe);
       var raw = localStorage.getItem(STORAGE_KEY);
       lastSeenRaw = raw;
-      if (raw) {
+      if (raw !== null) {              // the key exists: even '' is kept, never started fresh over
         var c = classify(raw);
         if (c.data) state = normalize(c.data);
         else block(c.reason, raw);   // keep it; never start fresh over it
@@ -333,9 +333,8 @@
     } else if (storageOK) {
       try {
         var text = JSON.stringify(state);
-        localStorage.setItem(STORAGE_KEY, text);
-        lastSeenRaw = text;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        localStorage.setItem(STORAGE_KEY, text);   // the only write
+        lastSeenRaw = text;                         // set only after the write succeeded
         ok = true;
         document.querySelectorAll('[data-save-state]').forEach(function (el) { el.textContent = 'Saved in this browser · ' + stampTime(); });
       } catch (e) {

@@ -83,7 +83,7 @@ all learner-facing lines of Production Specification v1.1. See `BUILD_REPORT.md`
 
 ## Data-protection guard (Phase 0)
 `public/shared/state.js` never writes over saved progress it cannot read: a newer `schemaVersion`,
-malformed JSON, or an invalid version. Instead, the page keeps working in memory, stops saving,
+malformed JSON, an invalid version, or an empty value. Instead, the page keeps working in memory, stops saving,
 and turns the storage banner into **"Saved progress needs attention."** with a **Download saved data**
 button. Export hands over the protected data. Clear and Restore warn before replacing it. The same check
 runs before every save, so a tab left open when another tab or a newer version saves newer data stops

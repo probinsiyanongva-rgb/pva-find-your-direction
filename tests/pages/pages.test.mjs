@@ -163,6 +163,22 @@ describe('GUARD · every page leaves newer saved data alone', () => {
     p.check(p.$('#dir-amazon fieldset.s4-reaction input[value=explore]'));
     assert.equal(p.raw(), F.RAW.v3);
   });
+  for (const page of ['index', 'progress', '4-1', '4-2']) {
+    test(`P16 ${page}: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data`, () => {
+      const p = openPage({ page, storage: { [KEY]: '' } });
+      noErrors(p);
+      assert.equal(p.raw(), '', 'unchanged right after opening');
+      assert.equal(p.bannerVisible(), true);
+      assert.match(p.bannerText(), /could not be read/i);
+      assert.ok(p.$$('#storageBanner button').some((b) => /Download saved data/.test(b.textContent)));
+    });
+  }
+  test('P17 4.1: working through the page with an empty-string saved value never overwrites it', () => {
+    const p = openPage({ page: '4-1', storage: { [KEY]: '' } });
+    p.check(p.$('#dir-amazon fieldset.s4-reaction input[value=explore]'));
+    p.$('#dir-ndis .s4-dir-toggle').click();
+    assert.equal(p.raw(), '');
+  });
   test('P15 4.2: adding an experience while blocked never overwrites the newer data', () => {
     const p = openPage({ page: '4-2', storage: { [KEY]: F.RAW.v3 } });
     p.check(p.$('input[name=new-source][value=family]'));

@@ -17,12 +17,13 @@ This is reproduced by the recorded baseline run, `tests/results/01-baseline-befo
 ## 2. What changed (`public/shared/state.js` only)
 | Area | Behaviour now |
 |---|---|
-| Load | Unreadable or newer stored data is kept untouched. Saving is paused (`PVAS4.saveBlocked()` returns `'newer'` or `'unreadable'`). The page still works in memory. |
-| Every save | Never writes while paused. Before each write, if the stored text changed since this tab last read or wrote it, and this version can't read the new text, the tab pauses instead of writing. This covers an old tab left open while another tab or a newer version saves. |
+| Load | Unreadable or newer stored data is kept untouched. **This includes a key that exists with an empty-string value** (review revision): `''` is treated as unreadable saved data, not as "nothing saved". Saving is paused (`PVAS4.saveBlocked()` returns `'newer'` or `'unreadable'`). The page still works in memory. |
+| Every save | **Exactly one write per save** (review revision: an earlier duplicate `setItem()` was removed). `lastSeenRaw` is set only after that write succeeds. Never writes while paused. Before each write, if the stored text changed since this tab last read or wrote it, and this version can't read the new text, the tab pauses instead of writing. This covers an old tab left open while another tab or a newer version saves. A value that changes to `''` is caught the same way. |
 | Banner | The existing storage banner is reused. A **Download saved data** button is added from `state.js`, so no page HTML changes. |
 | Download saved data | Gives the exact stored data. JSON objects are wrapped in the normal backup format (`version: 2`), so a newer version can restore them. Text that isn't JSON is saved verbatim as `rawText`. |
 | Export while paused | Hands over the protected data, not the empty in-memory page state. |
 | Clear / Restore while paused | Separate warning: "…can't read… will permanently delete/replace it… press Cancel and download it first." OK proceeds (an explicit learner choice). Cancel changes nothing. |
+| Intentional change from `33c4e04` | `33c4e04` treated an empty-string value as "nothing saved", started fresh, and overwrote it on the first save. It is now preserved, and the "could not be read" message is shown. |
 | Unchanged | Storage key, schema v2, `migrate()`, `normalize()`, wrong-file messages, the storage-unavailable banner, and all v1/v2 behaviour. Golden tests prove that v1/v2/tampered data is still read exactly as before. |
 
 ### Learner-facing text added (please review the wording)
@@ -37,8 +38,8 @@ This is reproduced by the recorded baseline run, `tests/results/01-baseline-befo
 ## 3. Tests (`tests/`, Node 22.12+, jsdom 27.4.0)
 | Suite | What it covers |
 |---|---|
-| `unit/state.test.mjs` | **B1–B18 baseline:** loading and migration (golden), saving, Work Clues, 4.2 tasks and deletion, completion persistence, Export/Restore/Clear, rejected files, storage unavailable. **G1–G14 guard.** |
-| `pages/pages.test.mjs` | Hub, Progress, 4.1 and 4.2 driven through their own controls. **P1–P12 baseline:** statuses, Continue button, canonical card order, full 4.1 and 4.2 completion, persistence on reopen, read-only handoff, delete with confirm. **P13–P15 guard** on every page. |
+| `unit/state.test.mjs` | **B1–B18 baseline:** loading and migration (golden), saving, Work Clues, 4.2 tasks and deletion, completion persistence, Export/Restore/Clear, rejected files, storage unavailable. **G1–G17 guard**, including G15–G17 for an empty-string value. **W1–W2:** one write per save, and a failed write. |
+| `pages/pages.test.mjs` | Hub, Progress, 4.1 and 4.2 driven through their own controls. **P1–P12 baseline:** statuses, Continue button, canonical card order, full 4.1 and 4.2 completion, persistence on reopen, read-only handoff, delete with confirm. **P13–P17 guard** on every page, including P16–P17 for an empty-string value. |
 | `fixtures/golden/` | Output of the **unchanged** `state.js` (`33c4e04`, sha256 recorded) for v1, v2 and tampered data, and v1/v2 backups. |
 | `e2e/stage4.spec.mjs` | 27 Playwright tests: widths 390/820/1366/1600, console errors, real downloads, keyboard. **Not run** (see §4). |
 
@@ -47,10 +48,13 @@ This is reproduced by the recorded baseline run, `tests/results/01-baseline-befo
 |---|---|---|
 | `01-baseline-before-guard.txt` | unchanged `33c4e04` | 55 tests: **33 pass** (all baseline), **22 fail** (all guard tests; expected) |
 | `02-final-suite-on-unchanged-code.txt` | unchanged `33c4e04`, final 58-test suite | **33 pass, 25 fail** (all guard tests). G12–G14 were added after run 01. G14 fails there only because `saveBlocked()` doesn't exist yet, not because of a behaviour difference. |
-| `03-after-guard.txt` | this branch | **58 pass, 0 fail** |
+| `03-after-guard.txt` | first guard commit `96df889` | **58 pass, 0 fail**. Earlier record; superseded by 07. |
 | `04-playwright-not-run.txt` | — | Chromium download failed in this workspace. The suite was listed (27 tests) but **not executed**. |
+| `05-revision-suite-on-unchanged-33c4e04.txt` | unchanged `33c4e04`, revised 68-test suite | **33 pass, 35 fail.** All 35 failures are guard tests. W1 and W2 fail there only because `saveBlocked()` doesn't exist; the original code wrote once. |
+| `06-revision-suite-on-previous-guard-39a13ff.txt` | previous branch head `39a13ff` | **59 pass, 9 fail.** W1 fails ("written once": the duplicate `setItem()`). G15–G17, P16 ×4 and P17 fail (the empty-string value was overwritten). This shows the new tests catch both review findings. |
+| **`07-after-revision.txt`** | **this revision** | **68 pass, 0 fail** |
 
-The golden files were generated once, from unchanged code, in the baseline commit. They were not regenerated afterwards (`git diff` is empty from the baseline commit to this branch).
+Runs 01–04 are kept unchanged as the original evidence. The golden files were generated once, from unchanged code, in the baseline commit. They were not regenerated afterwards (`git diff` is empty from the baseline commit to this branch).
 
 ## 4. Remaining limitations
 1. **Playwright suite not run.** Layout at the four widths, keyboard focus and the banner's look (the button reuses the existing `progress-tools` / `btn subtle` styles inside the banner) are **unverified**. Run `npm run test:e2e` locally before approving.
@@ -76,3 +80,15 @@ cd tests && npm install && npm test                       # expect 58 pass
 npx playwright install chromium && npm run test:e2e       # not yet run anywhere
 ```
 Approval of the guard release and its deployment are separate owner steps.
+
+## 7. Review revision (14 Oct 2026)
+Requested before approval. Applied on `phase-0-guard` only.
+1. **Duplicate write removed.** `persist()` contained the new `setItem()` and also the original one, so every save wrote the key twice, with `lastSeenRaw` set between the two writes. There is now one write, and `lastSeenRaw` is set after it succeeds. Covered by W1 (exactly one write per save; the stored text equals this tab's last write; the next save is not blocked) and W2 (a failed write leaves storage unchanged and shows the existing cannot-save banner, not the guard).
+2. **Empty-string value.** `load()` used `if (raw)` and the pre-save check skipped `''`, so an empty value was silently overwritten. Both now treat `''` as unreadable saved data: preserved, the "could not be read" message shown, and Download saved data offered (the download contains `rawText: ""`). Covered by:
+   - G15: at load;
+   - G16: changes to `''` before a save;
+   - G17: Clear warns and Cancel keeps it;
+   - P16: all four pages on open;
+   - P17: working through 4.1.
+3. **Results:** 07 = 68/68 pass. Runs 05 and 06 show the new tests fail on the original code and on the previous guard commit. Runs 01–04 are unchanged.
+4. **Playwright:** still **not run**. Nothing in this revision has been checked in a real browser.

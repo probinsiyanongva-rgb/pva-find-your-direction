@@ -1,0 +1,1015 @@
+# revised test suite run against 33c4e04 (state.js sha256 98732a7d000ae90d…) · node v22.22.0 · 2026-10-14T12:08:47Z
+
+> test
+> node --test --test-reporter=spec "unit/*.test.mjs" "pages/*.test.mjs"
+
+▶ BASELINE · Stage 4 hub and Progress page
+  ✔ P1 hub, new learner: nothing started, Start Module 4.1, 4.3/4.4 coming later (165.266674ms)
+  ✔ P2 hub, 4.1 and 4.2 complete: both Complete, Review Module 4.2 (49.483486ms)
+  ✔ P3 Progress page, 4.1 complete only (v1 data): Start Module 4.2 (93.520557ms)
+  ✔ P4 hub Export button downloads a backup (69.859507ms)
+✔ BASELINE · Stage 4 hub and Progress page (379.928431ms)
+▶ BASELINE · Module 4.1
+  ✔ P5 renders 4 job posts, 5 scenarios and the 11 Direction Cards in canonical order (489.993472ms)
+  ✔ P6 a new learner completes 4.1 through the page controls, and it stays complete on reopen (2125.251616ms)
+  ✔ P7 opening a Direction Card records it as explored (never used for completion) (265.52701ms)
+  ✔ P8 returning learner: saved reactions and the Work Clues review are shown (314.113615ms)
+✔ BASELINE · Module 4.1 (3195.904997ms)
+▶ BASELINE · Module 4.2
+  ✔ P9 a new learner completes 4.2 through the page controls (249.59837ms)
+  ✔ P10 handoff shows 4.1 Work Clues read-only, grouped by reaction (46.277511ms)
+  ✔ P11 deleting an experience from the page (after confirming) removes it and its tasks; completion stays (59.910331ms)
+  ✔ P12 cancelling the delete keeps the experience (45.88841ms)
+✔ BASELINE · Module 4.2 (402.364954ms)
+▶ GUARD · every page leaves newer saved data alone
+  ✖ P13 index: opening the page with newer saved data does not overwrite it, and offers Download saved data (32.795777ms)
+  ✖ P13 progress: opening the page with newer saved data does not overwrite it, and offers Download saved data (23.915243ms)
+  ✖ P13 4-1: opening the page with newer saved data does not overwrite it, and offers Download saved data (174.529206ms)
+  ✖ P13 4-2: opening the page with newer saved data does not overwrite it, and offers Download saved data (41.063517ms)
+  ✖ P14 4.1: working through the page while blocked still never overwrites the newer data (476.752323ms)
+  ✖ P16 index: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (18.588721ms)
+  ✖ P16 progress: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (13.44768ms)
+  ✖ P16 4-1: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (193.185032ms)
+  ✖ P16 4-2: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (37.046738ms)
+  ✖ P17 4.1: working through the page with an empty-string saved value never overwrites it (247.013903ms)
+  ✖ P15 4.2: adding an experience while blocked never overwrites the newer data (50.395114ms)
+✖ GUARD · every page leaves newer saved data alone (1309.601914ms)
+▶ BASELINE · loading and migration
+  ✔ B1 v1 profile loads exactly as the unchanged code loaded it (golden) (110.389446ms)
+  ✔ B2 full v2 profile (4.1 + 4.2 complete) loads unchanged (golden) (36.976593ms)
+  ✔ B3 tampered v2 profile: invalid records dropped field by field, valid data kept (golden) (17.305671ms)
+  ✔ B4 empty storage starts fresh with no banner; first save writes schema v2 (61.687073ms)
+✔ BASELINE · loading and migration (228.096102ms)
+▶ BASELINE · saving keeps existing learner data
+  ✔ B5 saving a v2 profile keeps 4.1 and 4.2 exactly, adds only the change (22.231033ms)
+  ✔ B6 saving a v1 profile writes v2 with 4.1 untouched (14.141058ms)
+  ✔ B7 Work Clues: one clue per source, the only reaction store (14.18472ms)
+✔ BASELINE · saving keeps existing learner data (51.148124ms)
+▶ BASELINE · 4.2 experiences and tasks
+  ✔ B8 task IDs are unique across experiences (14.90315ms)
+  ✔ B9 deleting a task removes only that task; deleting an experience removes its tasks (20.157029ms)
+  ✔ B10 module completion is kept after deleting all 4.2 data (33.555764ms)
+✔ BASELINE · 4.2 experiences and tasks (69.064512ms)
+▶ BASELINE · Export / Restore / Clear
+  ✔ B11 v1 and v2 backups validate to the same data as the unchanged code (golden) (11.641621ms)
+  ✔ B12 other-course, newer-wrapper, newer-data and empty backups are rejected with clear messages (9.063291ms)
+  ✔ B13 restoring a rejected file (otherCourse) changes nothing and asks nothing (261.745854ms)
+  ✔ B13 restoring a rejected file (futureWrapper) changes nothing and asks nothing (274.36148ms)
+  ✔ B13 restoring a rejected file (futureData) changes nothing and asks nothing (265.805011ms)
+  ✔ B13 restoring a rejected file (notJson) changes nothing and asks nothing (302.143421ms)
+  ✔ B14 restoring a valid backup asks first; Cancel keeps current progress (372.54964ms)
+  ✔ B15 restoring a valid backup with OK replaces progress with the backup (22.513774ms)
+  ✔ B16 export produces the documented backup format containing the current data (18.669048ms)
+  ✔ B17 Clear asks first; Cancel keeps progress, OK removes it (24.86395ms)
+✔ BASELINE · Export / Restore / Clear (1567.543271ms)
+▶ BASELINE · storage unavailable
+  ✔ B18 blocked site data: course still works in memory and shows the existing banner (25.77743ms)
+✔ BASELINE · storage unavailable (25.99699ms)
+▶ GUARD · saved progress that cannot be read is never overwritten
+  ✖ G1 newer schema (v3): stays byte-identical after the learner keeps working (26.549879ms)
+  ✖ G1 malformed JSON: stays byte-identical after the learner keeps working (41.187759ms)
+  ✖ G1 schemaVersion is a string: stays byte-identical after the learner keeps working (14.279232ms)
+  ✖ G1 schemaVersion 0: stays byte-identical after the learner keeps working (12.265237ms)
+  ✖ G1 schemaVersion 2.5: stays byte-identical after the learner keeps working (14.38655ms)
+  ✖ G1 not an object: stays byte-identical after the learner keeps working (13.295354ms)
+  ✖ G2 the page says why saving is paused and offers "Download saved data" (24.134261ms)
+  ✖ G3 malformed data gets the "could not be read" wording (16.796163ms)
+  ✖ G4 "Download saved data" for newer data gives a backup a newer version can restore (30.635068ms)
+  ✖ G5 "Download saved data" for unreadable text keeps the exact stored text (13.17227ms)
+  ✖ G6 another tab (or newer version) writes newer data mid-session: this tab stops saving instead of overwriting (13.362078ms)
+  ✖ G7 Clear while blocked warns about the unreadable data; Cancel keeps it (10.32776ms)
+  ✖ G8 Clear while blocked with OK removes it, lifts the guard, and saving resumes (9.280559ms)
+  ✖ G9 Restore while blocked warns before replacing; Cancel keeps the unreadable data (264.551787ms)
+  ✖ G10 Restore while blocked with OK replaces it and saving resumes (27.036705ms)
+  ✖ G11 a second tab opened later is also blocked and also leaves the data alone (37.582749ms)
+  ✖ G12 Export Progress while blocked hands over the protected saved data, not an empty page state (20.811242ms)
+  ✖ G13 Clear after another tab saved newer data shows the guard warning, not the ordinary one (10.479381ms)
+  ✖ G15 key present with an empty string at load: treated as unreadable, kept, guard shown, download offered (10.353266ms)
+  ✖ G16 stored value changes to an empty string before a save: this tab stops instead of overwriting it (13.236069ms)
+  ✖ G17 Clear with an empty-string value shows the guard warning; Cancel keeps it (9.693508ms)
+  ✖ G14 a browser with readable v1/v2 data never sees the guard (26.482742ms)
+✖ GUARD · saved progress that cannot be read is never overwritten (662.383702ms)
+▶ GUARD · each save writes once
+  ✖ W1 one save = exactly one write of the key, and the stored text is what this tab last wrote (10.759285ms)
+  ✖ W2 a failed write leaves stored data unchanged and shows the existing cannot-save banner (not the guard) (10.72465ms)
+✖ GUARD · each save writes once (21.680524ms)
+ℹ tests 68
+ℹ suites 11
+ℹ pass 33
+ℹ fail 35
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11047.492757
+
+✖ failing tests:
+
+test at pages/pages.test.mjs:150:5
+✖ P13 index: opening the page with newer saved data does not overwrite it, and offers Download saved data (32.795777ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(p.$$('#storageBanner button').some((b) => /Download saved data/.test(b.textContent)))
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:155:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Test.start (node:internal/test_runner/test:944:17)
+      at node:internal/test_runner/test:1440:71
+      at node:internal/per_context/primordials:464:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:433:3)
+      at node:internal/per_context/primordials:464:9
+      at Array.map (<anonymous>) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:150:5
+✖ P13 progress: opening the page with newer saved data does not overwrite it, and offers Download saved data (23.915243ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(p.$$('#storageBanner button').some((b) => /Download saved data/.test(b.textContent)))
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:155:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1442:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:150:5
+✖ P13 4-1: opening the page with newer saved data does not overwrite it, and offers Download saved data (174.529206ms)
+  AssertionError [ERR_ASSERTION]: unchanged right after opening
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:52.902Z"}}'
+  - '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:153:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:52.902Z"}}',
+    expected: '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:150:5
+✖ P13 4-2: opening the page with newer saved data does not overwrite it, and offers Download saved data (41.063517ms)
+  AssertionError [ERR_ASSERTION]: unchanged right after opening
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[]}},"_meta":{"updatedAt":"2026-10-14T12:08:52.984Z"}}'
+  - '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:153:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[]}},"_meta":{"updatedAt":"2026-10-14T12:08:52.984Z"}}',
+    expected: '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:158:3
+✖ P14 4.1: working through the page while blocked still never overwrites the newer data (476.752323ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:53.372Z"}],"scenarioObservations":[],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing"],"completed":true}],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:53.372Z"}}'
+  - '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:164:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:53.372Z"}],"scenarioObservations":[],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing"],"completed":true}],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:53.372Z"}}',
+    expected: '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:167:5
+✖ P16 index: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (18.588721ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:171:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:167:5
+✖ P16 progress: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (13.44768ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:171:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:167:5
+✖ P16 4-1: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (193.185032ms)
+  AssertionError [ERR_ASSERTION]: unchanged right after opening
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:53.648Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:170:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:53.648Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:167:5
+✖ P16 4-2: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (37.046738ms)
+  AssertionError [ERR_ASSERTION]: unchanged right after opening
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[]}},"_meta":{"updatedAt":"2026-10-14T12:08:53.722Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:170:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[]}},"_meta":{"updatedAt":"2026-10-14T12:08:53.722Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:176:3
+✖ P17 4.1: working through the page with an empty-string saved value never overwrites it (247.013903ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:53.903Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ndis"],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:53.940Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:180:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:53.903Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ndis"],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:53.940Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:182:3
+✖ P15 4.2: adding an experience while blocked never overwrites the newer data (50.395114ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gs1yuh2g5","source":"family","note":"","tasks":[]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:54.022Z"}}'
+  - '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/pages/pages.test.mjs:186:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gs1yuh2g5","source":"family","note":"","tasks":[]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:54.022Z"}}',
+    expected: '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:192:5
+✖ G1 newer schema (v3): stays byte-identical after the learner keeps working (26.549879ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.810Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu7eh0t8h","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.811Z"}}'
+  - '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:198:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Test.start (node:internal/test_runner/test:944:17)
+      at node:internal/test_runner/test:1440:71
+      at node:internal/per_context/primordials:464:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:433:3)
+      at node:internal/per_context/primordials:464:9
+      at Array.map (<anonymous>) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.810Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu7eh0t8h","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.811Z"}}',
+    expected: '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:192:5
+✖ G1 malformed JSON: stays byte-identical after the learner keeps working (41.187759ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.855Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu8ofc1ps","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.856Z"}}'
+  - '{"schemaVersion":2,"workClues":[{"sourceType":"direction"'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:198:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1442:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.855Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu8ofc1ps","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.856Z"}}',
+    expected: '{"schemaVersion":2,"workClues":[{"sourceType":"direction"',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:192:5
+✖ G1 schemaVersion is a string: stays byte-identical after the learner keeps working (14.279232ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.871Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu93m74fg","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.872Z"}}'
+  - '{"schemaVersion":"2","workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-03T03:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:198:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.871Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu93m74fg","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.872Z"}}',
+    expected: '{"schemaVersion":"2","workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-03T03:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:192:5
+✖ G1 schemaVersion 0: stays byte-identical after the learner keeps working (12.265237ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.883Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu9gy61go","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.884Z"}}'
+  - '{"schemaVersion":0,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-03T03:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:198:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.883Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu9gy61go","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.884Z"}}',
+    expected: '{"schemaVersion":0,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-03T03:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:192:5
+✖ G1 schemaVersion 2.5: stays byte-identical after the learner keeps working (14.38655ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.897Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu9uckj9i","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.898Z"}}'
+  - '{"schemaVersion":2.5,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-03T03:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:198:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.897Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gu9uckj9i","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.898Z"}}',
+    expected: '{"schemaVersion":2.5,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-03T03:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:192:5
+✖ G1 not an object: stays byte-identical after the learner keeps working (13.295354ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.910Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gua6t692r","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.912Z"}}'
+  - '"just a string"'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:198:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:08:56.910Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ecommerce"],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gua6t692r","source":"work","note":"","tasks":[]}]},"4-1":{"lastSection":"patterns","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:08:56.912Z"}}',
+    expected: '"just a string"',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:201:3
+✖ G2 the page says why saving is paused and offers "Download saved data" (24.134261ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /newer version/i. Input:
+  
+  "Progress can't be saved in this browser.Your saved Stage 4 progress could not be read, so this page started fresh. Check your browser storage settings if this keeps happening."
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:204:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "Progress can't be saved in this browser.Your saved Stage 4 progress could not be read, so this page started fresh. Check your browser storage settings if this keeps happening.",
+    expected: /newer version/i,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:211:3
+✖ G3 malformed data gets the "could not be read" wording (16.796163ms)
+  TypeError: p.S.saveBlocked is not a function
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:213:22)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+
+test at unit/state.test.mjs:216:3
+✖ G4 "Download saved data" for newer data gives a backup a newer version can restore (30.635068ms)
+  TypeError: Cannot read properties of undefined (reading 'click')
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:218:89)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+
+test at unit/state.test.mjs:227:3
+✖ G5 "Download saved data" for unreadable text keeps the exact stored text (13.17227ms)
+  TypeError: Cannot read properties of undefined (reading 'click')
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:229:89)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+
+test at unit/state.test.mjs:234:3
+✖ G6 another tab (or newer version) writes newer data mid-session: this tab stops saving instead of overwriting (13.362078ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"},{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"unsure","note":"","updatedAt":"2026-10-14T12:08:57.010Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon","dir-ndis"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:57.010Z"}}'
+  - '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:240:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"},{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"unsure","note":"","updatedAt":"2026-10-14T12:08:57.010Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon","dir-ndis"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:57.010Z"}}',
+    expected: '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:244:3
+✖ G7 Clear while blocked warns about the unreadable data; Cancel keeps it (10.32776ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Download saved data/. Input:
+  
+  'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:248:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.',
+    expected: /Download saved data/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:250:3
+✖ G8 Clear while blocked with OK removes it, lifts the guard, and saving resumes (9.280559ms)
+  TypeError: p.S.saveBlocked is not a function
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:254:22)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+
+test at unit/state.test.mjs:259:3
+✖ G9 Restore while blocked warns before replacing; Cancel keeps the unreadable data (264.551787ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Download saved data/. Input:
+  
+  'Restore this backup?\n' +
+    '\n' +
+    'Exported: 10/10/2026, 8:00:00 AM\n' +
+    'Work Clues: 4\n' +
+    'Module 4.1: complete\n' +
+    'Module 4.2: complete (2 experiences)\n' +
+    '\n' +
+    'Restoring REPLACES the Stage 4 progress currently saved in this browser.\n' +
+    '\n' +
+    'Press OK to replace and restore, or Cancel.'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:263:12)
+      at async Test.run (node:internal/test_runner/test:1054:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Restore this backup?\n\nExported: 10/10/2026, 8:00:00 AM\nWork Clues: 4\nModule 4.1: complete\nModule 4.2: complete (2 experiences)\n\nRestoring REPLACES the Stage 4 progress currently saved in this browser.\n\nPress OK to replace and restore, or Cancel.',
+    expected: /Download saved data/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:265:3
+✖ G10 Restore while blocked with OK replaces it and saving resumes (27.036705ms)
+  TypeError: p.S.saveBlocked is not a function
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:269:22)
+      at async Test.run (node:internal/test_runner/test:1054:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+
+test at unit/state.test.mjs:273:3
+✖ G11 a second tab opened later is also blocked and also leaves the data alone (37.582749ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gumn3grbg","source":"family","note":"","tasks":[]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:57.359Z"}}'
+  - '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:277:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":null,"snapshotReached":false,"completedAt":null,"experiences":[{"id":"exp-mv82gumn3grbg","source":"family","note":"","tasks":[]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:57.359Z"}}',
+    expected: '{"schemaVersion":3,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]},"4-3":{"completedAt":null,"explorations":[{"directionId":"dir-ecommerce","judgment":"explore","relatedTaskIds":["task-aaa002"]}],"selectedDirectionIds":["dir-ecommerce"]}},"_meta":{"updatedAt":"2026-11-01T00:00:00.000Z"}}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:279:3
+✖ G12 Export Progress while blocked hands over the protected saved data, not an empty page state (20.811242ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+      _meta: {
+  +     updatedAt: '2026-10-14T12:08:57.371Z'
+  -     updatedAt: '2026-11-01T00:00:00.000Z'
+      },
+  +   exploredDirections: [],
+  +   jobPostObservations: [],
+  -   exploredDirections: [
+  -     'dir-ecommerce',
+  -     'dir-amazon'
+  -   ],
+  -   jobPostObservations: [
+  -     {
+  -       completed: true,
+  -       postId: 'post-a',
+  -       selected: [
+  -         'obs-organizing',
+  -         'obs-communicating'
+  -       ]
+  -     },
+  -     {
+  -       completed: true,
+  -       postId: 'post-b',
+  -       selected: [
+  -         'obs-organizing',
+  -         'obs-communicating'
+  -       ]
+  -     },
+  -     {
+  -       completed: true,
+  -       postId: 'post-c',
+  -       selected: [
+  -         'obs-organizing',
+  -         'obs-communicating'
+  -       ]
+  -     },
+  -     {
+  -       completed: true,
+  -       postId: 'post-d',
+  -       selected: [
+  -         'obs-organizing',
+  -         'obs-communicating'
+  -       ]
+  -     }
+  -   ],
+      modules: {
+  -     '4-1': {
+  -       completedAt: '2026-10-01T02:10:00.000Z',
+  -       directionsReviewed: true,
+  -       lastSection: 'wrap-up'
+  -     },
+        '4-2': {
+  +       completedAt: null,
+  -       completedAt: '2026-10-03T03:00:00.000Z',
+          experiences: [
+            {
+  +           id: 'exp-mv82gumzdq2iu',
+  +           note: '',
+  -           id: 'exp-aaa001',
+  -           note: 'Customer service job',
+              source: 'work',
+  +           tasks: []
+  -           tasks: [
+  -             {
+  -               evidence: 'regularly',
+  -               id: 'task-aaa001',
+  -               label: 'Answered customer questions',
+  -               note: 'Daily for two years',
+  -               patternTags: [
+  -                 'communicate'
+  -               ],
+  -               promptId: 'p-answered-questions'
+  -             },
+  -             {
+  -               evidence: 'done_before',
+  -               id: 'task-aaa002',
+  -               label: 'Updated records in a system',
+  -               note: '',
+  -               patternTags: [
+  -                 'organize',
+  -                 'operate'
+  -               ],
+  -               promptId: 'p-updated-records-system'
+  -             },
+  -             {
+  -               evidence: 'some_exposure',
+  -               id: 'task-aaa003',
+  -               label: 'Made a weekly summary sheet',
+  -               note: '',
+  -               patternTags: [],
+  -               promptId: null
+  -             }
+  -           ]
+            },
+  -         {
+  -           id: 'exp-bbb001',
+  -           note: '',
+  -           source: 'family',
+  -           tasks: [
+  -             {
+  -               evidence: 'regularly',
+  -               id: 'task-bbb001',
+  -               label: 'Tracked household money',
+  -               note: '',
+  -               patternTags: [
+  -                 'organize'
+  -               ],
+  -               promptId: 'p-tracked-household-money'
+  -             },
+  -             {
+  -               evidence: 'not_done_yet',
+  -               id: 'task-bbb002',
+  -               label: 'Posted products for our sari-sari store page',
+  -               note: '',
+  -               patternTags: [
+  -                 'create',
+  -                 'communicate'
+  -               ],
+  -               promptId: null
+  -             }
+  -           ]
+  -         }
+          ],
+  +       lastSection: null,
+  +       snapshotReached: false
+  -       lastSection: 'handoff',
+  -       snapshotReached: true
+        },
+  -     '4-3': {
+  -       completedAt: null,
+  -       explorations: [
+  -         {
+  -           directionId: 'dir-ecommerce',
+  -           judgment: 'explore',
+  -           relatedTaskIds: [
+  -             'task-aaa002'
+  -           ]
+  -         }
+  -       ],
+  -       selectedDirectionIds: [
+  -         'dir-ecommerce'
+  -       ]
+  -     }
+      },
+  +   scenarioObservations: [],
+  +   schemaVersion: 2,
+  +   workClues: []
+  -   scenarioObservations: [
+  -     {
+  -       completed: true,
+  -       scenarioId: 'scn-organizing-information',
+  -       selectedPatterns: [
+  -         'organize'
+  -       ]
+  -     },
+  -     {
+  -       completed: true,
+  -       scenarioId: 'scn-customer-communication',
+  -       selectedPatterns: [
+  -         'communicate'
+  -       ]
+  -     },
+  -     {
+  -       completed: true,
+  -       scenarioId: 'scn-research-analysis',
+  -       selectedPatterns: [
+  -         'research'
+  -       ]
+  -     },
+  -     {
+  -       completed: true,
+  -       scenarioId: 'scn-creating-content',
+  -       selectedPatterns: [
+  -         'create'
+  -       ]
+  -     },
+  -     {
+  -       completed: true,
+  -       scenarioId: 'scn-keeping-process-running',
+  -       selectedPatterns: [
+  -         'operate',
+  -         'organize'
+  -       ]
+  -     }
+  -   ],
+  -   schemaVersion: 3,
+  -   workClues: [
+  -     {
+  -       id: 'scenario:scn-customer-communication',
+  -       note: 'I liked helping people.',
+  -       reaction: 'explore',
+  -       sourceId: 'scn-customer-communication',
+  -       sourceType: 'scenario',
+  -       updatedAt: '2026-10-01T02:00:00.000Z'
+  -     },
+  -     {
+  -       id: 'direction:dir-ecommerce',
+  -       note: '',
+  -       reaction: 'explore',
+  -       sourceId: 'dir-ecommerce',
+  -       sourceType: 'direction',
+  -       updatedAt: '2026-10-01T02:05:00.000Z'
+  -     },
+  -     {
+  -       id: 'direction:dir-bookkeeping',
+  -       note: 'Need to know more.',
+  -       reaction: 'unsure',
+  -       sourceId: 'dir-bookkeeping',
+  -       sourceType: 'direction',
+  -       updatedAt: '2026-10-01T02:06:00.000Z'
+  -     },
+  -     {
+  -       id: 'direction:dir-social-content',
+  -       note: '',
+  -       reaction: 'not_for_me',
+  -       sourceId: 'dir-social-content',
+  -       sourceType: 'direction',
+  -       updatedAt: '2026-10-01T02:07:00.000Z'
+  -     }
+  -   ]
+    }
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:284:12)
+      at async Test.run (node:internal/test_runner/test:1054:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { schemaVersion: 2, workClues: [], scenarioObservations: [], jobPostObservations: [], exploredDirections: [], modules: { '4-2': [Object] }, _meta: { updatedAt: '2026-10-14T12:08:57.371Z' } },
+    expected: { schemaVersion: 3, workClues: [ [Object], [Object], [Object], [Object] ], scenarioObservations: [ [Object], [Object], [Object], [Object], [Object] ], jobPostObservations: [ [Object], [Object], [Object], [Object] ], exploredDirections: [ 'dir-ecommerce', 'dir-amazon' ], modules: { '4-1': [Object], '4-2': [Object], '4-3': [Object] }, _meta: { updatedAt: '2026-11-01T00:00:00.000Z' } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:286:3
+✖ G13 Clear after another tab saved newer data shows the guard warning, not the ordinary one (10.479381ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Download saved data/. Input:
+  
+  'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:290:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.',
+    expected: /Download saved data/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:293:3
+✖ G15 key present with an empty string at load: treated as unreadable, kept, guard shown, download offered (10.353266ms)
+  TypeError: p.S.saveBlocked is not a function
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:295:22)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+
+test at unit/state.test.mjs:310:3
+✖ G16 stored value changes to an empty string before a save: this tab stops instead of overwriting it (13.236069ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"},{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"unsure","note":"","updatedAt":"2026-10-14T12:08:57.415Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon","dir-ndis"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:57.415Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:316:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"},{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"unsure","note":"","updatedAt":"2026-10-14T12:08:57.415Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon","dir-ndis"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-14T12:08:57.415Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:322:3
+✖ G17 Clear with an empty-string value shows the guard warning; Cancel keeps it (9.693508ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Download saved data/. Input:
+  
+  'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:325:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.',
+    expected: /Download saved data/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:328:3
+✖ G14 a browser with readable v1/v2 data never sees the guard (26.482742ms)
+  TypeError: p.S.saveBlocked is not a function
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:332:24)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+
+test at unit/state.test.mjs:351:3
+✖ W1 one save = exactly one write of the key, and the stored text is what this tab last wrote (10.759285ms)
+  TypeError: p.S.saveBlocked is not a function
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:360:22)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Test.start (node:internal/test_runner/test:944:17)
+      at node:internal/test_runner/test:1440:71
+      at node:internal/per_context/primordials:464:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:433:3)
+      at node:internal/per_context/primordials:464:9
+      at Array.map (<anonymous>)
+
+test at unit/state.test.mjs:363:3
+✖ W2 a failed write leaves stored data unchanged and shows the existing cannot-save banner (not the guard) (10.72465ms)
+  TypeError: p.S.saveBlocked is not a function
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-33c4e04/tests/unit/state.test.mjs:370:22)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1442:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7)

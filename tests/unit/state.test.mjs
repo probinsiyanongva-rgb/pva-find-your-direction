@@ -290,6 +290,41 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
     assert.match(p.dialogs.confirms[0], /Download saved data/);
     assert.equal(p.raw(), F.RAW.v3);
   });
+  test('G15 key present with an empty string at load: treated as unreadable, kept, guard shown, download offered', async () => {
+    const p = withRaw('');
+    assert.equal(p.S.saveBlocked(), 'unreadable');
+    assert.equal(p.bannerVisible(), true);
+    assert.match(p.bannerText(), /could not be read/i);
+    const btn = p.$$('#storageBanner button').find((b) => /Download saved data/.test(b.textContent));
+    assert.ok(btn, 'Download saved data offered');
+    p.S.markExplored('dir-ecommerce');
+    p.S.setReaction('direction', 'dir-amazon', 'explore');
+    p.S.addExperience('work');
+    assert.equal(p.raw(), '', 'empty string preserved, not overwritten');
+    assert.doesNotMatch(p.$('[data-save-state]').textContent, /^Saved in this browser/);
+    btn.click();
+    const b = JSON.parse(await p.downloadText(0));
+    assert.equal(b.rawText, '');
+    assert.equal(b.storageKey, KEY);
+  });
+  test('G16 stored value changes to an empty string before a save: this tab stops instead of overwriting it', () => {
+    const p = withProfile(F.profileV2Full);
+    p.S.markExplored('dir-ndis');
+    assert.equal(p.stored().schemaVersion, 2, 'normal saving first');
+    p.window.localStorage.setItem(KEY, '');
+    p.S.setReaction('direction', 'dir-amazon', 'unsure');
+    assert.equal(p.raw(), '');
+    assert.equal(p.S.saveBlocked(), 'unreadable');
+    assert.equal(p.bannerVisible(), true);
+    assert.match(p.bannerText(), /could not be read/i);
+    assert.ok(p.$$('#storageBanner button').some((b) => /Download saved data/.test(b.textContent)));
+  });
+  test('G17 Clear with an empty-string value shows the guard warning; Cancel keeps it', () => {
+    const p = withRaw('', { confirm: false });
+    p.S.clearProgress(() => {});
+    assert.match(p.dialogs.confirms[0], /Download saved data/);
+    assert.equal(p.raw(), '');
+  });
   test('G14 a browser with readable v1/v2 data never sees the guard', () => {
     for (const prof of [F.profileV1, F.profileV2Full, F.profileV2Tampered]) {
       const p = withProfile(prof);
@@ -298,5 +333,42 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
       assert.equal(p.bannerVisible(), false);
       assert.equal(p.stored().schemaVersion, 2);
     }
+  });
+});
+
+describe('GUARD · each save writes once', () => {
+  /* Counts writes of the progress key (load()'s storage probe uses another key). */
+  function countWrites(p, failKey = false) {
+    const proto = p.window.Storage.prototype;
+    const real = proto.setItem;
+    const writes = [];
+    proto.setItem = function (k, v) {
+      if (k === KEY) { if (failKey) throw new p.window.DOMException('Quota exceeded', 'QuotaExceededError'); writes.push(String(v)); }
+      return real.call(this, k, v);
+    };
+    return writes;
+  }
+  test('W1 one save = exactly one write of the key, and the stored text is what this tab last wrote', () => {
+    const p = withProfile(F.profileV2Full);
+    const writes = countWrites(p);
+    p.S.markExplored('dir-ndis');
+    assert.equal(writes.length, 1, 'written once');
+    assert.equal(p.raw(), writes[0]);
+    assert.equal(p.raw(), JSON.stringify(p.S._state()));
+    p.S.setReaction('direction', 'dir-amazon', 'unsure');
+    assert.equal(writes.length, 2, 'next save also writes once');
+    assert.equal(p.S.saveBlocked(), null, 'this tab recognises its own last write (lastSeenRaw), so it is not blocked');
+    assert.equal(p.raw(), writes[1]);
+  });
+  test('W2 a failed write leaves stored data unchanged and shows the existing cannot-save banner (not the guard)', () => {
+    const p = withProfile(F.profileV2Full);
+    const before = p.raw();
+    countWrites(p, true);
+    p.S.setLastSection('4-1', 'patterns');
+    assert.equal(p.raw(), before);
+    assert.equal(p.S.storageOK(), false);
+    assert.equal(p.S.saveBlocked(), null);
+    assert.match(p.bannerText(), /Your browser stopped this course from saving progress/);
+    assert.doesNotMatch(p.bannerText(), /Download saved data/);
   });
 });
