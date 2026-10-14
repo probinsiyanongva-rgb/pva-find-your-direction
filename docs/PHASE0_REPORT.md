@@ -1,6 +1,6 @@
 # Stage 4 — Phase 0 Report: Data-Protection Guard and Regression Baseline
 
-**Branch:** `phase-0-guard` (based on `main` at `33c4e04`). **Not merged. Not deployed.**
+**Branch:** `phase-0-guard` (based on `main` at `33c4e04`). **Owner-verified and approved for release on 14 Oct 2026 (§8).** Merging to `main` deploys it (Cloudflare deploys automatically from `main`).
 **Scope:** Phase 0 only. No Module 4.3 code. No change to 4.1/4.2 page HTML, module scripts, content data, schema version or backup format.
 **Date:** 14 Oct 2026
 
@@ -92,3 +92,25 @@ Requested before approval. Applied on `phase-0-guard` only.
    - P17: working through 4.1.
 3. **Results:** 07 = 68/68 pass. Runs 05 and 06 show the new tests fail on the original code and on the previous guard commit. Runs 01–04 are unchanged.
 4. **Playwright:** still **not run**. Nothing in this revision has been checked in a real browser.
+
+## 8. Owner verification and approval (14 Oct 2026)
+Run by the owner on his own computer against commit `7aa916536b07e1d0e61082dee1e7aea53b879b78`. The commit was confirmed with `git rev-parse HEAD`. Results are as reported by the owner; the raw output files stayed on his machine.
+
+**Environment:** Windows, PowerShell, Node v24.21.0, `npm ci` from the committed lockfile, Playwright Chrome for Testing 156.0.8078.4.
+
+| Check | Result |
+|---|---|
+| Node/jsdom suite (`npm test`) | **68 / 68 passed** (11 suites) |
+| Playwright suite (`npm run test:e2e`), real Chromium | **27 / 27 passed**. This is the first real-browser run of the suite. |
+| Manual checks on `http://localhost:4173` in Chrome | **All passed:** guard banner fully visible at the top on 4.2 at 390 px, with `saveBlocked()` returning `'newer'` and the stored v3 data unchanged; banner on hub, Progress and 4.1; data unchanged after interacting; keyboard (Tab, visible focus, Space); Download saved data; Export while paused; Clear warning with Cancel keeping the data; broken and empty values show "could not be read"; Restore warning; private-window banner. |
+
+**Observations (not blocking; owner decided to release as-is):**
+1. **Button text wraps** onto two lines ("Download saved / data") at 390 px. Cosmetic; deferred.
+2. **Playwright screenshot E9** captured the page while it was scrolled, so the top of the banner was behind the sticky bars. A manual check at the top of the page showed the full banner, so there is no layout fault. Test gaps to fix later:
+   - E9 doesn't check whether anything covers the banner, and saves its screenshot outside the ignored folder;
+   - the empty-string cases are covered only by the Node suite.
+3. **Caching.** The owner's first tab kept running the old cached `state.js` until a hard reload. Learners' browsers can do the same after release. So:
+   - allow time between this release and any schema v3 release;
+   - the v3 release must make browsers fetch the new files (for example, versioned file names).
+
+**Decision:** guard release approved as-is by the owner on 14 Oct 2026, to be merged to `main` and deployed. Module 4.3 remains parked.
