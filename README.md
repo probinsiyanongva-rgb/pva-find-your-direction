@@ -96,7 +96,7 @@ Before the guard, opening 4.1 or 4.2 with newer data replaced it with an empty p
    first receive newer data, or a rollback can still erase their progress.
 2. **The guard release is the oldest version that may be redeployed.** Never redeploy `33c4e04` or anything
    older once a newer schema has shipped: that code replaces newer saved progress with an empty profile.
-3. Record the guard release's merge commit here when it is deployed: `GUARD RELEASE: <commit SHA, date>`.
+3. **GUARD RELEASE: `ee27fd0b46afa8872d65045175a60ab84a4d50b4` (merge of `phase-0-guard` into `main`), deployed 14 Oct 2026.** Its app code is identical to the owner-verified `7aa9165`. Live `state.js` was confirmed to contain the guard after deployment. Do not redeploy anything older than this commit once a newer schema has shipped.
 4. Every later release must keep the guard and pass the full test suite, including the golden tests for
    existing v1/v2 data.
 
