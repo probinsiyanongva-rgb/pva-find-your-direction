@@ -445,3 +445,34 @@ describe('4.3 · guard and wording safety', () => {
     for (const l of tagLines) assert.doesNotMatch(l, /\bd\.|DIRECTIONS|directionId|indexOf|===|filter|some\(|every\(/, 'task tags are display-only: ' + l.trim().slice(0, 80));
   });
 });
+
+describe('4.3 · navigation (Step E)', () => {
+  test('N1 hub: 4.3 complete → Review Module 4.3; in progress → Continue at the saved section', () => {
+    const done = openPage({ page: 'index', storage: seed(F.profileV3Full) });
+    assert.equal(text(done, '#stamp43'), 'Complete');
+    assert.equal(text(done, '#continueBtn'), 'Review Module 4.3');
+    assert.equal(text(done, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 complete · 4 Work Clues saved');
+    const prof = JSON.parse(JSON.stringify(F.profileV3Full)); prof.modules['4-3'].completedAt = null; prof.modules['4-3'].lastSection = 'decision';
+    const mid = openPage({ page: 'progress', storage: seed(prof) });
+    assert.equal(text(mid, '#continueBtn'), 'Continue Module 4.3');
+    assert.equal(mid.$('#continueBtn').getAttribute('href'), '../4-3/#decision');
+  });
+  test('N2 4.1 and 4.2 sidebars link to 4.3; only 4.4 is Coming later; 4.2’s NEXT links to 4.3', () => {
+    for (const page of ['4-1', '4-2']) {
+      const p = openPage({ page });
+      assert.equal(p.$('.s4-modules a[href="../4-3/"]').textContent.replace(/\s+/g, ' ').trim(), '4.3 Exploring Possible Directions');
+      assert.deepEqual(p.$$('.s4-modules li.later').map((li) => words(li)), ['4.4 Build Your Direction Map Coming later']);
+    }
+    const p = openPage({ page: '4-2', hash: 'handoff' });
+    const next = p.$('#handoff a.s4-next');
+    assert.equal(next.getAttribute('href'), '../4-3/');
+    assert.match(next.textContent, /NEXT: 4\.3 EXPLORING POSSIBLE DIRECTIONS.*Open Module 4\.3/);
+  });
+  test('N3 the 4.3 page marks itself current and shows 4.4 as Coming later with no link', () => {
+    const p = openPage({ page: '4-3', storage: seed(F.profileV2Full) });
+    assert.match(p.$('.s4-modules li.current').textContent, /4\.3 Exploring Possible Directions/);
+    assert.equal(p.$$('a[href*="4-4"]').length, 0);
+    assert.equal(text(p, '#m41Status'), 'Complete');
+    assert.equal(text(p, '#m42Status'), 'Complete');
+  });
+});
