@@ -353,7 +353,7 @@
         '<p>Your Work Clues are saved in this browser' + (completedAt ? ' (first completed ' + esc(new Date(completedAt).toLocaleDateString()) + ')' : '') + '. They will carry into the next parts of Stage 4.</p>' +
         '<p class="small">Use <strong>Export Progress</strong> to keep a backup file, especially if you might switch devices or browsers.</p>' +
         '<div class="progress-tools"><button class="btn subtle" type="button" data-export>Export Progress</button></div>';
-      $all('[data-export]', box).forEach(function (b) { b.addEventListener('click', function () { S.exportProgress(summary); }); });
+      $all('[data-export]', box).forEach(function (b) { b.addEventListener('click', function () { S.exportProgress(); }); });
     } else {
       var rows = [
         [c.posts, 'Section 1: look at all four job posts', 'job-posts'],
@@ -365,10 +365,6 @@
         rows.map(function (r) { return '<li class="' + (r[0] ? 'ok' : '') + '"><span class="s4-mark" aria-hidden="true">' + (r[0] ? '✓' : '○') + '</span><span class="sr-only">' + (r[0] ? 'Done: ' : 'Not done yet: ') + '</span>' + (r[0] ? esc(r[1]) : '<a href="#' + r[2] + '" data-nav="' + r[2] + '">' + esc(r[1]) + '</a>') + '</li>'; }).join('') +
         '</ul><p class="small">You don’t need to open every direction card or choose a direction.</p>';
     }
-  }
-  function summary(st) {
-    var m = st.modules['4-1'];
-    return { workClues: st.workClues.length, module41Complete: !!(m && m.completedAt), schemaVersion: st.schemaVersion };
   }
 
   function refreshUI() {
@@ -433,7 +429,7 @@
   renderDirections();
   renderReview(true);
   S.onChange(refreshUI);
-  S.wireTools({ summary: summary });
+  S.wireTools();   // backup summary comes from the shared state layer
   refreshUI();
   var startAt = location.hash.slice(1);
   if (SECTIONS.indexOf(startAt) < 0) startAt = S.module(MOD).lastSection || 'start';

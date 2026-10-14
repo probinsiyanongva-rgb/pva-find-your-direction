@@ -382,7 +382,7 @@
         '<p>Your evidence is saved in this browser (first completed ' + esc(new Date(completedAt).toLocaleDateString()) + '). You can keep editing it.</p>' +
         '<p class="small">Use <strong>Export Progress</strong> to keep a backup file, especially if you might switch devices or browsers.</p>' +
         '<div class="progress-tools"><button class="btn subtle" type="button" data-export-inline>Export Progress</button></div>';
-      $all('[data-export-inline]', box).forEach(function (b) { b.addEventListener('click', function () { S.exportProgress(summary); }); });
+      $all('[data-export-inline]', box).forEach(function (b) { b.addEventListener('click', function () { S.exportProgress(); }); });
     } else {
       var rows = [
         [c.experience, 'Add at least one experience', 'experience'],
@@ -395,10 +395,6 @@
         rows.map(function (r) { return '<li class="' + (r[0] ? 'ok' : '') + '"><span class="s4-mark" aria-hidden="true">' + (r[0] ? '✓' : '○') + '</span><span class="sr-only">' + (r[0] ? 'Done: ' : 'Not done yet: ') + '</span>' + (r[0] ? esc(r[1]) : '<a href="#' + r[2] + '" data-nav="' + r[2] + '">' + esc(r[1]) + '</a>') + '</li>'; }).join('') +
         '</ul><p class="small">Any background and any evidence answer counts, including “I have not done this yet”.</p>';
     }
-  }
-  function summary(st) {
-    var m1 = st.modules['4-1'], m2 = st.modules['4-2'];
-    return { workClues: st.workClues.length, module41Complete: !!(m1 && m1.completedAt), module42Complete: !!(m2 && m2.completedAt), experiences: m2 ? m2.experiences.length : 0, schemaVersion: st.schemaVersion };
   }
 
   /* ---------- helpers ---------- */
@@ -459,7 +455,7 @@
   renderEvidenceDefs();
   renderPatternRef();
   S.onChange(renderStatus);
-  S.wireTools({ summary: summary });
+  S.wireTools();   // backup summary comes from the shared state layer
   var startAt = location.hash.slice(1);
   if (SECTIONS.indexOf(startAt) < 0) startAt = S.module(MOD).lastSection || 'start';
   go(startAt, { initial: true });

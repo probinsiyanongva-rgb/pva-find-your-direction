@@ -46,8 +46,33 @@ describe('BASELINE · Stage 4 hub and Progress page', () => {
     p.click('[data-export]');
     const b = JSON.parse(await p.downloadText(0));
     assert.equal(b.format, F.BACKUP_FORMAT);
-    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, experiences: 2, schemaVersion: F.EXPECTED.schema });
+    /* Deliberate update (spec v1.5 decision 5, 4.3 Step C): the one combined summary adds
+       module43Complete. Previously { workClues, module41Complete, module42Complete, experiences, schemaVersion }. */
+    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });
   });
+});
+
+describe('SUMMARY · one shared backup summary from every page (spec v1.5 decision 5)', () => {
+  const WANT = { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema };
+  const exportsFrom = [
+    ['hub', 'index', null, '[data-export]'],
+    ['Progress page', 'progress', null, '[data-export]'],
+    ['4.1 sidebar', '4-1', null, '.s4-tools [data-export]'],
+    ['4.1 completion box', '4-1', 'wrap-up', '#completionStatus [data-export]'],
+    ['4.2 sidebar', '4-2', null, '.s4-tools [data-export]'],
+    ['4.2 completion box', '4-2', 'snapshot', '[data-export-inline]']
+  ];
+  for (const [label, page, hash, sel] of exportsFrom) {
+    test(`SUM ${label}: Export gives the combined summary`, async () => {
+      const p = openPage({ page, storage: seed(F.profileV2Full), hash: hash || undefined });
+      const btn = p.$(sel);
+      assert.ok(btn, label + ' has an Export button (' + sel + ')');
+      btn.click();
+      const b = JSON.parse(await p.downloadText(0));
+      assert.deepEqual(b.summary, WANT);
+      assert.equal(p.S.validateBackup(b).ok, true);
+    });
+  }
 });
 
 describe('BASELINE · Module 4.1', () => {

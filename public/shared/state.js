@@ -669,7 +669,7 @@
     };
   }
 
-  function exportProgress(summaryFn) {
+  function exportProgress() {
     /* Guard: while saving is paused, the learner's real progress is the protected
        stored data, not this page's in-memory state, so that is what they get. */
     if (blocked) { downloadSavedData(); return; }
@@ -677,7 +677,7 @@
       format: BACKUP_FORMAT, version: BACKUP_VERSION, course: COURSE_NAME, storageKey: STORAGE_KEY,
       exportedAt: new Date().toISOString(),
       note: 'Progress backup for PVA Academy Stage 4: Find Your Direction only. Restore it on the Stage 4 home page, Progress page, or inside a module to bring your Work Clues back in this or another browser.',
-      summary: summaryFn ? summaryFn(state) : summaryOf(state),
+      summary: summaryOf(state),   // one shared summary for every page (spec v1.5 decision 5)
       data: state
     };
     downloadJson(payload, 'Find-Your-Direction-progress-backup-' + new Date().toISOString().slice(0, 10) + '.json');
@@ -746,7 +746,7 @@
     var re = document.querySelectorAll('[data-restore]');
     var cl = document.querySelectorAll('[data-clear]');
     var file = document.getElementById('restoreFile');
-    ex.forEach(function (b) { b.addEventListener('click', function () { exportProgress(opts.summary); }); });
+    ex.forEach(function (b) { b.addEventListener('click', function () { exportProgress(); }); });
     re.forEach(function (b) { b.addEventListener('click', function () { if (file) { file.value = ''; file.click(); } }); });
     if (file) file.addEventListener('change', function () { restoreFromFile(file.files[0], opts.afterRestore || function () { location.reload(); }); });
     cl.forEach(function (b) { b.addEventListener('click', function () { clearProgress(opts.afterClear || function () { location.reload(); }); }); });

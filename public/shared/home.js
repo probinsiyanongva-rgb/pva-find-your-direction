@@ -45,13 +45,7 @@
       btn.href = root + target + '/' + (label.indexOf('Continue') === 0 && m.lastSection ? '#' + m.lastSection : '');
     }
   }
-  S.wireTools({
-    summary: function (st) {
-      var m1 = st.modules['4-1'], m2 = st.modules['4-2'];
-      return { workClues: st.workClues.length, module41Complete: !!(m1 && m1.completedAt), module42Complete: !!(m2 && m2.completedAt), experiences: m2 ? m2.experiences.length : 0, schemaVersion: st.schemaVersion };
-    },
-    afterRestore: render, afterClear: render
-  });
+  S.wireTools({ afterRestore: render, afterClear: render });   // backup summary comes from the shared state layer
   S.onChange(render);
   render();
 })();
