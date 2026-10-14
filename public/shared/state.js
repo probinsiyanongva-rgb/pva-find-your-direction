@@ -28,7 +28,16 @@
    capability profiles, transfer notes or development needs.
    4.2 evidence is a named string, never a number; pattern tags are only ever
    set by the learner.
-   Nothing is sent to a server or account. */
+   Nothing is sent to a server or account.
+
+   DATA-PROTECTION GUARD (Phase 0). Saved progress this version cannot read
+   (a newer schema, malformed JSON, an invalid version) is NEVER written over:
+   the page keeps working in memory, stops saving, shows the storage banner
+   with "Download saved data", and asks before Clear or Restore replaces it.
+   The same check runs before every save, so a tab that is still open when
+   another tab (or a newer version of the course) saves newer data stops
+   instead of overwriting it. This guard release is the oldest version that
+   may be redeployed once any newer schema has shipped (see README). */
 (function () {
   'use strict';
 
@@ -51,6 +60,21 @@
   var storageOK = true;
   var state = fresh();
   var listeners = [];
+
+  /* Guard state. blocked = { reason: 'newer'|'unreadable', raw: <exact stored text> }
+     while saving is paused. lastSeenRaw = the stored text this tab last read or wrote,
+     so a change made elsewhere is noticed before this tab saves over it. */
+  var blocked = null;
+  var lastSeenRaw = null;
+  var GUARD = {
+    heading: 'Saved progress needs attention.',
+    newer: 'This browser has Stage 4 progress saved by a newer version of this course. To keep it safe, this page will not save over it, so changes you make here won’t be saved. Use Download saved data to keep a copy, then open the course again later.',
+    unreadable: 'Your saved Stage 4 progress could not be read. To keep it safe, this page will not save over it, so changes you make here won’t be saved. Use Download saved data to keep a copy before you restore or clear progress.',
+    button: 'Download saved data',
+    saveState: 'Not saved — see the message at the top of this page.',
+    replaceWarning: 'This browser also has Stage 4 progress that this version of the course can’t read. Restoring will permanently replace it. If you haven’t used “Download saved data” yet, press Cancel and download it first.',
+    clear: 'This browser has Stage 4 progress that this version of the course can’t read. Clearing will permanently delete it. If you haven’t used “Download saved data” yet, press Cancel and download it first.\n\nDelete it and start fresh? Other PVA courses are not affected.'
+  };
 
   function fresh() {
     return {
@@ -194,17 +218,103 @@
     b.classList.remove('hidden');
   }
 
+  /* ---------- data-protection guard ---------- */
+  /* Decides whether stored text is usable. Never throws. */
+  function classify(raw) {
+    var parsed;
+    try { parsed = JSON.parse(raw); } catch (e) { return { reason: 'unreadable' }; }
+    var m = migrate(parsed);
+    if (m) return { data: m };
+    var v = isObj(parsed) ? parsed.schemaVersion : null;
+    if (typeof v === 'number' && Math.floor(v) === v && v > SCHEMA_VERSION) return { reason: 'newer' };
+    return { reason: 'unreadable' };
+  }
+  function setSaveState(text) {
+    document.querySelectorAll('[data-save-state]').forEach(function (el) { el.textContent = text; });
+  }
+  var bannerOriginal = null;
+  function showGuard() {
+    setSaveState(GUARD.saveState);
+    var b = document.getElementById('storageBanner');
+    if (!b) return;
+    var head = b.querySelector('strong');
+    var text = document.getElementById('storageBannerText');
+    if (!bannerOriginal) bannerOriginal = { head: head ? head.textContent : null, text: text ? text.textContent : null };
+    if (head) head.textContent = GUARD.heading;
+    if (text) text.textContent = blocked.reason === 'newer' ? GUARD.newer : GUARD.unreadable;
+    if (!b.querySelector('[data-download-saved]')) {
+      var row = document.createElement('div');
+      row.className = 'progress-tools';
+      row.setAttribute('data-guard-actions', '');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn subtle';
+      btn.setAttribute('data-download-saved', '');
+      btn.textContent = GUARD.button;
+      btn.addEventListener('click', downloadSavedData);
+      row.appendChild(btn);
+      b.appendChild(row);
+    }
+    b.classList.remove('hidden');
+  }
+  function hideGuard() {
+    var b = document.getElementById('storageBanner');
+    if (!b) return;
+    var row = b.querySelector('[data-guard-actions]');
+    if (row) row.parentNode.removeChild(row);
+    if (bannerOriginal) {
+      var head = b.querySelector('strong'), text = document.getElementById('storageBannerText');
+      if (head && bannerOriginal.head !== null) head.textContent = bannerOriginal.head;
+      if (text && bannerOriginal.text !== null) text.textContent = bannerOriginal.text;
+    }
+    if (storageOK) b.classList.add('hidden');
+  }
+  function block(reason, raw) {
+    blocked = { reason: reason, raw: raw };
+    showGuard();
+  }
+  /* Before writing: if what is stored now is not what this tab last read or wrote,
+     and this version cannot read it, stop instead of overwriting it. */
+  function storedChangedToUnreadable() {
+    var current;
+    try { current = localStorage.getItem(STORAGE_KEY); } catch (e) { return false; }
+    if (current === null || current === '' || current === lastSeenRaw) return false;
+    var c = classify(current);
+    if (c.data) return false;          // readable data from another tab: existing last-save-wins behaviour
+    block(c.reason, current);
+    return true;
+  }
+  /* Saves the protected text exactly as stored. JSON objects are wrapped in the
+     normal backup format so a version that understands them can restore them. */
+  function downloadSavedData() {
+    if (!blocked) return;
+    var parsed = null;
+    try { parsed = JSON.parse(blocked.raw); } catch (e) {}
+    var now = new Date().toISOString();
+    var payload = isObj(parsed) ? {
+      format: BACKUP_FORMAT, version: BACKUP_VERSION, course: COURSE_NAME, storageKey: STORAGE_KEY, exportedAt: now,
+      note: 'Stage 4 progress that this version of the course could not use, kept exactly as it was saved. A version of the course that understands it can restore this file.',
+      summary: { savedSchemaVersion: parsed.schemaVersion === undefined ? null : parsed.schemaVersion, readableByThisVersion: false },
+      data: parsed
+    } : {
+      format: BACKUP_FORMAT + '-unreadable', course: COURSE_NAME, storageKey: STORAGE_KEY, exportedAt: now,
+      note: 'Stage 4 progress text that could not be read, kept exactly as it was saved.',
+      rawText: blocked.raw
+    };
+    downloadJson(payload, 'Find-Your-Direction-saved-data-' + now.slice(0, 10) + '.json');
+  }
+
   function load() {
     try {
       var probe = '__pva_s4_probe__';
       localStorage.setItem(probe, '1');
       localStorage.removeItem(probe);
       var raw = localStorage.getItem(STORAGE_KEY);
+      lastSeenRaw = raw;
       if (raw) {
-        var parsed = null;
-        try { parsed = migrate(JSON.parse(raw)); } catch (e) { parsed = null; }
-        if (parsed) state = normalize(parsed);
-        else showBanner('Your saved Stage 4 progress could not be read, so this page started fresh. Check your browser storage settings if this keeps happening.');
+        var c = classify(raw);
+        if (c.data) state = normalize(c.data);
+        else block(c.reason, raw);   // keep it; never start fresh over it
       }
     } catch (e) {
       storageOK = false;
@@ -218,8 +328,13 @@
   function persist() {
     state._meta.updatedAt = new Date().toISOString();
     var ok = false;
-    if (storageOK) {
+    if (storageOK && (blocked || storedChangedToUnreadable())) {
+      setSaveState(GUARD.saveState);      // guard: keep working in memory, never write
+    } else if (storageOK) {
       try {
+        var text = JSON.stringify(state);
+        localStorage.setItem(STORAGE_KEY, text);
+        lastSeenRaw = text;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         ok = true;
         document.querySelectorAll('[data-save-state]').forEach(function (el) { el.textContent = 'Saved in this browser · ' + stampTime(); });
@@ -350,7 +465,19 @@
   }
 
   /* ---------- export / restore / clear ---------- */
+  function downloadJson(payload, filename) {
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+  }
+
   function exportProgress(summaryFn) {
+    /* Guard: while saving is paused, the learner's real progress is the protected
+       stored data, not this page's in-memory state, so that is what they get. */
+    if (blocked) { downloadSavedData(); return; }
     var payload = {
       format: BACKUP_FORMAT, version: BACKUP_VERSION, course: COURSE_NAME, storageKey: STORAGE_KEY,
       exportedAt: new Date().toISOString(),
@@ -358,12 +485,7 @@
       summary: summaryFn ? summaryFn(state) : { workClues: state.workClues.length },
       data: state
     };
-    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'Find-Your-Direction-progress-backup-' + new Date().toISOString().slice(0, 10) + '.json';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+    downloadJson(payload, 'Find-Your-Direction-progress-backup-' + new Date().toISOString().slice(0, 10) + '.json');
   }
 
   /* Pure check used by Restore (and by QA). Returns {ok, error} or {ok, data}. */
@@ -386,14 +508,23 @@
       var check = validateBackup(payload);
       if (!check.ok) { alert(check.error); return; }
       var r = check.data;
+      if (!blocked && storageOK) storedChangedToUnreadable();
       var when = payload.exportedAt ? new Date(payload.exportedAt).toLocaleString() : 'unknown date';
       var msg = 'Restore this backup?\n\nExported: ' + when +
         '\nWork Clues: ' + r.workClues.length +
         '\nModule 4.1: ' + (r.modules['4-1'] && r.modules['4-1'].completedAt ? 'complete' : 'in progress or not started') +
         '\nModule 4.2: ' + (r.modules['4-2'] && r.modules['4-2'].completedAt ? 'complete' : 'in progress or not started') +
         ' (' + (r.modules['4-2'] ? r.modules['4-2'].experiences.length : 0) + ' experiences)' +
-        '\n\nRestoring REPLACES the Stage 4 progress currently saved in this browser.\n\nPress OK to replace and restore, or Cancel.';
+        '\n\nRestoring REPLACES the Stage 4 progress currently saved in this browser.' +
+        (blocked ? '\n\n' + GUARD.replaceWarning : '') +
+        '\n\nPress OK to replace and restore, or Cancel.';
       if (!confirm(msg)) return;
+      if (blocked) {
+        /* The learner was warned and chose to replace the protected data. */
+        blocked = null;
+        try { lastSeenRaw = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+        hideGuard();
+      }
       state = r;
       persist();
       if (done) done();
@@ -402,8 +533,11 @@
   }
 
   function clearProgress(done) {
-    if (!confirm('Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.')) return;
+    if (!blocked && storageOK) storedChangedToUnreadable();
+    if (!confirm(blocked ? GUARD.clear : 'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.')) return;
     state = fresh();
+    if (blocked) { blocked = null; hideGuard(); }
+    lastSeenRaw = null;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) { storageOK = false; showBanner(); }
     listeners.forEach(function (fn) { try { fn(); } catch (e) {} });
     if (done) done();
@@ -428,6 +562,8 @@
     STORAGE_KEY: STORAGE_KEY, SCHEMA_VERSION: SCHEMA_VERSION, REACTIONS: REACTIONS,
     PATTERN_IDS: PATTERN_IDS, EVIDENCE: EVIDENCE, EXP_SOURCES: EXP_SOURCES,
     storageOK: function () { return storageOK; },
+    saveBlocked: function () { return blocked ? blocked.reason : null; },   // 'newer' | 'unreadable' | null
+    downloadSavedData: downloadSavedData,
     onChange: function (fn) { listeners.push(fn); },
     module: function (id) { return state.modules[id] || defaultModule(id); },
     setLastSection: setLastSection, setDirectionsReviewed: setDirectionsReviewed, markModuleComplete: markModuleComplete,

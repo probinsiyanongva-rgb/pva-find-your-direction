@@ -276,4 +276,27 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
     b.S.addExperience('family');
     assert.equal(b.raw(), F.RAW.v3);
   });
+  test('G12 Export Progress while blocked hands over the protected saved data, not an empty page state', async () => {
+    const p = withRaw(F.RAW.v3);
+    p.S.addExperience('work');          // in-memory only
+    p.S.exportProgress();
+    const b = JSON.parse(await p.downloadText(0));
+    assert.deepEqual(b.data, F.profileV3Future);
+  });
+  test('G13 Clear after another tab saved newer data shows the guard warning, not the ordinary one', () => {
+    const p = withProfile(F.profileV2Full, { confirm: false });
+    p.window.localStorage.setItem(KEY, F.RAW.v3);
+    p.S.clearProgress(() => {});
+    assert.match(p.dialogs.confirms[0], /Download saved data/);
+    assert.equal(p.raw(), F.RAW.v3);
+  });
+  test('G14 a browser with readable v1/v2 data never sees the guard', () => {
+    for (const prof of [F.profileV1, F.profileV2Full, F.profileV2Tampered]) {
+      const p = withProfile(prof);
+      p.S.markExplored('dir-ndis');
+      assert.equal(p.S.saveBlocked(), null);
+      assert.equal(p.bannerVisible(), false);
+      assert.equal(p.stored().schemaVersion, 2);
+    }
+  });
 });
