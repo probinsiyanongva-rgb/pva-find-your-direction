@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1B4332">
+<meta name="description" content="PVA Academy Stage 4, Module 4.3: put the work and your own experience side by side, and decide what is worth exploring next.">
+<title>4.3 Exploring Possible Directions — Find Your Direction | PVA Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/course.css">
+<link rel="stylesheet" href="../shared/stage4.css">
+</head>
+<body data-root="../" data-module="4-3">
+<a class="skip-link" href="#main-content">Skip to module content</a>
+<header class="route-bar"><div class="route-inner"><a class="home-btn" href="https://probinsiyanongva.org/" aria-label="Back to PVA Academy home page">← PVA Academy</a><div class="route-title"><a href="../">Find Your Direction</a></div><div class="route-tag">STAGE 4 · FIND YOUR DIRECTION</div></div></header>
+
+<div class="s4-mobilebar">
+  <button class="btn subtle s4-menu-btn" type="button" id="menuBtn" aria-controls="s4Side" aria-expanded="false">☰ Stage 4 menu</button>
+</div>
+<div class="s4-backdrop" id="s4Backdrop"></div>
+
+<div class="s4-shell">
+<aside class="s4-side" id="s4Side" aria-label="Stage 4 navigation">
+  <div class="s4-side-head">
+    <span class="section-label">Stage 4 · Find Your Direction</span>
+    <button class="s4-close" type="button" id="sideClose" aria-label="Close menu">×</button>
+  </div>
+
+  <nav aria-label="Stage 4 modules">
+    <a class="s4-stagehome" href="../">Stage 4 home</a>
+    <ol class="s4-modules">
+      <li class="s4-mod">
+        <a class="s4-mod-link" href="../4-1/"><span class="s4-mod-num">4.1</span> Understanding VA Work Directions</a>
+        <span class="s4-modprogress" id="m41Status"></span>
+      </li>
+      <li class="s4-mod">
+        <a class="s4-mod-link" href="../4-2/"><span class="s4-mod-num">4.2</span> Looking at Yourself as a VA</a>
+        <span class="s4-modprogress" id="m42Status"></span>
+      </li>
+      <li class="s4-mod current">
+        <span class="s4-mod-name"><span class="s4-mod-num">4.3</span> Exploring Possible Directions</span>
+        <ol class="s4-sections" id="sectionNav">
+          <li><a href="#start" data-nav="start">Start</a></li>
+          <li><a href="#clues" data-nav="clues">1 · My Work Clues <span class="s4-status" data-status="clues"></span></a></li>
+          <li><a href="#evidence" data-nav="evidence">2 · What I Have Done <span class="s4-status" data-status="evidence"></span></a></li>
+          <li><a href="#directions" data-nav="directions">3 · Choose a Direction <span class="s4-status" data-status="directions"></span></a></li>
+          <li><a href="#decision" data-nav="decision">4 · My Provisional Decision <span class="s4-status" data-status="decision"></span></a></li>
+          <li><a href="#finish" data-nav="finish">5 · Review and Finish <span class="s4-status" data-status="finish"></span></a></li>
+        </ol>
+        <p class="s4-modprogress" id="moduleProgress" aria-live="polite"></p>
+      </li>
+      <li class="s4-mod later"><span class="s4-mod-name"><span class="s4-mod-num">4.4</span> Build Your Direction Map</span><span class="stamp">Coming later</span></li>
+    </ol>
+  </nav>
+
+  <div class="s4-tools">
+    <span class="section-label">Backup</span>
+    <div class="progress-tools"><button class="btn subtle" type="button" data-export>Export Progress</button><button class="btn subtle" type="button" data-restore>Restore Progress</button></div>
+    <span class="save-state" data-save-state>Progress is saved in this browser.</span>
+    <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+  </div>
+</aside>
+
+<main id="main-content" class="s4-main">
+<div class="storage-banner hidden" id="storageBanner" role="status" aria-live="polite"><strong>Progress can't be saved in this browser.</strong><br><span id="storageBannerText">You can continue, but what you enter here may not remain after you close or refresh this page. If you are using private browsing or have blocked site data, try a normal browser window.</span></div>
+
+<!-- ===== SCREEN 0 · MODULE ENTRY ===== -->
+<section class="s4-section" id="start" data-section="start" aria-labelledby="startTitle">
+  <div class="course-header">
+    <div class="eyebrow">MODULE 4.3</div>
+    <h1 id="startTitle">Exploring Possible Directions</h1>
+    <p>You’ve looked at different kinds of VA work. You’ve also looked at tasks you’ve actually done. Now let’s put those two views side by side—not to give you a score, but to help you decide what might be worth exploring next.</p>
+  </div>
+  <div class="card">
+    <ul>
+      <li>There is no test result and no automatic recommendation.</li>
+      <li>You make the decisions.</li>
+      <li>You can change your mind at any time.</li>
+      <li>Choosing “Not sure yet” is a valid answer.</li>
+    </ul>
+    <p class="small">You don’t need to enter names of employers, clients, schools, or family members.</p>
+    <div class="hero-actions"><a class="btn gold" href="#clues" data-nav="clues">Start exploring</a></div>
+  </div>
+</section>
+
+<!-- ===== SCREEN 1 · WORK CLUES ===== -->
+<section class="s4-section" id="clues" data-section="clues" aria-labelledby="s1Title" hidden>
+  <div class="card">
+    <div class="section-label">1 · My Work Clues</div>
+    <h2 id="s1Title">Bring forward my Work Clues</h2>
+    <p>Before we compare directions with your experience, let’s remember what caught your attention when you looked at the work.</p>
+  </div>
+  <div id="clueList"></div>
+  <div class="s4-continue"><button class="btn" type="button" id="cluesContinue">Continue →</button></div>
+</section>
+
+<!-- ===== SCREEN 2 · WHAT I HAVE DONE ===== -->
+<section class="s4-section" id="evidence" data-section="evidence" aria-labelledby="s2Title" hidden>
+  <div class="card">
+    <div class="section-label">2 · What I Have Done</div>
+    <h2 id="s2Title">Bring forward what I have done</h2>
+    <p>Now let’s look at tasks you recorded. These are examples of what you’ve done—not a score of what you can or can’t do.</p>
+  </div>
+  <div id="taskList"></div>
+  <div class="s4-continue"><button class="btn" type="button" id="evidenceContinue">Continue →</button></div>
+</section>
+
+<!-- ===== SCREEN 3 · CHOOSE A DIRECTION ===== -->
+<section class="s4-section" id="directions" data-section="directions" aria-labelledby="s3Title" hidden>
+  <div class="card">
+    <div class="section-label">3 · Choose a Direction</div>
+    <h2 id="s3Title">Which kind of work would you like to look at?</h2>
+    <p>Choose any direction that you want to understand better. The order below is fixed and does not indicate a ranking.</p>
+  </div>
+  <div class="s4-dirlist" id="directionList"></div>
+  <div class="s4-continue"><a class="btn" href="#decision" data-nav="decision">Continue to my provisional decision →</a></div>
+</section>
+
+<!-- ===== SCREEN 4 · DIRECTION CONNECTION VIEW (rendered per direction) ===== -->
+<section class="s4-section" id="examine" data-section="examine" aria-labelledby="s4Title" hidden>
+  <p><a href="#directions" data-nav="directions">← All directions</a></p>
+  <h2 id="s4Title" class="s43-examine-title"></h2>
+  <div id="examineBody"></div>
+</section>
+
+<!-- ===== SCREEN 5 · PROVISIONAL DECISION ===== -->
+<section class="s4-section" id="decision" data-section="decision" aria-labelledby="s5Title" hidden>
+  <div class="card">
+    <div class="section-label">4 · My Provisional Decision</div>
+    <h2 id="s5Title">What would you like to explore next?</h2>
+    <p>You don’t have to settle on a specialization now. Based on what you’ve reviewed, choose up to two directions you want to investigate further—or leave yourself undecided for now.</p>
+  </div>
+  <div id="decisionBody"></div>
+</section>
+
+<!-- ===== SCREEN 5A · OPTIONAL COMPARISON ===== -->
+<section class="s4-section" id="compare" data-section="compare" aria-labelledby="s5aTitle" hidden>
+  <div class="card">
+    <div class="section-label">Optional</div>
+    <h2 id="s5aTitle">Compare two directions</h2>
+    <p>Look at what you recorded for two directions at once. This shows only what you wrote and chose.</p>
+  </div>
+  <div id="compareBody"></div>
+  <div class="s4-continue"><a class="btn secondary" href="#decision" data-nav="decision">← Back to my provisional decision</a></div>
+</section>
+
+<!-- ===== SCREEN 6 · REVIEW AND FINISH ===== -->
+<section class="s4-section" id="finish" data-section="finish" aria-labelledby="s6Title" hidden>
+  <div class="card">
+    <div class="section-label">5 · Review and Finish</div>
+    <h2 id="s6Title">My Directions to Explore</h2>
+    <div id="finishSummary"></div>
+  </div>
+  <div class="card s4-status-card" id="completionStatus" aria-live="polite"></div>
+</section>
+
+<footer><span class="footer-mark">PVA Academy</span> · Practical. Valuable. Authentic. · Stage 4 · Module 4.3 v1.0</footer>
+</main>
+</div>
+
+<script src="../shared/state.js"></script>
+<script src="../shared/m41-data.js"></script>
+<script src="../shared/m42-data.js"></script>
+<script src="../shared/m43.js"></script>
+</body>
+</html>
