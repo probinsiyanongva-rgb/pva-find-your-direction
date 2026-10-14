@@ -42,6 +42,7 @@ function statePageHtml() {
  * @param {boolean} [o.storageThrows]          simulate blocked site data
  * @param {boolean|((msg:string)=>boolean)} [o.confirm]  answer for window.confirm (default true)
  * @param {string} [o.hash]
+ * @param {string} [o.stateFile]  'state' page only: load this state.js instead of public/shared/state.js
  */
 export function openPage(o) {
   const spec = o.page === 'state' ? { url: 'https://pva.test/' } : PAGES[o.page];
@@ -83,7 +84,7 @@ export function openPage(o) {
   }
 
   for (const src of scripts) {
-    const file = o.page === 'state' ? path.join(PUBLIC, src) : path.resolve(path.dirname(pageFile), src);
+    const file = o.page === 'state' ? (o.stateFile || path.join(PUBLIC, src)) : path.resolve(path.dirname(pageFile), src);
     w.eval(readFileSync(file, 'utf8') + '\n//# sourceURL=' + path.relative(ROOT, file));
   }
 
