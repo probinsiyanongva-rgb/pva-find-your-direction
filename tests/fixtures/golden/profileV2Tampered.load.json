@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 2,
+  "workClues": [
+    {
+      "id": "direction:dir-amazon",
+      "sourceType": "direction",
+      "sourceId": "dir-amazon",
+      "reaction": "explore",
+      "note": "ok",
+      "updatedAt": null
+    }
+  ],
+  "scenarioObservations": [
+    {
+      "scenarioId": "scn-creating-content",
+      "selectedPatterns": [
+        "create"
+      ],
+      "completed": true
+    }
+  ],
+  "jobPostObservations": [],
+  "exploredDirections": [
+    "dir-amazon"
+  ],
+  "modules": {
+    "4-1": {
+      "lastSection": "directions",
+      "directionsReviewed": false,
+      "completedAt": null
+    },
+    "4-2": {
+      "lastSection": "evidence",
+      "snapshotReached": false,
+      "completedAt": null,
+      "experiences": [
+        {
+          "id": "exp-ccc001",
+          "source": "work",
+          "note": "ok",
+          "tasks": [
+            {
+              "id": "task-ccc001",
+              "label": "Kept",
+              "promptId": null,
+              "patternTags": [
+                "organize"
+              ],
+              "evidence": "done_before",
+              "note": ""
+            }
+          ]
+        },
+        {
+          "id": "exp-ccc002",
+          "source": "school",
+          "note": "",
+          "tasks": []
+        }
+      ]
+    }
+  },
+  "_meta": {
+    "updatedAt": "2026-10-05T00:00:00.000Z"
+  }
+}

@@ -1,3 +1,7 @@
 # Private Final Challenge answer key (see README). Never upload tools/source/.
 tools/source/
 __pycache__/
+# Test tooling (tests/ is never deployed; Cloudflare serves ./public only)
+tests/node_modules/
+tests/e2e/test-results/
+tests/e2e/playwright-report/

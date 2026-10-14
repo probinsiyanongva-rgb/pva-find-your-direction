@@ -1,0 +1,39 @@
+# Phase 0 · Playwright suite: NOT RUN in this workspace
+# 2026-10-14T11:40:10Z · @playwright/test 1.64.0 · node v22.22.0
+
+## Browser install attempt (npx playwright install chromium)
+Error: Download failed: server returned code 403 body 'request blocked: no rule or allowlist entry allows host "cdn.playwright.dev"'. URL: https://cdn.playwright.dev/builds/cft/156.0.8078.4/linux64/chrome-linux64.zip
+    at IncomingMessage.handleError (/home/claude/pva-find-your-direction/tests/node_modules/playwright-core/lib/coreBundle.js:33897:23)
+Error: Download failed: server returned code 403 body 'request blocked: no rule or allowlist entry allows host "cdn.playwright.dev"'. URL: https://cdn.playwright.dev/builds/cft/156.0.8078.4/linux64/chrome-linux64.zip
+
+## Suite collects and parses (npx playwright test --list), but no test was executed:
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:31:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:46:3 › BASELINE · Module 4.1 in a real browser › E2 Direction Cards render in canonical order
+  [chromium] › stage4.spec.mjs:51:3 › BASELINE · Module 4.1 in a real browser › E3 a new learner completes 4.1 and it survives a reload
+  [chromium] › stage4.spec.mjs:74:3 › BASELINE · Module 4.2 in a real browser › E4 a learner with 4.1 done completes 4.2
+  [chromium] › stage4.spec.mjs:90:3 › BASELINE · Module 4.2 in a real browser › E5 Export from the hub downloads a backup that restores
+  [chromium] › stage4.spec.mjs:103:5 › GUARD · newer saved progress is protected in a real browser › E6 hub: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:103:5 › GUARD · newer saved progress is protected in a real browser › E6 progress: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:103:5 › GUARD · newer saved progress is protected in a real browser › E6 4.1: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:103:5 › GUARD · newer saved progress is protected in a real browser › E6 4.2: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:114:3 › GUARD · newer saved progress is protected in a real browser › E7 the Download saved data button is reachable by keyboard and downloads the exact data
+  [chromium] › stage4.spec.mjs:125:3 › GUARD · newer saved progress is protected in a real browser › E8 working through 4.1 while blocked never writes, even after a reload
+  [chromium] › stage4.spec.mjs:132:3 › GUARD · newer saved progress is protected in a real browser › E9 guard banner fits at 390px
+Total: 27 tests in 1 file
+
+Run locally: cd tests && npm install && npx playwright install chromium && npm run test:e2e

@@ -1,0 +1,307 @@
+# revised test suite run against 39a13ff (state.js sha256 37f1ad6be5908d32…) · node v22.22.0 · 2026-10-14T12:08:59Z
+
+> test
+> node --test --test-reporter=spec "unit/*.test.mjs" "pages/*.test.mjs"
+
+▶ BASELINE · Stage 4 hub and Progress page
+  ✔ P1 hub, new learner: nothing started, Start Module 4.1, 4.3/4.4 coming later (150.174588ms)
+  ✔ P2 hub, 4.1 and 4.2 complete: both Complete, Review Module 4.2 (43.909584ms)
+  ✔ P3 Progress page, 4.1 complete only (v1 data): Start Module 4.2 (41.567072ms)
+  ✔ P4 hub Export button downloads a backup (55.024059ms)
+✔ BASELINE · Stage 4 hub and Progress page (292.053266ms)
+▶ BASELINE · Module 4.1
+  ✔ P5 renders 4 job posts, 5 scenarios and the 11 Direction Cards in canonical order (456.652171ms)
+  ✔ P6 a new learner completes 4.1 through the page controls, and it stays complete on reopen (1650.784184ms)
+  ✔ P7 opening a Direction Card records it as explored (never used for completion) (201.704534ms)
+  ✔ P8 returning learner: saved reactions and the Work Clues review are shown (243.26498ms)
+✔ BASELINE · Module 4.1 (2553.585668ms)
+▶ BASELINE · Module 4.2
+  ✔ P9 a new learner completes 4.2 through the page controls (213.070561ms)
+  ✔ P10 handoff shows 4.1 Work Clues read-only, grouped by reaction (46.00896ms)
+  ✔ P11 deleting an experience from the page (after confirming) removes it and its tasks; completion stays (58.679691ms)
+  ✔ P12 cancelling the delete keeps the experience (49.951494ms)
+✔ BASELINE · Module 4.2 (368.354775ms)
+▶ GUARD · every page leaves newer saved data alone
+  ✔ P13 index: opening the page with newer saved data does not overwrite it, and offers Download saved data (22.921957ms)
+  ✔ P13 progress: opening the page with newer saved data does not overwrite it, and offers Download saved data (18.366181ms)
+  ✔ P13 4-1: opening the page with newer saved data does not overwrite it, and offers Download saved data (197.591857ms)
+  ✔ P13 4-2: opening the page with newer saved data does not overwrite it, and offers Download saved data (45.823636ms)
+  ✔ P14 4.1: working through the page while blocked still never overwrites the newer data (455.160582ms)
+  ✖ P16 index: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (43.173798ms)
+  ✖ P16 progress: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (13.921391ms)
+  ✖ P16 4-1: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (165.943046ms)
+  ✖ P16 4-2: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (40.516523ms)
+  ✖ P17 4.1: working through the page with an empty-string saved value never overwrites it (231.599874ms)
+  ✔ P15 4.2: adding an experience while blocked never overwrites the newer data (50.043673ms)
+✖ GUARD · every page leaves newer saved data alone (1286.006915ms)
+▶ BASELINE · loading and migration
+  ✔ B1 v1 profile loads exactly as the unchanged code loaded it (golden) (85.297072ms)
+  ✔ B2 full v2 profile (4.1 + 4.2 complete) loads unchanged (golden) (26.598697ms)
+  ✔ B3 tampered v2 profile: invalid records dropped field by field, valid data kept (golden) (11.762999ms)
+  ✔ B4 empty storage starts fresh with no banner; first save writes schema v2 (42.848632ms)
+✔ BASELINE · loading and migration (167.846083ms)
+▶ BASELINE · saving keeps existing learner data
+  ✔ B5 saving a v2 profile keeps 4.1 and 4.2 exactly, adds only the change (23.316395ms)
+  ✔ B6 saving a v1 profile writes v2 with 4.1 untouched (14.390556ms)
+  ✔ B7 Work Clues: one clue per source, the only reaction store (16.999329ms)
+✔ BASELINE · saving keeps existing learner data (55.253299ms)
+▶ BASELINE · 4.2 experiences and tasks
+  ✔ B8 task IDs are unique across experiences (15.912763ms)
+  ✔ B9 deleting a task removes only that task; deleting an experience removes its tasks (20.746186ms)
+  ✔ B10 module completion is kept after deleting all 4.2 data (29.512206ms)
+✔ BASELINE · 4.2 experiences and tasks (66.616394ms)
+▶ BASELINE · Export / Restore / Clear
+  ✔ B11 v1 and v2 backups validate to the same data as the unchanged code (golden) (12.35211ms)
+  ✔ B12 other-course, newer-wrapper, newer-data and empty backups are rejected with clear messages (10.054692ms)
+  ✔ B13 restoring a rejected file (otherCourse) changes nothing and asks nothing (263.355111ms)
+  ✔ B13 restoring a rejected file (futureWrapper) changes nothing and asks nothing (262.525962ms)
+  ✔ B13 restoring a rejected file (futureData) changes nothing and asks nothing (268.05374ms)
+  ✔ B13 restoring a rejected file (notJson) changes nothing and asks nothing (272.654711ms)
+  ✔ B14 restoring a valid backup asks first; Cancel keeps current progress (307.652734ms)
+  ✔ B15 restoring a valid backup with OK replaces progress with the backup (25.686934ms)
+  ✔ B16 export produces the documented backup format containing the current data (39.549971ms)
+  ✔ B17 Clear asks first; Cancel keeps progress, OK removes it (24.279925ms)
+✔ BASELINE · Export / Restore / Clear (1490.17068ms)
+▶ BASELINE · storage unavailable
+  ✔ B18 blocked site data: course still works in memory and shows the existing banner (15.407472ms)
+✔ BASELINE · storage unavailable (15.553562ms)
+▶ GUARD · saved progress that cannot be read is never overwritten
+  ✔ G1 newer schema (v3): stays byte-identical after the learner keeps working (82.92262ms)
+  ✔ G1 malformed JSON: stays byte-identical after the learner keeps working (23.042954ms)
+  ✔ G1 schemaVersion is a string: stays byte-identical after the learner keeps working (15.480877ms)
+  ✔ G1 schemaVersion 0: stays byte-identical after the learner keeps working (14.900487ms)
+  ✔ G1 schemaVersion 2.5: stays byte-identical after the learner keeps working (14.530158ms)
+  ✔ G1 not an object: stays byte-identical after the learner keeps working (14.346078ms)
+  ✔ G2 the page says why saving is paused and offers "Download saved data" (15.812828ms)
+  ✔ G3 malformed data gets the "could not be read" wording (37.747384ms)
+  ✔ G4 "Download saved data" for newer data gives a backup a newer version can restore (32.927782ms)
+  ✔ G5 "Download saved data" for unreadable text keeps the exact stored text (19.78551ms)
+  ✔ G6 another tab (or newer version) writes newer data mid-session: this tab stops saving instead of overwriting (17.151357ms)
+  ✔ G7 Clear while blocked warns about the unreadable data; Cancel keeps it (14.711876ms)
+  ✔ G8 Clear while blocked with OK removes it, lifts the guard, and saving resumes (17.104835ms)
+  ✔ G9 Restore while blocked warns before replacing; Cancel keeps the unreadable data (263.34112ms)
+  ✔ G10 Restore while blocked with OK replaces it and saving resumes (23.451617ms)
+  ✔ G11 a second tab opened later is also blocked and also leaves the data alone (32.513508ms)
+  ✔ G12 Export Progress while blocked hands over the protected saved data, not an empty page state (19.901419ms)
+  ✔ G13 Clear after another tab saved newer data shows the guard warning, not the ordinary one (14.822771ms)
+  ✖ G15 key present with an empty string at load: treated as unreadable, kept, guard shown, download offered (13.747188ms)
+  ✖ G16 stored value changes to an empty string before a save: this tab stops instead of overwriting it (13.254796ms)
+  ✖ G17 Clear with an empty-string value shows the guard warning; Cancel keeps it (25.535916ms)
+  ✔ G14 a browser with readable v1/v2 data never sees the guard (41.939361ms)
+✖ GUARD · saved progress that cannot be read is never overwritten (771.09011ms)
+▶ GUARD · each save writes once
+  ✖ W1 one save = exactly one write of the key, and the stored text is what this tab last wrote (16.456582ms)
+  ✔ W2 a failed write leaves stored data unchanged and shows the existing cannot-save banner (not the guard) (10.533624ms)
+✖ GUARD · each save writes once (27.175708ms)
+ℹ tests 68
+ℹ suites 11
+ℹ pass 59
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10133.979955
+
+✖ failing tests:
+
+test at pages/pages.test.mjs:167:5
+✖ P16 index: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (43.173798ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/pages/pages.test.mjs:171:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:167:5
+✖ P16 progress: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (13.921391ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/pages/pages.test.mjs:171:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:167:5
+✖ P16 4-1: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (165.943046ms)
+  AssertionError [ERR_ASSERTION]: unchanged right after opening
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:09:04.606Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/pages/pages.test.mjs:170:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:09:04.606Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:167:5
+✖ P16 4-2: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data (40.516523ms)
+  AssertionError [ERR_ASSERTION]: unchanged right after opening
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[]}},"_meta":{"updatedAt":"2026-10-14T12:09:04.667Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/pages/pages.test.mjs:170:14)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":[],"modules":{"4-2":{"lastSection":"start","snapshotReached":false,"completedAt":null,"experiences":[]}},"_meta":{"updatedAt":"2026-10-14T12:09:04.667Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at pages/pages.test.mjs:176:3
+✖ P17 4.1: working through the page with an empty-string saved value never overwrites it (231.599874ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:09:04.835Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ndis"],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:09:04.872Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/pages/pages.test.mjs:180:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"explore","note":"","updatedAt":"2026-10-14T12:09:04.835Z"}],"scenarioObservations":[],"jobPostObservations":[],"exploredDirections":["dir-ndis"],"modules":{"4-1":{"lastSection":"start","directionsReviewed":false,"completedAt":null}},"_meta":{"updatedAt":"2026-10-14T12:09:04.872Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:293:3
+✖ G15 key present with an empty string at load: treated as unreadable, kept, guard shown, download offered (13.747188ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + null
+  - 'unreadable'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/unit/state.test.mjs:295:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 'unreadable',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:310:3
+✖ G16 stored value changes to an empty string before a save: this tab stops instead of overwriting it (13.254796ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '{"schemaVersion":2,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"},{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"unsure","note":"","updatedAt":"2026-10-14T12:09:08.250Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon","dir-ndis"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-14T12:09:08.250Z"}}'
+  - ''
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/unit/state.test.mjs:316:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '{"schemaVersion":2,"workClues":[{"id":"scenario:scn-customer-communication","sourceType":"scenario","sourceId":"scn-customer-communication","reaction":"explore","note":"I liked helping people.","updatedAt":"2026-10-01T02:00:00.000Z"},{"id":"direction:dir-ecommerce","sourceType":"direction","sourceId":"dir-ecommerce","reaction":"explore","note":"","updatedAt":"2026-10-01T02:05:00.000Z"},{"id":"direction:dir-bookkeeping","sourceType":"direction","sourceId":"dir-bookkeeping","reaction":"unsure","note":"Need to know more.","updatedAt":"2026-10-01T02:06:00.000Z"},{"id":"direction:dir-social-content","sourceType":"direction","sourceId":"dir-social-content","reaction":"not_for_me","note":"","updatedAt":"2026-10-01T02:07:00.000Z"},{"id":"direction:dir-amazon","sourceType":"direction","sourceId":"dir-amazon","reaction":"unsure","note":"","updatedAt":"2026-10-14T12:09:08.250Z"}],"scenarioObservations":[{"scenarioId":"scn-organizing-information","selectedPatterns":["organize"],"completed":true},{"scenarioId":"scn-customer-communication","selectedPatterns":["communicate"],"completed":true},{"scenarioId":"scn-research-analysis","selectedPatterns":["research"],"completed":true},{"scenarioId":"scn-creating-content","selectedPatterns":["create"],"completed":true},{"scenarioId":"scn-keeping-process-running","selectedPatterns":["operate","organize"],"completed":true}],"jobPostObservations":[{"postId":"post-a","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-b","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-c","selected":["obs-organizing","obs-communicating"],"completed":true},{"postId":"post-d","selected":["obs-organizing","obs-communicating"],"completed":true}],"exploredDirections":["dir-ecommerce","dir-amazon","dir-ndis"],"modules":{"4-1":{"lastSection":"wrap-up","directionsReviewed":true,"completedAt":"2026-10-01T02:10:00.000Z"},"4-2":{"lastSection":"handoff","snapshotReached":true,"completedAt":"2026-10-03T03:00:00.000Z","experiences":[{"id":"exp-aaa001","source":"work","note":"Customer service job","tasks":[{"id":"task-aaa001","label":"Answered customer questions","promptId":"p-answered-questions","patternTags":["communicate"],"evidence":"regularly","note":"Daily for two years"},{"id":"task-aaa002","label":"Updated records in a system","promptId":"p-updated-records-system","patternTags":["organize","operate"],"evidence":"done_before","note":""},{"id":"task-aaa003","label":"Made a weekly summary sheet","promptId":null,"patternTags":[],"evidence":"some_exposure","note":""}]},{"id":"exp-bbb001","source":"family","note":"","tasks":[{"id":"task-bbb001","label":"Tracked household money","promptId":"p-tracked-household-money","patternTags":["organize"],"evidence":"regularly","note":""},{"id":"task-bbb002","label":"Posted products for our sari-sari store page","promptId":null,"patternTags":["create","communicate"],"evidence":"not_done_yet","note":""}]}]}},"_meta":{"updatedAt":"2026-10-14T12:09:08.250Z"}}',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:322:3
+✖ G17 Clear with an empty-string value shows the guard warning; Cancel keeps it (25.535916ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Download saved data/. Input:
+  
+  'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.'
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/unit/state.test.mjs:325:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Clear all saved Stage 4: Find Your Direction progress in this browser, including your Work Clues? This cannot be undone. Other PVA courses are not affected.',
+    expected: /Download saved data/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at unit/state.test.mjs:351:3
+✖ W1 one save = exactly one write of the key, and the stored text is what this tab last wrote (16.456582ms)
+  AssertionError [ERR_ASSERTION]: written once
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (file:///tmp/claude-0/-home-claude-pva-find-your-direction/94c54965-d9a3-5a75-9300-2492bc8a5177/scratchpad/wt-39a13ff/tests/unit/state.test.mjs:355:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Test.start (node:internal/test_runner/test:944:17)
+      at node:internal/test_runner/test:1440:71
+      at node:internal/per_context/primordials:464:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:433:3)
+      at node:internal/per_context/primordials:464:9
+      at Array.map (<anonymous>) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -80,3 +80,36 @@ all learner-facing lines of Production Specification v1.1. See `BUILD_REPORT.md`
 - Completion (`completedAt`, kept once set): ≥1 experience, ≥1 task, every task has evidence, ≥1 learner-chosen
   pattern tag, snapshot reached.
 - Work Clues appear in 4.2 only in the final section, read-only (no sidebar clue panel in 4.2).
+
+## Data-protection guard (Phase 0)
+`public/shared/state.js` never writes over saved progress it cannot read: a newer `schemaVersion`,
+malformed JSON, an invalid version, or an empty value. Instead, the page keeps working in memory, stops saving,
+and turns the storage banner into **"Saved progress needs attention."** with a **Download saved data**
+button. Export hands over the protected data. Clear and Restore warn before replacing it. The same check
+runs before every save, so a tab left open when another tab or a newer version saves newer data stops
+instead of overwriting it. `PVAS4.saveBlocked()` returns `'newer'`, `'unreadable'` or `null`.
+Before the guard, opening 4.1 or 4.2 with newer data replaced it with an empty profile
+(proven in `tests/results/01-baseline-before-guard.txt`).
+
+## Rollback policy (owner decision, Phase 0)
+1. **Deploy the guard release before any schema v3 release.** The guard must already be live when learners
+   first receive newer data, or a rollback can still erase their progress.
+2. **The guard release is the oldest version that may be redeployed.** Never redeploy `33c4e04` or anything
+   older once a newer schema has shipped: that code replaces newer saved progress with an empty profile.
+3. Record the guard release's merge commit here when it is deployed: `GUARD RELEASE: <commit SHA, date>`.
+4. Every later release must keep the guard and pass the full test suite, including the golden tests for
+   existing v1/v2 data.
+
+## Tests
+```text
+cd tests
+npm install                 # jsdom + Playwright library (no browsers downloaded)
+npm test                    # unit (state.js) + page tests (hub, Progress, 4.1, 4.2) in jsdom
+npx playwright install chromium && npm run test:e2e   # real-browser suite: layout, keyboard, downloads
+```
+- `tests/` is outside `public/` (never deployed) and has its own `package.json` (the repo root has none,
+  so the Cloudflare build is unchanged). Requires Node 22.12+.
+- `tests/fixtures/golden/` holds what the unchanged state layer (`33c4e04`) produced for existing learner
+  data. **Do not regenerate it** to make a change pass; a golden failure means existing data would be read
+  differently.
+- Recorded runs are in `tests/results/`.

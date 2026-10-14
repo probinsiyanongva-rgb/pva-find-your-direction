@@ -1,0 +1,6 @@
+{
+  "note": "Golden output of the unchanged Stage 4 state layer. Do not regenerate after changing state.js.",
+  "commit": "33c4e047182a0483421709f21b1c57ffabad6864",
+  "stateJsSha256": "98732a7d000ae90dca97cd895eea64c25429e65c380f67e1269539d3c1c11c94",
+  "generatedAt": "2026-10-14T11:33:02.462Z"
+}
