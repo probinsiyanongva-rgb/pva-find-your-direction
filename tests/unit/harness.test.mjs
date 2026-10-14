@@ -36,3 +36,23 @@ describe('HARNESS', () => {
     }
   });
 });
+
+describe('RELEASE · versioned asset URLs (cache-busting for the 4.3 release)', () => {
+  const RELEASE = '4.3.0';
+  test('R1 every local script and stylesheet on every page carries ?v=' + RELEASE, () => {
+    for (const [name, file] of Object.entries(PAGE_FILES)) {
+      const html = readFileSync(path.join(PUBLIC, file), 'utf8');
+      const urls = [...html.matchAll(/(?:src|href)="((?:\.\.?\/)shared\/[^"]+)"/g)].map((m) => m[1]);
+      assert.ok(urls.length >= 4, name + ' has shared assets');
+      for (const u of urls) assert.match(u, new RegExp('\\.(js|css)\\?v=' + RELEASE.replace(/\./g, '\\.') + '$'), name + ': ' + u);
+    }
+  });
+  test('R2 the harness loads the real versioned files (no page runs on a missing script)', async () => {
+    const { openPage } = await import('../helpers/env.mjs');
+    for (const name of Object.keys(PAGE_FILES)) {
+      const p = openPage({ page: name });
+      assert.ok(p.S && p.S.SCHEMA_VERSION === 3, name + ' loaded state.js');
+      assert.deepEqual(p.errors, [], name);
+    }
+  });
+});
