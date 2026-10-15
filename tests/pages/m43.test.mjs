@@ -58,10 +58,10 @@ describe('4.3 · journey', () => {
     assert.match(box, /Module 4\.3 complete/);
     assert.ok(box.includes("You've looked at the work. You've looked at what you've actually done. Now you've put those two views side by side."));
     assert.ok(box.includes("Next, we'll turn the directions you're exploring into a practical next step."));
-    const next = p.$('#completionStatus .s4-next');
-    assert.equal(next.getAttribute('aria-disabled'), 'true');
-    assert.match(norm(next.textContent), /Continue to Module 4\.4.*Coming later/);
-    assert.equal(p.$$('#completionStatus a[href*="4-4"]').length, 0, 'no link to 4.4 until it exists');
+    /* Deliberate update for the 4.4 release (spec R-NAV-6): 4.4 now exists, so this is a live link. */
+    const next = p.$('#completionStatus a.s4-next');
+    assert.equal(next.getAttribute('href'), '../4-4/');
+    assert.match(norm(next.textContent), /Continue to Module 4\.4/);
     assert.equal(text(p, '#moduleProgress'), 'Module 4.3 complete');
   });
   test('J2 opening Direction Cards alone never completes the module', () => {
@@ -413,7 +413,7 @@ describe('4.3 · provisional decision, comparison and review', () => {
     const p = openPage({ page: '4-3', storage: seed(F.profileV3Full) });
     p.click('.s4-tools [data-export]');
     const b = JSON.parse(await p.downloadText(0));
-    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: true, experiences: 2, schemaVersion: F.EXPECTED.schema });
+    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: true, module44Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });   // module44Complete: deliberate 4.4 update
   });
 });
 
@@ -447,31 +447,37 @@ describe('4.3 · guard and wording safety', () => {
 });
 
 describe('4.3 · navigation (Step E)', () => {
-  test('N1 hub: 4.3 complete → Review Module 4.3; in progress → Continue at the saved section', () => {
+  /* Deliberate update for the 4.4 release (spec R-NAV-2): with 4.1–4.3 complete, Continue now
+     moves on to 4.4 ("Review Module 4.3" is gone); the summary line names 4.4. */
+  test('N1 hub: 4.3 complete → Start Module 4.4; in progress → Continue at the saved section', () => {
     const done = openPage({ page: 'index', storage: seed(F.profileV3Full) });
     assert.equal(text(done, '#stamp43'), 'Complete');
-    assert.equal(text(done, '#continueBtn'), 'Review Module 4.3');
-    assert.equal(text(done, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 complete · 4 Work Clues saved');
+    assert.equal(text(done, '#continueBtn'), 'Start Module 4.4');
+    assert.equal(text(done, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 complete · Module 4.4 not started yet · 4 Work Clues saved');
     const prof = JSON.parse(JSON.stringify(F.profileV3Full)); prof.modules['4-3'].completedAt = null; prof.modules['4-3'].lastSection = 'decision';
     const mid = openPage({ page: 'progress', storage: seed(prof) });
     assert.equal(text(mid, '#continueBtn'), 'Continue Module 4.3');
     assert.equal(mid.$('#continueBtn').getAttribute('href'), '../4-3/#decision');
   });
-  test('N2 4.1 and 4.2 sidebars link to 4.3; only 4.4 is Coming later; 4.2’s NEXT links to 4.3', () => {
+  /* Deliberate update for the 4.4 release (spec R-NAV-4): 4.4 is a link, nothing is Coming later. */
+  test('N2 4.1 and 4.2 sidebars link to 4.3 and 4.4; nothing is Coming later; 4.2’s NEXT links to 4.3', () => {
     for (const page of ['4-1', '4-2']) {
       const p = openPage({ page });
       assert.equal(p.$('.s4-modules a[href="../4-3/"]').textContent.replace(/\s+/g, ' ').trim(), '4.3 Exploring Possible Directions');
-      assert.deepEqual(p.$$('.s4-modules li.later').map((li) => words(li)), ['4.4 Build Your Direction Map Coming later']);
+      assert.equal(p.$('.s4-modules a[href="../4-4/"]').textContent.replace(/\s+/g, ' ').trim(), '4.4 Build Your Direction Map');
+      assert.equal(p.$$('.s4-modules li.later').length, 0);
     }
     const p = openPage({ page: '4-2', hash: 'handoff' });
     const next = p.$('#handoff a.s4-next');
     assert.equal(next.getAttribute('href'), '../4-3/');
     assert.match(next.textContent, /NEXT: 4\.3 EXPLORING POSSIBLE DIRECTIONS.*Open Module 4\.3/);
   });
-  test('N3 the 4.3 page marks itself current and shows 4.4 as Coming later with no link', () => {
+  /* Deliberate update for the 4.4 release (spec R-NAV-4): the 4.3 sidebar links to 4.4. */
+  test('N3 the 4.3 page marks itself current and links to 4.4 in its sidebar', () => {
     const p = openPage({ page: '4-3', storage: seed(F.profileV2Full) });
     assert.match(p.$('.s4-modules li.current').textContent, /4\.3 Exploring Possible Directions/);
-    assert.equal(p.$$('a[href*="4-4"]').length, 0);
+    assert.equal(p.$$('.s4-modules a[href="../4-4/"]').length, 1);
+    assert.equal(p.$$('.s4-modules li.later').length, 0);
     assert.equal(text(p, '#m41Status'), 'Complete');
     assert.equal(text(p, '#m42Status'), 'Complete');
   });
@@ -485,7 +491,7 @@ describe('4.3 · hub status for a learner who started 4.3 but has not examined a
     assert.deepEqual(m43(p).examinedDirectionIds, []);
     for (const [page, base] of [['index', './'], ['progress', '../']]) {
       const h = p.reopen(page);
-      assert.equal(text(h, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 in progress · 4 Work Clues saved');
+      assert.equal(text(h, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 in progress · Module 4.4 not started yet · 4 Work Clues saved');   // 4.4 named: deliberate 4.4 update
       if (page === 'index') assert.equal(text(h, '#stamp43'), 'In progress');
       assert.equal(text(h, '#continueBtn'), 'Continue Module 4.3');
       assert.equal(h.$('#continueBtn').getAttribute('href'), base + '4-3/#directions');

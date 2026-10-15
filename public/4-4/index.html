@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1B4332">
+<meta name="description" content="PVA Academy Stage 4, Module 4.4: choose what you will explore next and keep your Direction Map.">
+<title>4.4 Build Your Direction Map — Find Your Direction | PVA Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/course.css?v=4.4.0">
+<link rel="stylesheet" href="../shared/stage4.css?v=4.4.0">
+</head>
+<body data-root="../" data-module="4-4">
+<a class="skip-link" href="#main-content">Skip to module content</a>
+<header class="route-bar"><div class="route-inner"><a class="home-btn" href="https://probinsiyanongva.org/" aria-label="Back to PVA Academy home page">← PVA Academy</a><div class="route-title"><a href="../">Find Your Direction</a></div><div class="route-tag">STAGE 4 · FIND YOUR DIRECTION</div></div></header>
+
+<div class="s4-mobilebar">
+  <button class="btn subtle s4-menu-btn" type="button" id="menuBtn" aria-controls="s4Side" aria-expanded="false">☰ Stage 4 menu</button>
+</div>
+<div class="s4-backdrop" id="s4Backdrop"></div>
+
+<div class="s4-shell">
+<aside class="s4-side" id="s4Side" aria-label="Stage 4 navigation">
+  <div class="s4-side-head">
+    <span class="section-label">Stage 4 · Find Your Direction</span>
+    <button class="s4-close" type="button" id="sideClose" aria-label="Close menu">×</button>
+  </div>
+
+  <nav aria-label="Stage 4 modules">
+    <a class="s4-stagehome" href="../">Stage 4 home</a>
+    <ol class="s4-modules">
+      <li class="s4-mod">
+        <a class="s4-mod-link" href="../4-1/"><span class="s4-mod-num">4.1</span> Understanding VA Work Directions</a>
+        <span class="s4-modprogress" id="m41Status"></span>
+      </li>
+      <li class="s4-mod">
+        <a class="s4-mod-link" href="../4-2/"><span class="s4-mod-num">4.2</span> Looking at Yourself as a VA</a>
+        <span class="s4-modprogress" id="m42Status"></span>
+      </li>
+      <li class="s4-mod">
+        <a class="s4-mod-link" href="../4-3/"><span class="s4-mod-num">4.3</span> Exploring Possible Directions</a>
+        <span class="s4-modprogress" id="m43Status"></span>
+      </li>
+      <li class="s4-mod current">
+        <span class="s4-mod-name"><span class="s4-mod-num">4.4</span> Build Your Direction Map</span>
+        <ol class="s4-sections" id="sectionNav">
+          <li><a href="#look-back" data-nav="look-back">1 · Look Back</a></li>
+          <li><a href="#choose" data-nav="choose">2 · Choose What to Explore <span class="s4-status" data-status="choose"></span></a></li>
+          <li><a href="#steps" data-nav="steps">3 · My Next Step <span class="s4-status" data-status="steps"></span></a></li>
+          <li><a href="#map" data-nav="map">4 · My Direction Map <span class="s4-status" data-status="map"></span></a></li>
+        </ol>
+        <p class="s4-modprogress" id="moduleProgress" aria-live="polite"></p>
+      </li>
+    </ol>
+  </nav>
+
+  <div class="s4-tools">
+    <span class="section-label">Backup</span>
+    <div class="progress-tools"><button class="btn subtle" type="button" data-export>Export Progress</button><button class="btn subtle" type="button" data-restore>Restore Progress</button></div>
+    <span class="save-state" data-save-state>Progress is saved in this browser.</span>
+    <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+  </div>
+</aside>
+
+<main id="main-content" class="s4-main">
+<div class="storage-banner hidden" id="storageBanner" role="status" aria-live="polite"><strong>Progress can't be saved in this browser.</strong><br><span id="storageBannerText">You can continue, but what you enter here may not remain after you close or refresh this page. If you are using private browsing or have blocked site data, try a normal browser window.</span></div>
+
+<!-- ===== SCREEN 1 · LOOK BACK ===== -->
+<section class="s4-section" id="look-back" data-section="look-back" aria-labelledby="s1Title">
+  <div class="course-header">
+    <div class="eyebrow">MODULE 4.4</div>
+    <h1 id="moduleTitle">Build Your Direction Map</h1>
+  </div>
+  <div class="card">
+    <div class="section-label">1 · Look Back</div>
+    <h2 id="s1Title">Look back</h2>
+    <p>Here's what you've worked through so far. You don't need to repeat any of it. In this module, you'll choose what goes on your map and decide on one next step.</p>
+    <ul class="s44-counts" id="lookBackCounts"></ul>
+  </div>
+  <div class="card">
+    <label class="field-label" for="whereNow">Where are you in your VA journey right now? <span class="small">(Optional)</span></label>
+    <p class="small" id="whereNowExamples">Examples: “I'm learning the basics.” · “I've tried a few tasks for my family's online shop.” · “I've done some admin work but never as a VA.”</p>
+    <textarea id="whereNow" class="response s4-note" rows="2" aria-describedby="whereNowExamples whereNowNote"></textarea>
+    <p class="small" id="whereNowNote">Keep it about your VA journey. You don't need to share private details.</p>
+  </div>
+  <div class="s4-continue"><a class="btn" href="#choose" data-nav="choose" id="lookBackContinue">Continue →</a></div>
+</section>
+
+<!-- ===== SCREEN 2 · CHOOSE WHAT TO EXPLORE ===== -->
+<section class="s4-section" id="choose" data-section="choose" aria-labelledby="s2Title" hidden>
+  <div class="card">
+    <div class="section-label">2 · Choose What to Explore</div>
+    <h2 id="s2Title">Choose what to explore</h2>
+    <p>Which directions do you want to explore next? Add one or two to your map—or keep exploring for now. Both are complete answers.</p>
+    <p id="choice43"></p>
+  </div>
+  <div id="chooseBody"></div>
+  <div class="s4-continue"><button class="btn" type="button" id="chooseContinue">Continue →</button> <span class="small" id="chooseHint"></span></div>
+</section>
+
+<!-- ===== SCREEN 3 · MY NEXT STEP ===== -->
+<section class="s4-section" id="steps" data-section="steps" aria-labelledby="s3Title" hidden>
+  <div class="card">
+    <div class="section-label">3 · My Next Step</div>
+    <h2 id="s3Title">Decide on your next step</h2>
+    <p>Pick one small step you can do in the next few days, for free, without signing up for anything or contacting a client.</p>
+  </div>
+  <div id="stepsBody"></div>
+  <div class="s4-continue"><a class="btn secondary" href="#choose" data-nav="choose">← Back to choosing</a> <button class="btn" type="button" id="stepsContinue">Continue to my map →</button> <span class="small" id="stepsHint"></span></div>
+</section>
+
+<!-- ===== SCREEN 4 · MY DIRECTION MAP ===== -->
+<section class="s4-section" id="map" data-section="map" aria-labelledby="s4Title" hidden>
+  <div class="card s4-status-card s44-screen-only" id="completionStatus" aria-live="polite"></div>
+  <div class="card">
+    <div class="section-label s44-screen-only">4 · My Direction Map</div>
+    <h2 id="s4Title" class="s44-screen-only">My Direction Map</h2>
+    <div id="mapView" class="s44-map"></div>
+  </div>
+  <div class="card s44-screen-only" id="mapActions">
+    <p class="small" id="saveHint">Your choices are saved as you go. Press Save my Direction Map to finish Module 4.4.</p>
+    <div class="s4-actions">
+      <button class="btn gold" type="button" id="saveMapBtn">Save my Direction Map</button>
+      <button class="btn secondary" type="button" id="printMapBtn">Print my map</button>
+    </div>
+    <p class="small" id="saveMsg" role="status" aria-live="polite"></p>
+    <p class="small">To keep a PDF, choose 'Save as PDF' in the print window. If you change your map later, print it again to get an updated copy.</p>
+    <p class="s44-edit-links"><a href="#choose" data-nav="choose">Change my directions</a> · <a href="#steps" data-nav="steps">Change my steps</a> · <a href="#look-back" data-nav="look-back">Edit where I am now</a></p>
+  </div>
+  <div class="card s44-screen-only" id="stage5">
+    <p>Your map shows what you want to explore next—not what you're already ready for. In Stage 5, PRACTICE &amp; PROVE, you'll try the work itself.</p>
+    <div class="s4-next" aria-disabled="true"><span class="s4-next-label">Stage 5 · PRACTICE &amp; PROVE</span><span class="stamp">Coming later</span></div>
+  </div>
+</section>
+
+<footer><span class="footer-mark">PVA Academy</span> · Practical. Valuable. Authentic. · Stage 4 · Module 4.4 v1.0</footer>
+</main>
+</div>
+
+<script src="../shared/state.js?v=4.4.0"></script>
+<script src="../shared/m41-data.js?v=4.4.0"></script>
+<script src="../shared/m42-data.js?v=4.4.0"></script>
+<script src="../shared/m44.js?v=4.4.0"></script>
+</body>
+</html>

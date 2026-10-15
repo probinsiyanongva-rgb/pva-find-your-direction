@@ -16,7 +16,8 @@ const PAGES = {
   'progress': { file: 'progress/index.html', url: 'https://pva.test/progress/' },
   '4-1': { file: '4-1/index.html', url: 'https://pva.test/4-1/' },
   '4-2': { file: '4-2/index.html', url: 'https://pva.test/4-2/' },
-  '4-3': { file: '4-3/index.html', url: 'https://pva.test/4-3/' }
+  '4-3': { file: '4-3/index.html', url: 'https://pva.test/4-3/' },
+  '4-4': { file: '4-4/index.html', url: 'https://pva.test/4-4/' }
 };
 export const PAGE_FILES = Object.fromEntries(Object.entries(PAGES).map(([k, v]) => [k, v.file]));
 
@@ -37,7 +38,7 @@ function statePageHtml() {
 
 /**
  * @param {object} o
- * @param {'state'|'index'|'progress'|'4-1'|'4-2'|'4-3'} o.page
+ * @param {'state'|'index'|'progress'|'4-1'|'4-2'|'4-3'|'4-4'} o.page
  * @param {Record<string,string>} [o.storage]  localStorage contents before load (raw strings)
  * @param {boolean} [o.storageThrows]          simulate blocked site data
  * @param {boolean|((msg:string)=>boolean)} [o.confirm]  answer for window.confirm (default true)

@@ -1,13 +1,23 @@
 /* Stage 4 browser regression suite (Playwright, Chromium).
-   STATUS: E1–E9 ran 27/27 on the owner's machine (14 Oct 2026, Phase 0). The 4.3 additions
-   (4.3 in E1/E6, E10–E14) have NOT been run: no browser engine in the build workspace.
-   Run locally; see playwright.config.mjs. */
+   STATUS: E1–E14 ran 37/37 on the owner's machine (15 Oct 2026, 4.3 release). The 4.4
+   additions (4.4 in E1, E15–E23) also run in the build workspace against its preinstalled
+   Chromium (PW_CHROMIUM, see playwright.config.mjs); the owner's run is the release check. */
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import * as F from '../fixtures/fixtures.mjs';
 
 const KEY = F.STORAGE_KEY;
-const PAGES = [['hub', '/'], ['progress', '/progress/'], ['4.1', '/4-1/'], ['4.2', '/4-2/'], ['4.3', '/4-3/']];
+const PAGES = [['hub', '/'], ['progress', '/progress/'], ['4.1', '/4-1/'], ['4.2', '/4-2/'], ['4.3', '/4-3/'], ['4.4', '/4-4/']];   // 4.4 added (4.4 spec E19)
+
+/* Only when PW_CHROMIUM is set (the build workspace, which has no internet): answer the Google
+   Fonts and favicon requests locally so a blocked network is not reported as a page error.
+   Unset (the owner's machine), nothing is intercepted. */
+if (process.env.PW_CHROMIUM) {
+  test.beforeEach(async ({ page }) => {
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
+    await page.route(/\/favicon\.ico$/, (r) => r.fulfill({ status: 204, body: '' }));
+  });
+}
 const WIDTHS = [390, 820, 1366, 1600];
 const CANONICAL = ['dir-general-admin', 'dir-customer-support', 'dir-ecommerce', 'dir-amazon', 'dir-bookkeeping', 'dir-social-content',
   'dir-executive-assistant', 'dir-real-estate', 'dir-lead-generation', 'dir-technical', 'dir-ndis'];
@@ -145,7 +155,8 @@ test.describe('GUARD · newer saved progress is protected in a real browser', ()
 async function judge(page, id, value) { await page.locator(`input[name="judgment-${id}"][value="${value}"]`).check({ force: true }); }
 
 test.describe('4.3 · real browser', () => {
-  test('E10 a new learner completes 4.3 by staying undecided; no console errors; 4.4 is not a link', async ({ page }) => {
+  /* Deliberate update for the 4.4 release (spec R-NAV-6): the finish screen now links to 4.4. */
+  test('E10 a new learner completes 4.3 by staying undecided; no console errors; Continue to Module 4.4 is a link', async ({ page }) => {
     const errors = trackErrors(page);
     await page.goto('/4-3/');
     await page.getByRole('link', { name: 'Start exploring' }).click();
@@ -161,8 +172,8 @@ test.describe('4.3 · real browser', () => {
     await page.getByRole('link', { name: 'Continue to review and finish →' }).click();
     await page.getByRole('button', { name: 'Save and finish Module 4.3' }).click();
     await expect(page.locator('#completionStatus')).toContainText('Module 4.3 complete');
-    await expect(page.locator('#completionStatus .s4-next')).toContainText('Coming later');
-    expect(await page.locator('a[href*="4-4"]').count()).toBe(0);
+    await expect(page.locator('#completionStatus a.s4-next')).toHaveAttribute('href', '../4-4/');
+    await expect(page.locator('#completionStatus a.s4-next')).toContainText('Continue to Module 4.4');
     await page.reload();
     await expect(page.locator('#moduleProgress')).toHaveText('Module 4.3 complete');
     expect(errors).toEqual([]);
@@ -213,14 +224,166 @@ test.describe('4.3 · real browser', () => {
     await page.screenshot({ path: 'test-results/examine-390.png', fullPage: true });
   });
 
-  test('E14 every page requests its shared assets with ?v=4.3.0 and all load', async ({ page }) => {
+});
+
+/* ===== Module 4.4 (spec v1.0 §17.3) ===== */
+const V4 = () => JSON.stringify(F.profileV4Full);
+const V3 = () => JSON.stringify(F.profileV3Full);
+const noOverflow = async (page) => expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+const map44 = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).modules['4-4'], KEY);
+
+test.describe('4.4 · real browser', () => {
+  test('E15 add one direction, write a step, save; survives reload; hub says Review my Direction Map; no console errors', async ({ page }) => {
+    const errors = trackErrors(page);
+    await seed(page, V3());
+    await page.goto('/4-4/');
+    await page.getByRole('link', { name: 'Continue →' }).click();
+    await page.getByRole('button', { name: 'Add to my map: E-commerce VA' }).click();
+    await page.getByRole('button', { name: 'Continue →' }).click();
+    await page.getByLabel('My next exploration step').fill('Read three job posts for e-commerce VAs.');
+    await page.getByRole('button', { name: 'Continue to my map →' }).click();
+    await expect(page.locator('#mapView')).toContainText('My next exploration step');
+    await page.getByRole('button', { name: 'Save my Direction Map' }).click();
+    await expect(page.locator('#completionStatus')).toContainText('Module 4.4 complete');
+    await page.reload();
+    await expect(page.locator('#moduleProgress')).toHaveText('Module 4.4 complete');
+    await expect(page.locator('#mapView')).toContainText('Read three job posts for e-commerce VAs.');
+    await page.goto('/');
+    await expect(page.locator('#continueBtn')).toHaveText('Review my Direction Map');
+    await expect(page.locator('#continueBtn')).toHaveAttribute('href', './4-4/#map');
+    await expect(page.locator('#stamp44')).toHaveText('Complete');
+    expect(errors).toEqual([]);
+  });
+
+  test('E16 a learner with no 4.2 data and no 4.3 reflections completes by still exploring', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/4-4/#choose');
+    await expect(page.locator('#chooseEmpty')).toBeVisible();
+    await page.getByRole('button', { name: 'Choose this' }).click();
+    await page.getByRole('button', { name: 'Continue →' }).click();
+    await page.getByLabel('My next step to help me decide').fill('Examine one more direction in Module 4.3.');
+    await page.getByRole('button', { name: 'Continue to my map →' }).click();
+    await page.getByRole('button', { name: 'Save my Direction Map' }).click();
+    await expect(page.locator('#completionStatus')).toContainText('Module 4.4 complete');
+    await expect(page.locator('#mapView')).toContainText("Right now, I'm still exploring.");
+    expect(errors).toEqual([]);
+  });
+
+  test('E17 real dialogs: Cancel keeps everything, OK removes; adding a direction keeps the investigation step', async ({ page }) => {
+    await seed(page, V3());
+    await page.goto('/4-4/#choose');
+    await page.getByRole('button', { name: 'Add to my map: E-commerce VA' }).click();
+    await page.getByRole('button', { name: 'Continue →' }).click();
+    await page.getByLabel('My next exploration step').fill('My own step');
+    await page.getByLabel('My next exploration step').blur();
+    await page.locator('#sectionNav a[data-nav="choose"]').click();
+    const before = await page.evaluate((k) => localStorage.getItem(k), KEY);
+    const seen = [];
+    page.once('dialog', (d) => { seen.push(d.message()); d.dismiss(); });
+    await page.getByRole('button', { name: 'Remove from my map: E-commerce VA' }).click();
+    expect(await page.evaluate((k) => localStorage.getItem(k), KEY)).toBe(before);
+    page.once('dialog', (d) => { seen.push(d.message()); d.dismiss(); });
+    await page.getByRole('button', { name: 'Choose this' }).click();
+    expect(await page.evaluate((k) => localStorage.getItem(k), KEY)).toBe(before);
+    expect(seen).toEqual(['This will remove the next step you wrote for E-commerce VA from your map. Your Module 4.3 reflection stays as it is. Remove it?',
+      'Choosing to keep exploring will remove your directions and the next steps you wrote for them from your map. Your Module 4.3 reflections stay as they are. Continue?']);
+    page.once('dialog', (d) => d.accept());
+    await page.getByRole('button', { name: 'Choose this' }).click();
+    expect((await map44(page)).stillExploring).toBe(true);
+    await page.getByRole('button', { name: 'Continue →' }).click();
+    await page.getByLabel('My next step to help me decide').fill('Compare two cards');
+    await page.getByLabel('My next step to help me decide').blur();
+    await page.locator('#sectionNav a[data-nav="choose"]').click();
+    let asked = false; page.once('dialog', (d) => { asked = true; d.dismiss(); });
+    await page.getByRole('button', { name: 'Add to my map: Customer Support VA' }).click();
+    expect(asked).toBe(false);
+    expect((await map44(page)).investigationStep).toBe('Compare two cards');
+  });
+
+  test('E18 keyboard only: Use this idea, edit, Continue', async ({ page }) => {
+    await seed(page, V3());
+    await page.goto('/4-4/#choose');
+    await page.getByRole('button', { name: 'Add to my map: E-commerce VA' }).focus();
+    await page.keyboard.press('Enter');
+    await page.locator('#chooseContinue').focus();
+    await page.keyboard.press('Enter');
+    const idea = page.locator('[data-step-dir="dir-ecommerce"] [data-idea="0"]');
+    await idea.focus();
+    await page.keyboard.press('Enter');
+    const box = page.locator('textarea[data-step="dir-ecommerce"]');
+    await expect(box).toBeFocused();
+    expect((await map44(page)).mapDirections[0].nextStep).toBe('');
+    await page.keyboard.press('End');
+    await page.keyboard.type(' Today.');
+    await page.locator('#stepsContinue').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#map')).toBeVisible();
+    expect((await map44(page)).mapDirections[0].nextStep).toMatch(/appear more than once\. Today\.$/);
+  });
+
+  test('E19 all four screens fit at 390, 820, 1366 and 1600px', async ({ page }) => {
+    await seed(page, V4());
+    for (const width of [390, 820, 1366, 1600]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const s of ['look-back', 'choose', 'steps', 'map']) {
+        await page.goto('/4-4/#' + s);
+        await expect(page.locator('#' + s)).toBeVisible();
+        await noOverflow(page);
+      }
+      if (width === 390) { await page.goto('/4-4/#steps'); await page.screenshot({ path: 'test-results/m44-steps-390.png', fullPage: true }); }
+    }
+  });
+
+  test('E20 print layout: only the map; print date shown; text dark; Save as PDF line not printed', async ({ page }) => {
+    await seed(page, V4());
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.goto('/4-4/#map');
+    await page.emulateMedia({ media: 'print' });
+    for (const sel of ['#s4Side', '.s4-mobilebar', '#mapActions', '#stage5', '#completionStatus', '#s4Title', 'footer', '.route-bar']) await expect(page.locator(sel).first()).toBeHidden();
+    for (const sel of ['#look-back', '#choose', '#steps']) await expect(page.locator(sel)).toBeHidden();
+    await expect(page.locator('#mapView')).toBeVisible();
+    await expect(page.locator('#mapPrintDate')).toBeVisible();
+    await expect(page.locator('#mapPrintDate')).toContainText('Printed on');
+    await expect(page.locator('#mapReminder')).toBeVisible();
+    expect(await page.locator('#mapView .s44-screen-only a:visible').count()).toBe(0);
+    const dark = await page.evaluate(() => [...document.querySelectorAll('#mapView dt, #mapView dd, #mapView h3, #mapView p')].every((n) => {
+      const m = getComputedStyle(n).color.match(/\d+/g).map(Number); return m[0] < 80 && m[1] < 80 && m[2] < 80;
+    }));
+    expect(dark).toBe(true);
+    await page.screenshot({ path: 'test-results/m44-print-view.png', fullPage: true });
+    await page.emulateMedia({ media: 'screen' });
+    await expect(page.locator('#mapPrintDate')).toBeHidden();
+  });
+
+  test('E21 a PDF of the map is produced (artifact for the owner to open)', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'page.pdf is Chromium-only');
+    await seed(page, V4());
+    await page.goto('/4-4/#map');
+    const pdf = await page.pdf({ path: 'test-results/direction-map.pdf', format: 'A4', printBackground: false });
+    expect(pdf.length).toBeGreaterThan(5000);
+  });
+
+  test('E22 guard: newer (schema 5) data is protected on the 4.4 page; working through 4.4 never writes', async ({ page }) => {
+    await seed(page, F.RAW.newer);
+    await page.goto('/4-4/#choose');
+    await expect(page.locator('#storageBanner')).toContainText('Saved progress needs attention.');
+    await page.getByRole('button', { name: 'Choose this' }).click();
+    await page.getByRole('button', { name: 'Continue →' }).click();
+    await page.getByLabel('My next step to help me decide').fill('x');
+    await page.getByRole('button', { name: 'Continue to my map →' }).click();
+    await page.getByRole('button', { name: 'Save my Direction Map' }).click();
+    expect(await stored(page)).toBe(F.RAW.newer);
+  });
+
+  /* Replaces E14 (4.3 release) for the 4.4 release: version 4.4.0 and the 4.4 page included. */
+  test('E23 every page requests its shared assets with ?v=4.4.0 and all load', async ({ page }) => {
     for (const [, url] of PAGES) {
       const assets = [];
       page.on('response', (r) => { if (/\/shared\//.test(r.url())) assets.push([r.url(), r.status()]); });
       await page.goto(url);
       await page.waitForLoadState('networkidle');
       expect(assets.length).toBeGreaterThanOrEqual(4);
-      for (const [u, status] of assets) { expect(u, url).toMatch(/\?v=4\.3\.0$/); expect(status, u).toBe(200); }
+      for (const [u, status] of assets) { expect(u, url).toMatch(/\?v=4\.4\.0$/); expect(status, u).toBe(200); }
       page.removeAllListeners('response');
     }
   });

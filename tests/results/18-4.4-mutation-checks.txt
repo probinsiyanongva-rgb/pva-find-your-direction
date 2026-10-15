@@ -1,0 +1,28 @@
+Module 4.4 — mutation checks (15 Oct 2026, branch design-4-4)
+Each fault was introduced on purpose, the Node suite was run, and the file was restored.
+"fail N" = number of tests that caught it. All 19 were caught.
+
+CAUGHT  fail 2   state: add a direction without a saved reflection
+CAUGHT  fail 3   state: remove a written step without confirmation
+CAUGHT  fail 2   state: still exploring without confirmation
+CAUGHT  fail 2   state: adding a direction discards the investigation step
+CAUGHT  fail 14  state: normalize drops map directions without a saved reflection
+CAUGHT  fail 1   state: migration keeps a 4-4 key from v3
+CAUGHT  fail 11  state: summary without module44Complete
+CAUGHT  fail 1   state: Restore message without the 4.4 line
+CAUGHT  fail 1   state: hidden investigation step editable
+CAUGHT  fail 3   page: Use this idea saves at once
+CAUGHT  fail 4   page: blur saves a pending idea
+CAUGHT  fail 1   page: replace without asking
+CAUGHT  fail 2   page: Cancel still removes
+CAUGHT  fail 25  page: pre-add 4.3 selections
+CAUGHT  fail 2   page: writes 4.3 (marks the choice)
+CAUGHT  fail 3   page: map shows unlinked tasks
+CAUGHT  fail 1   page: warning style for "Not for me right now"
+CAUGHT  fail 1   hub: Review my Direction Map whenever 4.4 is complete
+CAUGHT  fail 1   hub: 4.4 status ignores data without lastSection   (NV2)
+
+Found while writing the page tests (fixed before this record): a step field that had not
+changed was still re-saved when the learner left Screen 3, which rewrote _meta.updatedAt,
+so a later Cancel did not leave storage byte-identical (TR1/TR4). Fields now save only
+text the learner actually changed.

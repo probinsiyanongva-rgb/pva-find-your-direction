@@ -240,3 +240,41 @@ a.s4-next-live:hover{background:var(--green-soft)}
   .s43-compare-table{display:none}
   .s43-compare-stacked{display:block}
 }
+
+/* ===== Module 4.4 · Build Your Direction Map (spec v1.0) ===== */
+.s44-counts{margin:8px 0 0 18px}
+.s44-counts li{margin:6px 0}
+.s44-choose-list{list-style:none;margin:0;padding:0}
+.s44-choose-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:10px 0}
+.s44-choose-row:first-child{border-top:0}
+.s44-choose-text{flex:1 1 260px;min-width:0}
+.s44-choose-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.s44-choice-btn{min-height:44px}
+.s44-onmap{font-weight:700;color:var(--green)}
+.s44-exploring{margin-top:14px}
+.s44-step{margin-top:14px}
+.s44-ideas{background:var(--cream);border-left:4px solid var(--line);padding:6px 12px;margin:10px 0 0;border-radius:0 8px 8px 0}
+.s44-idea-list{list-style:none;margin:4px 0;padding:0}
+.s44-idea-list li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line)}
+.s44-idea-list li:first-child{border-top:0}
+.s44-idea-list li>span:first-child{flex:1 1 220px;min-width:0}
+.s44-use-idea{min-height:40px;flex:0 0 auto}
+.s44-map-head{border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:8px}
+.s44-map-title{font:700 1.15rem Fraunces,Georgia,serif;letter-spacing:.04em;margin:0 0 6px;color:var(--charcoal)}
+.s44-reminder{font-style:italic}
+.s44-map-dir{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.s44-map-dir:first-of-type{border-top:0}
+.s44-map dt{font-weight:700;margin-top:8px}
+.s44-map dd{margin:2px 0 0;overflow-wrap:anywhere}
+.s44-map dd ul{margin:2px 0;padding-left:18px}
+.s44-edit-links{margin-top:8px}
+.s44-print-only{display:none}
+@media print{
+  .s4-side,.s4-mobilebar,.s4-backdrop,.storage-banner,.s4-continue,.s44-screen-only,.s4-section:not(#map),footer,.route-bar,.skip-link{display:none!important}
+  .s4-shell,.s4-main{display:block!important;margin:0!important;padding:0!important;max-width:none!important}
+  #map .card{border:0!important;box-shadow:none!important;padding:0!important;background:#fff!important}
+  .s44-map,.s44-map *{color:#000!important;background:#fff!important}
+  .s44-print-only{display:block}
+  .s44-map-dir{break-inside:avoid}
+  .s4-dir-num{border:1px solid #000}
+}

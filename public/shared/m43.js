@@ -474,7 +474,7 @@
       box.innerHTML = '<div class="section-label">Module 4.3</div><h2>Module 4.3 complete</h2>' +
         '<p>Your reflections are saved in this browser (first completed ' + esc(new Date(m.completedAt).toLocaleDateString()) + '). You can keep editing them.</p>' +
         '<div class="s4-transition"><p><strong>' + esc(COPY.transition1) + '</strong></p><p><strong>' + esc(COPY.transition2) + '</strong></p></div>' +
-        '<div class="s4-next" aria-disabled="true"><span class="s4-next-label">Continue to Module 4.4</span><span class="stamp">Coming later</span></div>' +
+        '<a class="s4-next s4-next-live" href="../4-4/"><span class="s4-next-label">Continue to Module 4.4 →</span></a>' +
         '<p><a href="#directions" data-nav="directions">Review my Module 4.3 reflections</a></p>' +
         '<p class="small">Use <strong>Export Progress</strong> to keep a backup file, especially if you might switch devices or browsers.</p>' +
         '<div class="progress-tools"><button class="btn subtle" type="button" data-export-inline>Export Progress</button></div>';

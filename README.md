@@ -1,4 +1,4 @@
-# PVA Academy — Stage 4: Find Your Direction · 4.1 v1.1 · 4.2 v1.1 · 4.3 v1.0
+# PVA Academy — Stage 4: Find Your Direction · 4.1 v1.1 · 4.2 v1.1 · 4.3 v1.0 · 4.4 v1.0
 
 Stage 4 of the PVA Beginner VA Journey. **One integrated Stage 4 course** that will hold
 4.1–4.4. Only Module 4.1 (Understanding VA Work Directions) is built; 4.2–4.4 show as
@@ -104,7 +104,7 @@ Before the guard, opening 4.1 or 4.2 with newer data replaced it with an empty p
 ```text
 cd tests
 npm install                 # jsdom + Playwright library (no browsers downloaded)
-npm test                    # unit (state.js) + page tests (hub, Progress, 4.1, 4.2, 4.3) in jsdom
+npm test                    # unit (state.js) + page tests (hub, Progress, 4.1–4.4) in jsdom
 npx playwright install chromium && npm run test:e2e   # real-browser suite: layout, keyboard, downloads
 ```
 - `tests/` is outside `public/` (never deployed) and has its own `package.json` (the repo root has none,
@@ -131,6 +131,29 @@ npx playwright install chromium && npm run test:e2e   # real-browser suite: layo
 - Migration: v1/v2 data and backups load unchanged; a `"4-3"` key in v1/v2 data is dropped (no release wrote it).
 - Completion: explicit **Save and finish Module 4.3** once the seven spec criteria are met; kept once set.
 - Assets load with `?v=4.3.0` (cache-busting). Bump it on every release that changes shared files.
+
+## Module 4.4 — Build Your Direction Map (v1.0)
+- Page: `public/4-4/index.html`; logic `public/shared/m44.js`; styles and the map's print layout appended to
+  `stage4.css` (`.s44-*`).
+- Source of truth: `docs/PVA_Module_4.4_Production_Specification_v1.0.md` (approved 15 Oct 2026), design authority
+  `docs/PVA_Module_4.4_Design_Brief_v0.3_APPROVED.md`. Build record: `BUILD_REPORT_4.4.md`.
+- State: **schema v4**, backup wrapper v4 (wrappers 1–4 accepted). `modules["4-4"] = { lastSection, completedAt,
+  whereIAmNow, mapDirections: [{ directionId, nextStep }] (0–2, learner order), stillExploring, investigationStep }`.
+  Limits 300 for each text. The investigation step is kept in every map state (spec §6, T8).
+- The map is rebuilt from the CURRENT 4.1–4.3 records every time; 4.4 never writes 4.1–4.3 (tested).
+- All 4.4 writes go through `PVAS4.m44`. A written next step is only discarded with `{ confirmed: true }`.
+- "Use this idea" never saves by itself: a copied idea is kept only when edited or on "Continue to my map".
+- Hub: earliest unfinished module first; **Review my Direction Map** once 4.1–4.4 are all complete.
+- Assets load with `?v=4.4.0`.
+
+## 4.4 release checklist (owner decisions)
+1. Owner runs `npm test` (expect 262/262) and `npm run test:e2e` (expect 50 passed) locally. (Done 15 Oct 2026: 262/262 and 50 passed; manual checks including print preview passed.)
+2. Owner manual checks (BUILD_REPORT_4.4 §7), including Chrome's real print preview and "Save as PDF".
+3. Merge `design-4-4` to `main` (Cloudflare deploys).
+4. After deploy: hard-reload and check `PVAS4.SCHEMA_VERSION === 4` and `typeof PVAS4.m44 === "object"`.
+5. Rollback: the 4.3 release `de481a0` and the guard release `ee27fd0` both treat 4.4 progress as newer data
+   (protected, read-only, downloadable, restorable by 4.4; tested in `tests/unit/state44.test.mjs` RB2b–RB4).
+   Never redeploy anything older than `ee27fd0`.
 
 ## 4.3 release checklist (owner decisions)
 1. The Phase 0 guard release `ee27fd0` must have been live long enough for returning learners to receive it

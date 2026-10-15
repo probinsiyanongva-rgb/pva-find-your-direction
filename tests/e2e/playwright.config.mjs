@@ -17,5 +17,7 @@ export default defineConfig({
   outputDir: 'test-results',
   use: { baseURL: `http://localhost:${PORT}`, trace: 'retain-on-failure', acceptDownloads: true },
   webServer: { command: `node e2e/serve.mjs ${PORT}`, cwd: '..', url: `http://localhost:${PORT}/`, reuseExistingServer: true, timeout: 20000 },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }]
+  /* Optional: PW_CHROMIUM=/path/to/chrome runs against an already-installed Chromium (used in the
+     build workspace, where browser downloads are blocked). Unset, Playwright uses its own browser. */
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], ...(process.env.PW_CHROMIUM ? { launchOptions: { executablePath: process.env.PW_CHROMIUM } } : {}) } }]
 });

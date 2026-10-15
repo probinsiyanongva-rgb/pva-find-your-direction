@@ -15,19 +15,23 @@ const noErrors = (p) => assert.deepEqual(p.errors, []);
 const text = (p, sel) => (p.$(sel) ? p.$(sel).textContent.replace(/\s+/g, ' ').trim() : null);
 
 describe('BASELINE · Stage 4 hub and Progress page', () => {
-  /* Deliberate updates for the 4.3 release (Step E navigation): 4.3 is linked, only 4.4 is
-     "Coming later", the summary line names 4.3, and Continue moves on to 4.3. */
-  test('P1 hub, new learner: nothing started, Start Module 4.1, 4.4 coming later', () => {
+  /* Deliberate updates for the 4.3 release (Step E navigation): 4.3 is linked, the summary line
+     names 4.3, and Continue moves on to 4.3. Deliberate updates for the 4.4 release (spec
+     R-NAV-2/3): 4.4 is linked with its own stamp, nothing is "Coming later", and the summary
+     line names 4.4. */
+  test('P1 hub, new learner: nothing started, Start Module 4.1, 4.4 linked', () => {
     const p = openPage({ page: 'index' });
     noErrors(p);
     assert.equal(text(p, '#stamp41'), 'Not started');
     assert.equal(text(p, '#stamp42'), 'Not started');
     assert.equal(text(p, '#continueBtn'), 'Start Module 4.1');
     assert.equal(p.$('#continueBtn').getAttribute('href'), './4-1/');
-    assert.equal(p.$$('li.later').length, 1, 'only 4.4 is Coming later');
+    assert.equal(p.$$('li.later').length, 0, 'nothing is Coming later');
+    assert.equal(p.$('a[href="4-4/"]').textContent, 'Build Your Direction Map');
+    assert.equal(text(p, '#stamp44'), 'Not started');
     assert.equal(text(p, '#stamp43'), 'Not started');
     assert.equal(p.$('a[href="4-3/"]').textContent, 'Exploring Possible Directions');
-    assert.equal(text(p, '#homeSummary'), 'Module 4.1 not started yet · Module 4.2 not started yet · Module 4.3 not started yet · 0 Work Clues saved');
+    assert.equal(text(p, '#homeSummary'), 'Module 4.1 not started yet · Module 4.2 not started yet · Module 4.3 not started yet · Module 4.4 not started yet · 0 Work Clues saved');
     assert.equal(p.raw(), null, 'opening the hub saves nothing');
   });
   test('P2 hub, 4.1 and 4.2 complete: both Complete, Start Module 4.3', () => {
@@ -37,12 +41,12 @@ describe('BASELINE · Stage 4 hub and Progress page', () => {
     assert.equal(text(p, '#stamp42'), 'Complete');
     assert.equal(text(p, '#continueBtn'), 'Start Module 4.3');
     assert.equal(p.$('#continueBtn').getAttribute('href'), './4-3/');
-    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 not started yet · 4 Work Clues saved');
+    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 not started yet · Module 4.4 not started yet · 4 Work Clues saved');
   });
   test('P3 Progress page, 4.1 complete only (v1 data): Start Module 4.2', () => {
     const p = openPage({ page: 'progress', storage: seed(F.profileV1) });
     noErrors(p);
-    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 not started yet · Module 4.3 not started yet · 4 Work Clues saved');
+    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 not started yet · Module 4.3 not started yet · Module 4.4 not started yet · 4 Work Clues saved');
     assert.equal(text(p, '#continueBtn'), 'Start Module 4.2');
     assert.equal(p.$('#continueBtn').getAttribute('href'), '../4-2/');
   });
@@ -53,12 +57,12 @@ describe('BASELINE · Stage 4 hub and Progress page', () => {
     assert.equal(b.format, F.BACKUP_FORMAT);
     /* Deliberate update (spec v1.5 decision 5, 4.3 Step C): the one combined summary adds
        module43Complete. Previously { workClues, module41Complete, module42Complete, experiences, schemaVersion }. */
-    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });
+    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, module44Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });   // module44Complete: deliberate 4.4 update
   });
 });
 
 describe('SUMMARY · one shared backup summary from every page (spec v1.5 decision 5)', () => {
-  const WANT = { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema };
+  const WANT = { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, module44Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema };   // module44Complete: deliberate 4.4 update
   const exportsFrom = [
     ['hub', 'index', null, '[data-export]'],
     ['Progress page', 'progress', null, '[data-export]'],

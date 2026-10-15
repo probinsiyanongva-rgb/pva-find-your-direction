@@ -38,7 +38,7 @@ describe('HARNESS', () => {
 });
 
 describe('RELEASE · versioned asset URLs (cache-busting for the 4.3 release)', () => {
-  const RELEASE = '4.3.0';
+  const RELEASE = '4.4.0';   // deliberate update for the 4.4 release (spec R-NAV-8)
   test('R1 every local script and stylesheet on every page carries ?v=' + RELEASE, () => {
     for (const [name, file] of Object.entries(PAGE_FILES)) {
       const html = readFileSync(path.join(PUBLIC, file), 'utf8');
@@ -51,7 +51,7 @@ describe('RELEASE · versioned asset URLs (cache-busting for the 4.3 release)', 
     const { openPage } = await import('../helpers/env.mjs');
     for (const name of Object.keys(PAGE_FILES)) {
       const p = openPage({ page: name });
-      assert.ok(p.S && p.S.SCHEMA_VERSION === 3, name + ' loaded state.js');
+      assert.ok(p.S && p.S.SCHEMA_VERSION === EXPECTED.schema, name + ' loaded state.js');
       assert.deepEqual(p.errors, [], name);
     }
   });
