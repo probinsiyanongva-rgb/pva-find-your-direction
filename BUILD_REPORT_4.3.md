@@ -14,7 +14,10 @@
 | `d9fff3a` | E1 | Navigation: hub, Progress, `home.js`, 4.1/4.2 sidebars, 4.2's NEXT link. 160/160. |
 | `45e3ef0` | E2 | `?v=4.3.0` on every shared asset, on all five pages. 162/162. |
 | `eb422fd` | E3 | Playwright tests for 4.3: committed, **not run** (`results/12`). |
-| (this commit) | E4 | README, this report, final run (`results/13`). |
+| `dc3af10` | E4 | README, this report, final run (`results/13`). |
+| `b30a877` | Fix | Hub status/Continue counts any saved 4.3 progress (§5 item 6). 168/168 (`results/14`). |
+| `b3e30cc` | Test fix | RB1 hashes the legacy guard copy with LF line endings, so it passes on a Windows checkout. No app change. 168/168 (`results/15`). |
+| (this commit) | Docs | Owner verification recorded (§7). No app change. |
 
 ## 2. App files changed (vs `75ad730`)
 **New:**
@@ -36,15 +39,15 @@
 
 No 4.1 or 4.2 learning activity, learner-facing copy or stored data changed. The golden snapshots are untouched.
 
-## 3. Final results (`tests/results/13-4.3-final.txt`): 162/162
+## 3. Final results: Node 168/168 (`tests/results/15`), Playwright 37/37 (owner)
 | File | Tests | Result |
 |---|---|---|
 | `unit/harness.test.mjs` | 5 | 5 pass |
 | `unit/state.test.mjs` (4.1/4.2 baseline + Phase 0 guard) | 45 | 45 pass |
 | `unit/state43.test.mjs` (4.3 state) | 46 | 46 pass |
 | `pages/pages.test.mjs` (hub, Progress, 4.1, 4.2, summary) | 29 | 29 pass |
-| `pages/m43.test.mjs` (4.3 page) | 37 | 37 pass |
-| **Playwright** `e2e/stage4.spec.mjs` | 37 | **NOT RUN.** The browser download is blocked in the build workspace. E1–E9 (27 tests) passed on the owner's machine on 14 Oct, before 4.3; the 4.3 additions have never run. |
+| `pages/m43.test.mjs` (4.3 page, incl. status S1–S3) | 43 | 43 pass |
+| **Playwright** `e2e/stage4.spec.mjs` | 37 | **37 passed** on the owner's machine (real Chrome, 15 Oct), including the first run of E10–E14 for 4.3. It cannot run in the build workspace (browser download blocked). |
 
 ### Required gates and where they are tested (all executed, all passing)
 | Gate | Tests |
@@ -79,20 +82,15 @@ No 4.1 or 4.2 learning activity, learner-facing copy or stored data changed. The
 6. Opening 4.3 marks it "In progress" on the hub, the same convention as 4.1 and 4.2 (via the saved `lastSection`). **Correction (15 Oct):** when 4.3 progress is saved without a valid `lastSection`, the hub now also counts *any* saved 4.3 progress: Work Clues or evidence reviewed, a direction examined, the decision reached, undecided chosen, or a selection. Before, it counted only explorations, so it could show "Not started" / "Start Module 4.3". Tests S1–S3 (`tests/results/14`, 168/168); S2 ×4 failed on the previous code.
 
 ## 6. Limitations
-- **Not yet checked in a real browser:**
-  - all 4.3 layout, keyboard and dialog behaviour;
-  - the comparison layout at the 960 px breakpoint;
-  - the `?v=` asset requests.
-
-  Run `npm run test:e2e` locally (37 tests).
 - Cache-busting covers scripts and stylesheets. Whether browsers revalidate the HTML pages themselves depends on Cloudflare's headers, which were not verifiable from here.
 - The release must respect the guard-propagation and rollback policy (README, "4.3 release checklist").
 
-## 7. Owner verification (to run locally)
-```text
-git fetch origin && git checkout module-4-3
-cd tests && npm ci
-npm test                                   # expect: tests 162, pass 162, fail 0
-npx playwright install chromium && npm run test:e2e   # expect 37 passed; first run of the 4.3 tests
-npm run serve                              # manual check at http://localhost:4173/4-3/
-```
+## 7. Owner verification (done, 15 Oct 2026, Windows, Node v24.21.0)
+- `npm test`: 167/168 on `b30a877`; the one failure was RB1 (Windows line endings in the legacy copy, a test fault). After `b3e30cc`: 168/168.
+- `npm run test:e2e`: **37 passed** in real Chrome, including E10–E14 (4.3).
+- Manual check on `localhost:4173/4-3/`, all passed:
+  1. the wording reads clearly;
+  2. D16 by hand: Cancel keeps the reason, OK removes it;
+  3. phone width (390 px): direction card and judgment buttons look right;
+  4. Export → Clear → Restore brings the 4.3 answers back.
+- Owner approved the release (merge `module-4-3` → `main`) on 15 Oct 2026.

@@ -135,7 +135,7 @@ npx playwright install chromium && npm run test:e2e   # real-browser suite: layo
 ## 4.3 release checklist (owner decisions)
 1. The Phase 0 guard release `ee27fd0` must have been live long enough for returning learners to receive it
    (rollback policy). Under that guard, v3 progress is protected ("newer"), never overwritten.
-2. Owner runs `npm test` and `npm run test:e2e` locally (the 4.3 Playwright tests have not yet run anywhere).
+2. Owner runs `npm test` and `npm run test:e2e` locally. (Done 15 Oct 2026: 168/168 and 37/37.)
 3. Owner manual check on `localhost`, then merge `module-4-3` to `main` (Cloudflare deploys from `main`).
 4. After deploy: hard-reload the live site and check `PVAS4.SCHEMA_VERSION === 3` and `typeof PVAS4.m43 === "object"`.
 5. Once v3 is live, the oldest version that may be redeployed is still the guard release `ee27fd0`. Any release from
