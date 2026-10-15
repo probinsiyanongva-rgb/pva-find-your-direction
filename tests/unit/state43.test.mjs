@@ -79,8 +79,11 @@ describe('4.3 · migration, schema v3 and round trip', () => {
 });
 
 describe('4.3 · ROLLBACK safety (Phase 0 guard release ee27fd0 meets v3 data)', () => {
-  test('RB1 the committed legacy copy is byte-identical to the guard release state.js', () => {
-    const sha = createHash('sha256').update(readFileSync(LEGACY_GUARD)).digest('hex');
+  test('RB1 the committed legacy copy matches the guard release state.js (line endings ignored)', () => {
+    /* Git on Windows may check text files out with CRLF line endings; the code is the same.
+       Hash the content with LF line endings, as committed (see .gitattributes). */
+    const text = readFileSync(LEGACY_GUARD, 'utf8').replace(/\r\n/g, '\n');
+    const sha = createHash('sha256').update(text, 'utf8').digest('hex');
     assert.equal(sha, '6e6b5ba2cd2178cfc92c399cd5037ddaa269926aed6732c1e818d2aea1a70c50');
   });
   test('RB2 guard-release code treats v3 progress as newer: kept byte-identical, Download saved data offered', async () => {
