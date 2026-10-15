@@ -147,7 +147,7 @@ npx playwright install chromium && npm run test:e2e   # real-browser suite: layo
 - Assets load with `?v=4.4.0`.
 
 ## 4.4 release checklist (owner decisions)
-1. Owner runs `npm test` (expect 262/262) and `npm run test:e2e` (expect 50 passed) locally.
+1. Owner runs `npm test` (expect 262/262) and `npm run test:e2e` (expect 50 passed) locally. (Done 15 Oct 2026: 262/262 and 50 passed; manual checks including print preview passed.)
 2. Owner manual checks (BUILD_REPORT_4.4 §7), including Chrome's real print preview and "Save as PDF".
 3. Merge `design-4-4` to `main` (Cloudflare deploys).
 4. After deploy: hard-reload and check `PVAS4.SCHEMA_VERSION === 4` and `typeof PVAS4.m44 === "object"`.

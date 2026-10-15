@@ -9,7 +9,7 @@
 |---|---|
 | `3c69024` | Step 1 — state layer: schema v4, backup v4, `normalize44`, v3→v4 migration, `PVAS4.m44`, summary flag, Restore line; `state44` tests; legacy copy of the 4.3 release `state.js`; deliberate fixture/test updates |
 | `fde83a2` | Steps 2–3 — the 4.4 page, styles and print layout; navigation (hub priority, sidebars, 4.3 finish link, `?v=4.4.0`); deliberate navigation test updates |
-| (this commit) | Step 4 — page tests, Playwright E15–E23, a fix found by the tests, results, README, this report |
+| `89f7453` | Step 4 — page tests, Playwright E15–E23, a fix found by the tests, results, README, this report |
 
 ## 2. Files changed (vs `de481a0`)
 **App (`public/`):**
@@ -83,7 +83,13 @@ No other deviations. Every requirement ID in spec §1–§15 is implemented as w
 - `page.pdf()` and print media emulation check structure and colour, not Chrome's print dialog itself (margins, headers/footers, page breaks as the learner sees them).
 - Cloudflare's caching of the HTML pages themselves was not verifiable from here (same as 4.3).
 
-## 7. Owner verification (to run locally)
+## 7. Owner verification — DONE (15 Oct 2026, Windows, real Chrome)
+- `npm test` on `89f7453`: **262/262**.
+- `npm run test:e2e`: **50 passed** (first run on the owner's machine, Playwright's own Chromium).
+- Manual checks 1–5 below: **all passed**, including Chrome's real print preview (map only, readable in black and white, sensible page breaks) and "Save as PDF".
+- Owner approved the release (merge `design-4-4` → `main`) on 15 Oct 2026.
+
+### Commands used
 ```text
 git fetch origin && git checkout design-4-4 && git pull
 cd tests && npm ci
