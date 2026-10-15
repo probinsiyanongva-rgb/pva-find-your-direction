@@ -70,11 +70,13 @@
   /* ---------- step fields: debounced saving plus the pending-idea rule (§4) ---------- */
   var fields = [];                                              // fields on the current Screen 3 render
   function stepField(textarea, save, status) {
-    var f = { input: textarea, pending: false, timer: null };
-    f.flush = function () { clearTimeout(f.timer); if (!f.pending) save(textarea.value); };   // an unaccepted idea is never flushed
-    f.commit = function () { clearTimeout(f.timer); save(textarea.value); f.pending = false; };
+    var f = { input: textarea, pending: false, dirty: false, timer: null };
+    /* Only text the learner typed is flushed; an unaccepted idea never is. Nothing is written
+       when nothing changed, so a Cancel elsewhere leaves storage byte-identical. */
+    f.flush = function () { clearTimeout(f.timer); if (f.dirty && !f.pending) { f.dirty = false; save(textarea.value); } };
+    f.commit = function () { clearTimeout(f.timer); if (f.dirty || f.pending) save(textarea.value); f.dirty = false; f.pending = false; };
     textarea.addEventListener('input', function () {
-      f.pending = false;                                        // the learner changed it: it is theirs now
+      f.pending = false; f.dirty = true;                        // the learner changed it: it is theirs now
       if (status) status.textContent = '';
       clearTimeout(f.timer); f.timer = setTimeout(f.flush, 400);
       syncStepsGate();
