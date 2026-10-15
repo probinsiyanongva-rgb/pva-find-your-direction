@@ -15,29 +15,34 @@ const noErrors = (p) => assert.deepEqual(p.errors, []);
 const text = (p, sel) => (p.$(sel) ? p.$(sel).textContent.replace(/\s+/g, ' ').trim() : null);
 
 describe('BASELINE · Stage 4 hub and Progress page', () => {
-  test('P1 hub, new learner: nothing started, Start Module 4.1, 4.3/4.4 coming later', () => {
+  /* Deliberate updates for the 4.3 release (Step E navigation): 4.3 is linked, only 4.4 is
+     "Coming later", the summary line names 4.3, and Continue moves on to 4.3. */
+  test('P1 hub, new learner: nothing started, Start Module 4.1, 4.4 coming later', () => {
     const p = openPage({ page: 'index' });
     noErrors(p);
     assert.equal(text(p, '#stamp41'), 'Not started');
     assert.equal(text(p, '#stamp42'), 'Not started');
     assert.equal(text(p, '#continueBtn'), 'Start Module 4.1');
     assert.equal(p.$('#continueBtn').getAttribute('href'), './4-1/');
-    assert.equal(p.$$('li.later').length, 2);
-    assert.equal(text(p, '#homeSummary'), 'Module 4.1 not started yet · Module 4.2 not started yet · 0 Work Clues saved');
+    assert.equal(p.$$('li.later').length, 1, 'only 4.4 is Coming later');
+    assert.equal(text(p, '#stamp43'), 'Not started');
+    assert.equal(p.$('a[href="4-3/"]').textContent, 'Exploring Possible Directions');
+    assert.equal(text(p, '#homeSummary'), 'Module 4.1 not started yet · Module 4.2 not started yet · Module 4.3 not started yet · 0 Work Clues saved');
     assert.equal(p.raw(), null, 'opening the hub saves nothing');
   });
-  test('P2 hub, 4.1 and 4.2 complete: both Complete, Review Module 4.2', () => {
+  test('P2 hub, 4.1 and 4.2 complete: both Complete, Start Module 4.3', () => {
     const p = openPage({ page: 'index', storage: seed(F.profileV2Full) });
     noErrors(p);
     assert.equal(text(p, '#stamp41'), 'Complete');
     assert.equal(text(p, '#stamp42'), 'Complete');
-    assert.equal(text(p, '#continueBtn'), 'Review Module 4.2');
-    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · 4 Work Clues saved');
+    assert.equal(text(p, '#continueBtn'), 'Start Module 4.3');
+    assert.equal(p.$('#continueBtn').getAttribute('href'), './4-3/');
+    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 complete · Module 4.3 not started yet · 4 Work Clues saved');
   });
   test('P3 Progress page, 4.1 complete only (v1 data): Start Module 4.2', () => {
     const p = openPage({ page: 'progress', storage: seed(F.profileV1) });
     noErrors(p);
-    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 not started yet · 4 Work Clues saved');
+    assert.equal(text(p, '#homeSummary'), 'Module 4.1 complete · Module 4.2 not started yet · Module 4.3 not started yet · 4 Work Clues saved');
     assert.equal(text(p, '#continueBtn'), 'Start Module 4.2');
     assert.equal(p.$('#continueBtn').getAttribute('href'), '../4-2/');
   });
@@ -46,8 +51,33 @@ describe('BASELINE · Stage 4 hub and Progress page', () => {
     p.click('[data-export]');
     const b = JSON.parse(await p.downloadText(0));
     assert.equal(b.format, F.BACKUP_FORMAT);
-    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, experiences: 2, schemaVersion: 2 });
+    /* Deliberate update (spec v1.5 decision 5, 4.3 Step C): the one combined summary adds
+       module43Complete. Previously { workClues, module41Complete, module42Complete, experiences, schemaVersion }. */
+    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });
   });
+});
+
+describe('SUMMARY · one shared backup summary from every page (spec v1.5 decision 5)', () => {
+  const WANT = { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema };
+  const exportsFrom = [
+    ['hub', 'index', null, '[data-export]'],
+    ['Progress page', 'progress', null, '[data-export]'],
+    ['4.1 sidebar', '4-1', null, '.s4-tools [data-export]'],
+    ['4.1 completion box', '4-1', 'wrap-up', '#completionStatus [data-export]'],
+    ['4.2 sidebar', '4-2', null, '.s4-tools [data-export]'],
+    ['4.2 completion box', '4-2', 'snapshot', '[data-export-inline]']
+  ];
+  for (const [label, page, hash, sel] of exportsFrom) {
+    test(`SUM ${label}: Export gives the combined summary`, async () => {
+      const p = openPage({ page, storage: seed(F.profileV2Full), hash: hash || undefined });
+      const btn = p.$(sel);
+      assert.ok(btn, label + ' has an Export button (' + sel + ')');
+      btn.click();
+      const b = JSON.parse(await p.downloadText(0));
+      assert.deepEqual(b.summary, WANT);
+      assert.equal(p.S.validateBackup(b).ok, true);
+    });
+  }
 });
 
 describe('BASELINE · Module 4.1', () => {
@@ -74,7 +104,7 @@ describe('BASELINE · Module 4.1', () => {
     noErrors(p);
     assert.equal(text(p, '#moduleProgress'), 'Module 4.1 complete');
     const s = p.stored();
-    assert.equal(s.schemaVersion, 2);
+    assert.equal(s.schemaVersion, F.EXPECTED.schema);
     assert.match(s.modules['4-1'].completedAt, /^\d{4}-/);
     assert.deepEqual(s.workClues.map((c) => [c.id, c.reaction]), [['direction:dir-bookkeeping', 'not_for_me']]);
     const again = p.reopen('4-1');
@@ -148,20 +178,20 @@ describe('BASELINE · Module 4.2', () => {
 describe('GUARD · every page leaves newer saved data alone', () => {
   for (const page of ['index', 'progress', '4-1', '4-2']) {
     test(`P13 ${page}: opening the page with newer saved data does not overwrite it, and offers Download saved data`, () => {
-      const p = openPage({ page, storage: { [KEY]: F.RAW.v3 } });
+      const p = openPage({ page, storage: { [KEY]: F.RAW.newer } });
       noErrors(p);
-      assert.equal(p.raw(), F.RAW.v3, 'unchanged right after opening');
+      assert.equal(p.raw(), F.RAW.newer, 'unchanged right after opening');
       assert.equal(p.bannerVisible(), true);
       assert.ok(p.$$('#storageBanner button').some((b) => /Download saved data/.test(b.textContent)));
     });
   }
   test('P14 4.1: working through the page while blocked still never overwrites the newer data', () => {
-    const p = openPage({ page: '4-1', storage: { [KEY]: F.RAW.v3 } });
+    const p = openPage({ page: '4-1', storage: { [KEY]: F.RAW.newer } });
     const post = p.$('#postList article.s4-post');
     p.check(post.querySelector('input[type=checkbox]'));
     post.querySelector('.s4-actions button').click();
     p.check(p.$('#dir-amazon fieldset.s4-reaction input[value=explore]'));
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
   });
   for (const page of ['index', 'progress', '4-1', '4-2']) {
     test(`P16 ${page}: an empty-string saved value is kept on open, with the could-not-be-read message and Download saved data`, () => {
@@ -180,9 +210,9 @@ describe('GUARD · every page leaves newer saved data alone', () => {
     assert.equal(p.raw(), '');
   });
   test('P15 4.2: adding an experience while blocked never overwrites the newer data', () => {
-    const p = openPage({ page: '4-2', storage: { [KEY]: F.RAW.v3 } });
+    const p = openPage({ page: '4-2', storage: { [KEY]: F.RAW.newer } });
     p.check(p.$('input[name=new-source][value=family]'));
     p.click('#addExperience');
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
   });
 });

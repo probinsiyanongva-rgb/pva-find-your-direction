@@ -15,8 +15,15 @@ const PAGES = {
   'index': { file: 'index.html', url: 'https://pva.test/' },
   'progress': { file: 'progress/index.html', url: 'https://pva.test/progress/' },
   '4-1': { file: '4-1/index.html', url: 'https://pva.test/4-1/' },
-  '4-2': { file: '4-2/index.html', url: 'https://pva.test/4-2/' }
+  '4-2': { file: '4-2/index.html', url: 'https://pva.test/4-2/' },
+  '4-3': { file: '4-3/index.html', url: 'https://pva.test/4-3/' }
 };
+export const PAGE_FILES = Object.fromEntries(Object.entries(PAGES).map(([k, v]) => [k, v.file]));
+
+/* Script tags in page order. A versioned URL (src="../shared/state.js?v=4.3.0") resolves
+   to the file without its query string, exactly as a static server does. */
+const SCRIPT_RE = /<script src="([^"?#]+)(?:[?#][^"]*)?"><\/script>/g;
+export function scriptSources(html) { return [...html.matchAll(SCRIPT_RE)].map((m) => m[1]); }
 
 /* A minimal page carrying the real storage banner markup from public/index.html,
    used by the state.js unit tests. */
@@ -30,18 +37,19 @@ function statePageHtml() {
 
 /**
  * @param {object} o
- * @param {'state'|'index'|'progress'|'4-1'|'4-2'} o.page
+ * @param {'state'|'index'|'progress'|'4-1'|'4-2'|'4-3'} o.page
  * @param {Record<string,string>} [o.storage]  localStorage contents before load (raw strings)
  * @param {boolean} [o.storageThrows]          simulate blocked site data
  * @param {boolean|((msg:string)=>boolean)} [o.confirm]  answer for window.confirm (default true)
  * @param {string} [o.hash]
+ * @param {string} [o.stateFile]  'state' page only: load this state.js instead of public/shared/state.js
  */
 export function openPage(o) {
   const spec = o.page === 'state' ? { url: 'https://pva.test/' } : PAGES[o.page];
   const pageFile = o.page === 'state' ? null : path.join(PUBLIC, spec.file);
   const html = pageFile ? readFileSync(pageFile, 'utf8') : statePageHtml();
-  const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
-  const bare = html.replace(/<script src="[^"]+"><\/script>/g, '');
+  const scripts = scriptSources(html);
+  const bare = html.replace(SCRIPT_RE, '');
 
   const errors = [];
   const vc = new VirtualConsole();
@@ -76,7 +84,7 @@ export function openPage(o) {
   }
 
   for (const src of scripts) {
-    const file = o.page === 'state' ? path.join(PUBLIC, src) : path.resolve(path.dirname(pageFile), src);
+    const file = o.page === 'state' ? (o.stateFile || path.join(PUBLIC, src)) : path.resolve(path.dirname(pageFile), src);
     w.eval(readFileSync(file, 'utf8') + '\n//# sourceURL=' + path.relative(ROOT, file));
   }
 

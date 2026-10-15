@@ -15,13 +15,23 @@
          "4-1": { lastSection, directionsReviewed, completedAt },
          "4-2": { lastSection, snapshotReached, completedAt,                  // schema v2
                   experiences: [{ id, source, note,
-                    tasks: [{ id, label, promptId|null, patternTags[], evidence|null, note }] }] }
+                    tasks: [{ id, label, promptId|null, patternTags[], evidence|null, note }] }] },
+         "4-3": { lastSection, completedAt, reviewedWorkClues, reviewedEvidence,  // schema v3
+                  examinedDirectionIds[], decisionReached, undecided, undecidedNote,
+                  selectedDirectionIds[],                                     // 0–2, the only store of the choice
+                  directionExplorations: [{ directionId, judgment|null, reason, reasonSkipped,
+                    relatedEvidenceIds[], whatMayBeNew, learningQuestions[], savedAt }] }
        },
        _meta: { updatedAt }
      }
 
-   Schema history: v1 = 4.1 only. v2 = adds modules["4-2"]. v1 data and v1
-   backups migrate to v2 unchanged (4.1 fields are never altered).
+   Schema history: v1 = 4.1 only. v2 = adds modules["4-2"]. v3 = adds
+   modules["4-3"] (Production Specification v1.5). Older data and backups
+   migrate unchanged (4.1/4.2 fields are never altered); a "4-3" key found in
+   v1/v2 data cannot be genuine 4.3 data and is dropped by the migration.
+   4.3 stores only learner choices and learner text: it references 4.2 tasks
+   by ID (relatedEvidenceIds) and never copies Work Clues or tasks. Judgments
+   (explore_further / unsure / not_now) are separate from Work Clue reactions.
 
    Deliberately NOT stored: interestedDirections (derive from workClues),
    reflection, any score, ranking, recommendation, pattern counts/totals,
@@ -43,19 +53,26 @@
 
   var STORAGE_KEY = 'pva-stage4-progress';
   var BACKUP_FORMAT = 'pva-stage4-progress-backup';
-  var BACKUP_VERSION = 2;          // backup wrapper; v1 and v2 wrappers are accepted
-  var SCHEMA_VERSION = 2;          // data schema; v1 data is migrated on load/restore
+  var BACKUP_VERSION = 3;          // backup wrapper; v1–v3 wrappers are accepted
+  var SCHEMA_VERSION = 3;          // data schema; v1/v2 data is migrated on load/restore
   var COURSE_NAME = 'PVA Academy — Stage 4: Find Your Direction';
 
   var SOURCE_TYPES = ['scenario', 'direction'];
   var REACTIONS = ['explore', 'unsure', 'not_for_me'];
-  var MODULE_IDS = ['4-1', '4-2'];     // 4-3, 4-4 are added here when built
+  var MODULE_IDS = ['4-1', '4-2', '4-3'];     // 4-4 is added here when built
   var PATTERN_IDS = ['organize', 'communicate', 'research', 'create', 'operate'];
   var EVIDENCE = ['regularly', 'done_before', 'some_exposure', 'not_done_yet'];   // named answers, NOT levels
   var EXP_SOURCES = ['work', 'business', 'school', 'freelance', 'community', 'family', 'previous-va', 'other'];
   var MAX_EXPERIENCES = 30, MAX_TASKS = 40, LABEL_MAX = 140, SHORT_NOTE_MAX = 300;
   var ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
   var NOTE_MAX = 1000;
+
+  /* Module 4.3 (spec v1.5). DIRECTION_IDS must equal PVA_M41.DIRECTIONS in order
+     (checked by a parity test); it is the locked, neutral display order. */
+  var DIRECTION_IDS = ['dir-general-admin', 'dir-customer-support', 'dir-ecommerce', 'dir-amazon', 'dir-bookkeeping',
+    'dir-social-content', 'dir-executive-assistant', 'dir-real-estate', 'dir-lead-generation', 'dir-technical', 'dir-ndis'];
+  var JUDGMENTS = ['explore_further', 'unsure', 'not_now'];   // never written to workClues
+  var LIMITS_43 = { reason: 300, whatMayBeNew: 1000, question: 140, questions: 10, undecidedNote: 300, selected: 2 };
 
   var storageOK = true;
   var state = fresh();
@@ -136,6 +153,8 @@
     if (isObj(raw.modules)) {
       if (isObj(raw.modules['4-1'])) out.modules['4-1'] = normalize41(raw.modules['4-1']);
       if (isObj(raw.modules['4-2'])) out.modules['4-2'] = normalize42(raw.modules['4-2']);
+      /* after 4.2, so references to deleted or invalid 4.2 tasks are dropped */
+      if (isObj(raw.modules['4-3'])) out.modules['4-3'] = normalize43(raw.modules['4-3'], out.modules['4-2']);
     }
     if (isObj(raw._meta)) out._meta.updatedAt = strOrNull(raw._meta.updatedAt);
     return out;
@@ -197,16 +216,82 @@
     return out;
   }
 
-  /* Schema migration. v1 (4.1 only) → v2 (adds modules["4-2"]): nothing in v1
-     changes meaning, so the step only bumps the version. Unknown or newer
-     versions are rejected. */
+  /* ---- 4.3 validation (spec v1.5 §4). Learner text is cleaned with cleanText()
+     like every Stage 4 text field and is never otherwise discarded. ---- */
+  function taskIdSet(m42) {
+    var set = {};
+    if (m42 && Array.isArray(m42.experiences)) m42.experiences.forEach(function (x) { x.tasks.forEach(function (t) { set[t.id] = 1; }); });
+    return set;
+  }
+  /* D16 four-case table: real text wins (flag off); blank text never counts, so an
+     explicit skip stands; otherwise neither answer is active. */
+  function normalizeReason(rawReason, rawSkipped) {
+    var r = cleanText(rawReason, LIMITS_43.reason);
+    if (r) return { reason: r, reasonSkipped: false };
+    return { reason: '', reasonSkipped: rawSkipped === true };
+  }
+  function normalizeQuestions(list) {
+    var out = [];
+    if (Array.isArray(list)) list.forEach(function (q) { var c = cleanText(q, LIMITS_43.question); if (c && out.length < LIMITS_43.questions) out.push(c); });
+    return out;
+  }
+  function normalizeExploration(x, tasks) {
+    if (!isObj(x) || DIRECTION_IDS.indexOf(x.directionId) < 0) return null;
+    var rs = normalizeReason(x.reason, x.reasonSkipped);
+    return {
+      directionId: x.directionId,
+      judgment: JUDGMENTS.indexOf(x.judgment) >= 0 ? x.judgment : null,   // invalid value dropped, text kept
+      reason: rs.reason,
+      reasonSkipped: rs.reasonSkipped,
+      relatedEvidenceIds: idList(x.relatedEvidenceIds, MAX_EXPERIENCES * MAX_TASKS).filter(function (id) { return tasks[id] === 1; }),
+      whatMayBeNew: cleanText(x.whatMayBeNew, LIMITS_43.whatMayBeNew),
+      learningQuestions: normalizeQuestions(x.learningQuestions),
+      savedAt: strOrNull(x.savedAt)
+    };
+  }
+  function isSavedExploration(x) { return !!(x && x.judgment && x.savedAt); }
+  function normalize43(e, m42) {
+    var tasks = taskIdSet(m42);
+    var out = defaultModule('4-3');
+    out.lastSection = isId(e.lastSection) ? e.lastSection : null;
+    out.completedAt = strOrNull(e.completedAt);
+    out.reviewedWorkClues = e.reviewedWorkClues === true;
+    out.reviewedEvidence = e.reviewedEvidence === true;
+    out.examinedDirectionIds = idList(e.examinedDirectionIds, DIRECTION_IDS.length).filter(function (id) { return DIRECTION_IDS.indexOf(id) >= 0; });
+    if (Array.isArray(e.directionExplorations)) {
+      var seen = {};
+      e.directionExplorations.forEach(function (x) {
+        var n = normalizeExploration(x, tasks);
+        if (n && !seen[n.directionId]) { seen[n.directionId] = 1; out.directionExplorations.push(n); }
+      });
+    }
+    function saved(id) { for (var i = 0; i < out.directionExplorations.length; i++) if (out.directionExplorations[i].directionId === id) return isSavedExploration(out.directionExplorations[i]); return false; }
+    out.decisionReached = e.decisionReached === true;
+    out.selectedDirectionIds = idList(e.selectedDirectionIds, DIRECTION_IDS.length).filter(saved).slice(0, LIMITS_43.selected);
+    out.undecided = e.undecided === true && out.selectedDirectionIds.length === 0;   // never both; the selection stands
+    out.undecidedNote = cleanText(e.undecidedNote, LIMITS_43.undecidedNote);        // kept even if not undecided
+    return out;
+  }
+
+  /* Schema migration. v1 (4.1 only) → v2 (adds modules["4-2"]) → v3 (adds
+     modules["4-3"]): earlier fields never change meaning, so each step only bumps
+     the version. Unknown or newer versions are rejected. */
   function migrate(raw) {
     if (!isObj(raw)) return null;
     var v = raw.schemaVersion;
     if (typeof v !== 'number' || v < 1 || v > SCHEMA_VERSION || Math.floor(v) !== v) return null;
     var m = {};
     Object.keys(raw).forEach(function (k) { m[k] = raw[k]; });
-    if (v === 1) { m.schemaVersion = 2; }
+    if (v < 3) {
+      /* v1 → v2 → v3: nothing in v1/v2 changes meaning. A "4-3" key in older data was
+         never written by any release, so it is not trusted as 4.3 data. */
+      if (isObj(m.modules) && m.modules['4-3'] !== undefined) {
+        var mods = {};
+        Object.keys(m.modules).forEach(function (k) { if (k !== '4-3') mods[k] = m.modules[k]; });
+        m.modules = mods;
+      }
+      m.schemaVersion = 3;
+    }
     return m;
   }
 
@@ -349,6 +434,8 @@
   /* ---------- module state ---------- */
   function defaultModule(id) {
     if (id === '4-2') return { lastSection: null, snapshotReached: false, completedAt: null, experiences: [] };
+    if (id === '4-3') return { lastSection: null, completedAt: null, reviewedWorkClues: false, reviewedEvidence: false,
+      examinedDirectionIds: [], directionExplorations: [], decisionReached: false, undecided: false, undecidedNote: '', selectedDirectionIds: [] };
     return { lastSection: null, directionsReviewed: false, completedAt: null };
   }
   function mod(id) {
@@ -408,6 +495,100 @@
     persist();
   }
   function setSnapshotReached() { var m = mod('4-2'); if (!m.snapshotReached) { m.snapshotReached = true; persist(); } }
+
+  /* ---------- 4.3 (spec v1.5). Only learner choices and learner text are stored;
+     4.1 Work Clues and 4.2 tasks are read, never copied or changed. ---------- */
+  function m43() { return mod('4-3'); }
+  function currentTaskIds() { return taskIdSet(state.modules['4-2']); }   // read-only: never creates 4.2 state
+  function findExploration(dirId) {
+    var xs = state.modules['4-3'] ? state.modules['4-3'].directionExplorations : [];
+    for (var i = 0; i < xs.length; i++) if (xs[i].directionId === dirId) return xs[i];
+    return null;
+  }
+  function ensureExploration(dirId) {
+    if (DIRECTION_IDS.indexOf(dirId) < 0) return null;
+    var x = findExploration(dirId);
+    if (!x) {
+      x = { directionId: dirId, judgment: null, reason: '', reasonSkipped: false, relatedEvidenceIds: [], whatMayBeNew: '', learningQuestions: [], savedAt: null };
+      m43().directionExplorations.push(x);
+    }
+    return x;
+  }
+  function flag43(name) { var m = m43(); if (!m[name]) { m[name] = true; persist(); } }
+  function examineDirection(dirId) {
+    if (DIRECTION_IDS.indexOf(dirId) < 0) return false;
+    var m = m43();
+    if (m.examinedDirectionIds.indexOf(dirId) < 0) { m.examinedDirectionIds.push(dirId); persist(); }
+    return true;
+  }
+  function setJudgment(dirId, judgment) {
+    if (judgment !== null && JUDGMENTS.indexOf(judgment) < 0) return false;
+    var x = ensureExploration(dirId); if (!x) return false;
+    x.judgment = judgment; persist(); return true;            // learning questions are never touched here
+  }
+  /* D16 rule 1 / 5: real text is saved and switches the skip flag off; blank text is not a reason. */
+  function setReason(dirId, text) {
+    var x = ensureExploration(dirId); if (!x) return false;
+    var c = cleanText(text, LIMITS_43.reason);
+    if (c) { x.reason = c; x.reasonSkipped = false; } else { x.reason = ''; }
+    persist(); return true;
+  }
+  /* D16 rules 2–3: choosing "I don't have a reason to add yet". A written reason is only
+     removed when the caller passes { confirmed: true } after asking the learner. */
+  function skipReason(dirId, opts) {
+    var x = ensureExploration(dirId); if (!x) return 'invalid';
+    if (x.reason && !(opts && opts.confirmed === true)) return 'needs-confirm';
+    x.reason = ''; x.reasonSkipped = true; persist(); return 'skipped';
+  }
+  function unskipReason(dirId) { var x = findExploration(dirId); if (x && x.reasonSkipped) { x.reasonSkipped = false; persist(); } }
+  function setEvidence(dirId, taskId, on) {
+    if (on && !currentTaskIds()[taskId]) return false;
+    var x = ensureExploration(dirId); if (!x) return false;
+    var i = x.relatedEvidenceIds.indexOf(taskId);
+    if (on && i < 0) x.relatedEvidenceIds.push(taskId);
+    if (!on && i >= 0) x.relatedEvidenceIds.splice(i, 1);
+    persist(); return true;
+  }
+  function setWhatMayBeNew(dirId, text) { var x = ensureExploration(dirId); if (!x) return false; x.whatMayBeNew = cleanText(text, LIMITS_43.whatMayBeNew); persist(); return true; }
+  function addQuestion(dirId, text) {
+    var x = ensureExploration(dirId); if (!x) return false;
+    var c = cleanText(text, LIMITS_43.question);
+    if (!c || x.learningQuestions.length >= LIMITS_43.questions) return false;
+    x.learningQuestions.push(c); persist(); return true;
+  }
+  /* Editing never deletes: blank text is refused. Only removeQuestion deletes. */
+  function updateQuestion(dirId, index, text) {
+    var x = findExploration(dirId); if (!x || index < 0 || index >= x.learningQuestions.length) return false;
+    var c = cleanText(text, LIMITS_43.question); if (!c) return false;
+    x.learningQuestions[index] = c; persist(); return true;
+  }
+  function removeQuestion(dirId, index) {
+    var x = findExploration(dirId); if (!x || index < 0 || index >= x.learningQuestions.length) return false;
+    x.learningQuestions.splice(index, 1); persist(); return true;
+  }
+  function saveReflection(dirId) {
+    var x = findExploration(dirId); if (!x || !x.judgment) return false;
+    x.savedAt = new Date().toISOString(); persist(); return true;
+  }
+  function setSelected(dirId, on) {
+    var m = m43(), i = m.selectedDirectionIds.indexOf(dirId);
+    if (on) {
+      if (i >= 0) return true;
+      if (!isSavedExploration(findExploration(dirId)) || m.selectedDirectionIds.length >= LIMITS_43.selected) return false;
+      m.selectedDirectionIds.push(dirId); m.undecided = false;
+    } else if (i >= 0) m.selectedDirectionIds.splice(i, 1);
+    persist(); return true;
+  }
+  function setUndecided(on) { var m = m43(); m.undecided = !!on; if (on) m.selectedDirectionIds = []; persist(); }
+  function setUndecidedNote(text) { m43().undecidedNote = cleanText(text, LIMITS_43.undecidedNote); persist(); }
+  /* Current 4.2 tasks the learner chose for this direction, in 4.2's own order.
+     Deleted tasks simply no longer appear (read-time filter; 4.2 deletion is unchanged). */
+  function relatedTasks(dirId) {
+    var x = findExploration(dirId), out = [], m42 = state.modules['4-2'];
+    if (!x || !m42) return out;
+    m42.experiences.forEach(function (e) { e.tasks.forEach(function (t) { if (x.relatedEvidenceIds.indexOf(t.id) >= 0) out.push({ experience: e, task: t }); }); });
+    return out;
+  }
 
   /* ---------- observations ---------- */
   function findObs(list, key, id) { for (var i = 0; i < list.length; i++) if (list[i][key] === id) return list[i]; return null; }
@@ -473,7 +654,22 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
   }
 
-  function exportProgress(summaryFn) {
+  /* One combined, informational backup summary (spec v1.5 §4, decision 5). Restore never
+     reads it. 4.3 contributes only a completion flag: no counts of directions,
+     judgments or tasks, so the summary can never become a tally or profile. */
+  function summaryOf(st) {
+    var m = st.modules || {};
+    return {
+      workClues: st.workClues.length,
+      module41Complete: !!(m['4-1'] && m['4-1'].completedAt),
+      module42Complete: !!(m['4-2'] && m['4-2'].completedAt),
+      module43Complete: !!(m['4-3'] && m['4-3'].completedAt),
+      experiences: m['4-2'] ? m['4-2'].experiences.length : 0,
+      schemaVersion: st.schemaVersion
+    };
+  }
+
+  function exportProgress() {
     /* Guard: while saving is paused, the learner's real progress is the protected
        stored data, not this page's in-memory state, so that is what they get. */
     if (blocked) { downloadSavedData(); return; }
@@ -481,7 +677,7 @@
       format: BACKUP_FORMAT, version: BACKUP_VERSION, course: COURSE_NAME, storageKey: STORAGE_KEY,
       exportedAt: new Date().toISOString(),
       note: 'Progress backup for PVA Academy Stage 4: Find Your Direction only. Restore it on the Stage 4 home page, Progress page, or inside a module to bring your Work Clues back in this or another browser.',
-      summary: summaryFn ? summaryFn(state) : { workClues: state.workClues.length },
+      summary: summaryOf(state),   // one shared summary for every page (spec v1.5 decision 5)
       data: state
     };
     downloadJson(payload, 'Find-Your-Direction-progress-backup-' + new Date().toISOString().slice(0, 10) + '.json');
@@ -514,6 +710,7 @@
         '\nModule 4.1: ' + (r.modules['4-1'] && r.modules['4-1'].completedAt ? 'complete' : 'in progress or not started') +
         '\nModule 4.2: ' + (r.modules['4-2'] && r.modules['4-2'].completedAt ? 'complete' : 'in progress or not started') +
         ' (' + (r.modules['4-2'] ? r.modules['4-2'].experiences.length : 0) + ' experiences)' +
+        '\nModule 4.3: ' + (r.modules['4-3'] && r.modules['4-3'].completedAt ? 'complete' : 'in progress or not started') +
         '\n\nRestoring REPLACES the Stage 4 progress currently saved in this browser.' +
         (blocked ? '\n\n' + GUARD.replaceWarning : '') +
         '\n\nPress OK to replace and restore, or Cancel.';
@@ -549,7 +746,7 @@
     var re = document.querySelectorAll('[data-restore]');
     var cl = document.querySelectorAll('[data-clear]');
     var file = document.getElementById('restoreFile');
-    ex.forEach(function (b) { b.addEventListener('click', function () { exportProgress(opts.summary); }); });
+    ex.forEach(function (b) { b.addEventListener('click', function () { exportProgress(); }); });
     re.forEach(function (b) { b.addEventListener('click', function () { if (file) { file.value = ''; file.click(); } }); });
     if (file) file.addEventListener('change', function () { restoreFromFile(file.files[0], opts.afterRestore || function () { location.reload(); }); });
     cl.forEach(function (b) { b.addEventListener('click', function () { clearProgress(opts.afterClear || function () { location.reload(); }); }); });
@@ -563,6 +760,7 @@
     storageOK: function () { return storageOK; },
     saveBlocked: function () { return blocked ? blocked.reason : null; },   // 'newer' | 'unreadable' | null
     downloadSavedData: downloadSavedData,
+    SUMMARY: summaryOf,
     onChange: function (fn) { listeners.push(fn); },
     module: function (id) { return state.modules[id] || defaultModule(id); },
     setLastSection: setLastSection, setDirectionsReviewed: setDirectionsReviewed, markModuleComplete: markModuleComplete,
@@ -575,6 +773,18 @@
     directionsWithReaction: directionsWithReaction,
     exportProgress: exportProgress, validateBackup: validateBackup, restoreFromFile: restoreFromFile, clearProgress: clearProgress,
     wireTools: wireTools,
+    DIRECTION_IDS: DIRECTION_IDS.slice(), JUDGMENTS: JUDGMENTS.slice(), LIMITS_43: LIMITS_43,
+    m43: {
+      exploration: findExploration, isSaved: isSavedExploration, relatedTasks: relatedTasks,
+      setReviewedWorkClues: function () { flag43('reviewedWorkClues'); },
+      setReviewedEvidence: function () { flag43('reviewedEvidence'); },
+      setDecisionReached: function () { flag43('decisionReached'); },
+      examine: examineDirection, setJudgment: setJudgment,
+      setReason: setReason, skipReason: skipReason, unskipReason: unskipReason,
+      setEvidence: setEvidence, setWhatMayBeNew: setWhatMayBeNew,
+      addQuestion: addQuestion, updateQuestion: updateQuestion, removeQuestion: removeQuestion,
+      saveReflection: saveReflection, setSelected: setSelected, setUndecided: setUndecided, setUndecidedNote: setUndecidedNote
+    },
     _state: function () { return state; }
   };
 })();

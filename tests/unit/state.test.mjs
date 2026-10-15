@@ -5,11 +5,10 @@
    the unchanged code (that failure is the proof of the data-loss bug). */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { openPage, settle, plain, KEY } from '../helpers/env.mjs';
 import * as F from '../fixtures/fixtures.mjs';
 
-const golden = (name) => JSON.parse(readFileSync(new URL('../fixtures/golden/' + name, import.meta.url), 'utf8'));
+import { goldenNow as golden } from '../helpers/golden.mjs';
 const withProfile = (profile, extra = {}) => openPage({ page: 'state', storage: { [KEY]: JSON.stringify(profile) }, ...extra });
 const withRaw = (raw, extra = {}) => openPage({ page: 'state', storage: { [KEY]: raw }, ...extra });
 const json = (o) => JSON.stringify(o);
@@ -18,7 +17,7 @@ describe('BASELINE · loading and migration', () => {
   test('B1 v1 profile loads exactly as the unchanged code loaded it (golden)', () => {
     const p = withProfile(F.profileV1);
     assert.deepEqual(plain(p.S._state()), golden('profileV1.load.json'));
-    assert.equal(p.S._state().schemaVersion, 2);
+    assert.equal(p.S._state().schemaVersion, F.EXPECTED.schema);
     assert.equal(p.errors.length, 0, p.errors.join('\n'));
   });
   test('B2 full v2 profile (4.1 + 4.2 complete) loads unchanged (golden)', () => {
@@ -35,7 +34,7 @@ describe('BASELINE · loading and migration', () => {
     assert.equal(p.raw(), null);
     assert.equal(p.bannerVisible(), false);
     p.S.markExplored('dir-ndis');
-    assert.equal(p.stored().schemaVersion, 2);
+    assert.equal(p.stored().schemaVersion, F.EXPECTED.schema);
     assert.deepEqual(p.stored().exploredDirections, ['dir-ndis']);
   });
 });
@@ -56,7 +55,7 @@ describe('BASELINE · saving keeps existing learner data', () => {
     const p = withProfile(F.profileV1);
     p.S.markExplored('dir-ndis');
     const s = p.stored();
-    assert.equal(s.schemaVersion, 2);
+    assert.equal(s.schemaVersion, F.EXPECTED.schema);
     assert.deepEqual(s.modules['4-1'], F.profileV1.modules['4-1']);
     assert.equal(s.workClues.length, F.profileV1.workClues.length);
   });
@@ -148,7 +147,7 @@ describe('BASELINE · Export / Restore / Clear', () => {
     assert.match(p.downloads[0].filename, /^Find-Your-Direction-progress-backup-\d{4}-\d\d-\d\d\.json$/);
     const b = JSON.parse(await p.downloadText(0));
     assert.equal(b.format, F.BACKUP_FORMAT);
-    assert.equal(b.version, 2);
+    assert.equal(b.version, F.EXPECTED.backup);
     assert.equal(b.storageKey, KEY);
     assert.deepEqual(b.data.modules, golden('profileV2Full.load.json').modules);
     assert.equal(p.S.validateBackup(b).ok, true, 'an export restores');
@@ -179,7 +178,7 @@ describe('BASELINE · storage unavailable', () => {
 /* GUARD (Phase 0). Expected to FAIL on the unchanged code 33c4e04.   */
 /* ------------------------------------------------------------------ */
 const UNREADABLE = {
-  'newer schema (v3)': F.RAW.v3,
+  'newer schema': F.RAW.newer,
   'malformed JSON': F.RAW.malformed,
   'schemaVersion is a string': F.RAW.versionString,
   'schemaVersion 0': F.RAW.versionZero,
@@ -199,7 +198,7 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
     });
   }
   test('G2 the page says why saving is paused and offers "Download saved data"', () => {
-    const p = withRaw(F.RAW.v3);
+    const p = withRaw(F.RAW.newer);
     assert.equal(p.bannerVisible(), true);
     assert.match(p.bannerText(), /newer version/i);
     const btn = p.$$('#storageBanner button').find((b) => /Download saved data/.test(b.textContent));
@@ -214,14 +213,14 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
     assert.match(p.bannerText(), /could not be read/i);
   });
   test('G4 "Download saved data" for newer data gives a backup a newer version can restore', async () => {
-    const p = withRaw(F.RAW.v3);
+    const p = withRaw(F.RAW.newer);
     p.$$('#storageBanner button').find((b) => /Download saved data/.test(b.textContent)).click();
     assert.equal(p.downloads.length, 1);
     assert.match(p.downloads[0].filename, /^Find-Your-Direction-saved-data-\d{4}-\d\d-\d\d\.json$/);
     const b = JSON.parse(await p.downloadText(0));
     assert.equal(b.format, F.BACKUP_FORMAT);
-    assert.ok(b.version <= 2, 'wrapper version this and later versions accept');
-    assert.deepEqual(b.data, F.profileV3Future, 'saved data is carried exactly as stored');
+    assert.ok(b.version <= F.EXPECTED.backup, 'wrapper version this and later versions accept');
+    assert.deepEqual(b.data, F.profileNewer, 'saved data is carried exactly as stored');
     assert.equal(p.S.validateBackup(b).ok, false, 'this version still refuses to apply it');
   });
   test('G5 "Download saved data" for unreadable text keeps the exact stored text', async () => {
@@ -234,61 +233,61 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
   test('G6 another tab (or newer version) writes newer data mid-session: this tab stops saving instead of overwriting', () => {
     const p = withProfile(F.profileV2Full);
     p.S.markExplored('dir-ndis');
-    assert.equal(p.stored().schemaVersion, 2, 'normal saving before the other tab writes');
-    p.window.localStorage.setItem(KEY, F.RAW.v3);
+    assert.equal(p.stored().schemaVersion, F.EXPECTED.schema, 'normal saving before the other tab writes');
+    p.window.localStorage.setItem(KEY, F.RAW.newer);
     p.S.setReaction('direction', 'dir-amazon', 'unsure');
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
     assert.equal(p.S.saveBlocked(), 'newer');
     assert.equal(p.bannerVisible(), true);
   });
   test('G7 Clear while blocked warns about the unreadable data; Cancel keeps it', () => {
-    const p = withRaw(F.RAW.v3, { confirm: false });
+    const p = withRaw(F.RAW.newer, { confirm: false });
     p.S.clearProgress(() => {});
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
     assert.match(p.dialogs.confirms[0], /Download saved data/);
   });
   test('G8 Clear while blocked with OK removes it, lifts the guard, and saving resumes', () => {
-    const p = withRaw(F.RAW.v3, { confirm: true });
+    const p = withRaw(F.RAW.newer, { confirm: true });
     p.S.clearProgress(() => {});
     assert.equal(p.raw(), null);
     assert.equal(p.S.saveBlocked(), null);
     assert.equal(p.bannerVisible(), false);
     p.S.markExplored('dir-ndis');
-    assert.equal(p.stored().schemaVersion, 2);
+    assert.equal(p.stored().schemaVersion, F.EXPECTED.schema);
   });
   test('G9 Restore while blocked warns before replacing; Cancel keeps the unreadable data', async () => {
-    const p = withRaw(F.RAW.v3, { confirm: false });
+    const p = withRaw(F.RAW.newer, { confirm: false });
     assert.equal(await p.restoreText(json(F.backups.v2)), 'not-restored');
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
     assert.match(p.dialogs.confirms[0], /Download saved data/);
   });
   test('G10 Restore while blocked with OK replaces it and saving resumes', async () => {
-    const p = withRaw(F.RAW.v3, { confirm: true });
+    const p = withRaw(F.RAW.newer, { confirm: true });
     assert.equal(await p.restoreText(json(F.backups.v2)), 'restored');
-    assert.equal(p.stored().schemaVersion, 2);
+    assert.equal(p.stored().schemaVersion, F.EXPECTED.schema);
     assert.equal(p.S.saveBlocked(), null);
     p.S.markExplored('dir-ndis');
     assert.ok(p.stored().exploredDirections.includes('dir-ndis'));
   });
   test('G11 a second tab opened later is also blocked and also leaves the data alone', () => {
-    const a = withRaw(F.RAW.v3);
+    const a = withRaw(F.RAW.newer);
     const b = a.reopen('state');
     b.S.addExperience('family');
-    assert.equal(b.raw(), F.RAW.v3);
+    assert.equal(b.raw(), F.RAW.newer);
   });
   test('G12 Export Progress while blocked hands over the protected saved data, not an empty page state', async () => {
-    const p = withRaw(F.RAW.v3);
+    const p = withRaw(F.RAW.newer);
     p.S.addExperience('work');          // in-memory only
     p.S.exportProgress();
     const b = JSON.parse(await p.downloadText(0));
-    assert.deepEqual(b.data, F.profileV3Future);
+    assert.deepEqual(b.data, F.profileNewer);
   });
   test('G13 Clear after another tab saved newer data shows the guard warning, not the ordinary one', () => {
     const p = withProfile(F.profileV2Full, { confirm: false });
-    p.window.localStorage.setItem(KEY, F.RAW.v3);
+    p.window.localStorage.setItem(KEY, F.RAW.newer);
     p.S.clearProgress(() => {});
     assert.match(p.dialogs.confirms[0], /Download saved data/);
-    assert.equal(p.raw(), F.RAW.v3);
+    assert.equal(p.raw(), F.RAW.newer);
   });
   test('G15 key present with an empty string at load: treated as unreadable, kept, guard shown, download offered', async () => {
     const p = withRaw('');
@@ -310,7 +309,7 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
   test('G16 stored value changes to an empty string before a save: this tab stops instead of overwriting it', () => {
     const p = withProfile(F.profileV2Full);
     p.S.markExplored('dir-ndis');
-    assert.equal(p.stored().schemaVersion, 2, 'normal saving first');
+    assert.equal(p.stored().schemaVersion, F.EXPECTED.schema, 'normal saving first');
     p.window.localStorage.setItem(KEY, '');
     p.S.setReaction('direction', 'dir-amazon', 'unsure');
     assert.equal(p.raw(), '');
@@ -331,7 +330,7 @@ describe('GUARD · saved progress that cannot be read is never overwritten', () 
       p.S.markExplored('dir-ndis');
       assert.equal(p.S.saveBlocked(), null);
       assert.equal(p.bannerVisible(), false);
-      assert.equal(p.stored().schemaVersion, 2);
+      assert.equal(p.stored().schemaVersion, F.EXPECTED.schema);
     }
   });
 });

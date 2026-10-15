@@ -211,3 +211,32 @@ a.s4-next-live:hover{background:var(--green-soft)}
 .s4-progression-list{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0 4px}
 .s4-progression-list dt{font:700 .9rem Fraunces,Georgia,serif;color:var(--green)}
 .s4-progression-list dd{margin:0}
+
+/* ---------- Module 4.3 (spec v1.5) — additions only ---------- */
+.s43-part{margin-top:14px}
+.s43-examine-title{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.s43-card .s4-dir-headtext,.s43-card .s4-dir-details{display:block}
+.s43-task{display:flex;gap:10px;align-items:flex-start;padding:8px 0}
+.s43-task input,.s43-skip input,.s43-pickdir input,.s43-undecided input{margin-top:4px}
+.s43-judgment{border:0;padding:0;margin:0}
+.s43-judgment legend{font-weight:700;margin-bottom:8px}
+.s43-judgment .s4-rx{border-radius:12px;align-items:flex-start;text-align:left}
+.s43-judgment-note{margin-top:10px}
+.s43-guidance{background:var(--cream);border-left:4px solid var(--line);padding:6px 12px;margin:8px 0;border-radius:0 8px 8px 0}
+.s43-guidance ul,.s43-lq-examples{margin:4px 0 4px 18px}
+.s43-skip,.s43-undecided{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+.s43-qlist{padding-left:22px}
+.s43-qlist li{display:flex;gap:8px;align-items:center;margin:6px 0}
+.s43-qlist li input{flex:1;min-width:0}
+.s43-summary{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.s43-summary dt,.s43-compare-stacked dt{font-weight:700;margin-top:8px}
+.s43-summary dd,.s43-compare-stacked dd{margin:2px 0 0}
+.s43-compare-table table{width:100%;border-collapse:collapse}
+.s43-compare-table th,.s43-compare-table td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.s43-compare-table thead th{background:var(--cream)}
+.s43-compare-table td ul,.s43-compare-stacked dd ul{margin:0;padding-left:18px}
+.s43-compare-stacked{display:none}
+@media(max-width:959px){
+  .s43-compare-table{display:none}
+  .s43-compare-stacked{display:block}
+}

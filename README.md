@@ -1,4 +1,4 @@
-# PVA Academy — Stage 4: Find Your Direction · 4.1 v1.1 · 4.2 v1.1
+# PVA Academy — Stage 4: Find Your Direction · 4.1 v1.1 · 4.2 v1.1 · 4.3 v1.0
 
 Stage 4 of the PVA Beginner VA Journey. **One integrated Stage 4 course** that will hold
 4.1–4.4. Only Module 4.1 (Understanding VA Work Directions) is built; 4.2–4.4 show as
@@ -104,7 +104,7 @@ Before the guard, opening 4.1 or 4.2 with newer data replaced it with an empty p
 ```text
 cd tests
 npm install                 # jsdom + Playwright library (no browsers downloaded)
-npm test                    # unit (state.js) + page tests (hub, Progress, 4.1, 4.2) in jsdom
+npm test                    # unit (state.js) + page tests (hub, Progress, 4.1, 4.2, 4.3) in jsdom
 npx playwright install chromium && npm run test:e2e   # real-browser suite: layout, keyboard, downloads
 ```
 - `tests/` is outside `public/` (never deployed) and has its own `package.json` (the repo root has none,
@@ -113,3 +113,32 @@ npx playwright install chromium && npm run test:e2e   # real-browser suite: layo
   data. **Do not regenerate it** to make a change pass; a golden failure means existing data would be read
   differently.
 - Recorded runs are in `tests/results/`.
+
+## Module 4.3 — Exploring Possible Directions (v1.0)
+- Page: `public/4-3/index.html`; logic `public/shared/m43.js`; styles appended to `stage4.css` (`.s43-*`).
+- Source of truth: `docs/PVA_Module_4.3_Production_Specification_v1.5.md` (approved), with the locked
+  `docs/PVA_Module_4.3_Design_Brief_v0.3_LOCKED.md` as design authority. Build record: `BUILD_REPORT_4.3.md`.
+- State: **schema v3**, backup wrapper v3 (wrappers 1–3 accepted). `modules["4-3"] = { lastSection, completedAt,
+  reviewedWorkClues, reviewedEvidence, examinedDirectionIds[], decisionReached, undecided, undecidedNote,
+  selectedDirectionIds[] (0–2), directionExplorations: [{ directionId, judgment, reason, reasonSkipped,
+  relatedEvidenceIds[], whatMayBeNew, learningQuestions[], savedAt }] }`. Judgments are `explore_further | unsure |
+  not_now` and are never written to Work Clues. 4.2 tasks are referenced by ID only; references to deleted tasks are
+  dropped on load and hidden at once. Limits: reason 300, what may be new 1000, question 140 (max 10 per
+  direction), undecided note 300.
+- All 4.3 writes go through `PVAS4.m43`. D16 (reason switching) is enforced there: a written reason is only removed
+  with `{ confirmed: true }` after the learner confirms. Stored reasons are normalized by the spec's four-case table.
+- One shared backup summary for every page (`summaryOf` in `state.js`); Restore never reads it.
+- Migration: v1/v2 data and backups load unchanged; a `"4-3"` key in v1/v2 data is dropped (no release wrote it).
+- Completion: explicit **Save and finish Module 4.3** once the seven spec criteria are met; kept once set.
+- Assets load with `?v=4.3.0` (cache-busting). Bump it on every release that changes shared files.
+
+## 4.3 release checklist (owner decisions)
+1. The Phase 0 guard release `ee27fd0` must have been live long enough for returning learners to receive it
+   (rollback policy). Under that guard, v3 progress is protected ("newer"), never overwritten.
+2. Owner runs `npm test` and `npm run test:e2e` locally. (Done 15 Oct 2026: 168/168 and 37/37.)
+3. Owner manual check on `localhost`, then merge `module-4-3` to `main` (Cloudflare deploys from `main`).
+4. After deploy: hard-reload the live site and check `PVAS4.SCHEMA_VERSION === 3` and `typeof PVAS4.m43 === "object"`.
+5. Once v3 is live, the oldest version that may be redeployed is still the guard release `ee27fd0`. Any release from
+   `ee27fd0` up to (not including) the 4.3 merge treats 4.3 progress as newer data: protected and read-only, never
+   lost (tested: `tests/unit/state43.test.mjs` RB1–RB2). Never redeploy anything older than `ee27fd0`.
+

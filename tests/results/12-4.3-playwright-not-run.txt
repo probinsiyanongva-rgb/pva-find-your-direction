@@ -1,0 +1,47 @@
+# Module 4.3 · Playwright suite: 4.3 additions NOT RUN in the build workspace
+# 2026-10-14T22:59:01Z · @playwright/test 1.64.0
+
+## Browser install attempt (npx playwright install chromium):
+Error: Download failed: server returned code 403 body 'request blocked: no rule or allowlist entry allows host "cdn.playwright.dev"'. URL: https://cdn.playwright.dev/builds/cft/156.0.8078.4/linux64/ch
+
+## Suite collects (37 tests; E1-E9 = the 27 that passed on the owner's machine on 14 Oct, now incl. 4.3 in E1/E6; E10-E14 new). None executed here:
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 hub at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 progress at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.1 at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.2 at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.3 at 390px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.3 at 820px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.3 at 1366px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:32:7 › BASELINE · pages load cleanly and fit every width › E1 4.3 at 1600px: no console errors, no horizontal scroll
+  [chromium] › stage4.spec.mjs:47:3 › BASELINE · Module 4.1 in a real browser › E2 Direction Cards render in canonical order
+  [chromium] › stage4.spec.mjs:52:3 › BASELINE · Module 4.1 in a real browser › E3 a new learner completes 4.1 and it survives a reload
+  [chromium] › stage4.spec.mjs:75:3 › BASELINE · Module 4.2 in a real browser › E4 a learner with 4.1 done completes 4.2
+  [chromium] › stage4.spec.mjs:91:3 › BASELINE · Module 4.2 in a real browser › E5 Export from the hub downloads a backup that restores
+  [chromium] › stage4.spec.mjs:104:5 › GUARD · newer saved progress is protected in a real browser › E6 hub: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:104:5 › GUARD · newer saved progress is protected in a real browser › E6 progress: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:104:5 › GUARD · newer saved progress is protected in a real browser › E6 4.1: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:104:5 › GUARD · newer saved progress is protected in a real browser › E6 4.2: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:104:5 › GUARD · newer saved progress is protected in a real browser › E6 4.3: opening with newer data leaves it untouched and shows Download saved data
+  [chromium] › stage4.spec.mjs:115:3 › GUARD · newer saved progress is protected in a real browser › E7 the Download saved data button is reachable by keyboard and downloads the exact data
+  [chromium] › stage4.spec.mjs:126:3 › GUARD · newer saved progress is protected in a real browser › E8 working through 4.1 while blocked never writes, even after a reload
+  [chromium] › stage4.spec.mjs:133:3 › GUARD · newer saved progress is protected in a real browser › E9 guard banner fits at 390px
+  [chromium] › stage4.spec.mjs:148:3 › 4.3 · real browser › E10 a new learner completes 4.3 by staying undecided; no console errors; 4.4 is not a link
+  [chromium] › stage4.spec.mjs:171:3 › 4.3 · real browser › E11 the comparison is a table on wide screens and stacked under 960px, with no horizontal scroll
+  [chromium] › stage4.spec.mjs:186:3 › 4.3 · real browser › E12 keyboard: open a direction, choose a judgment, and Cancel the remove-reason dialog (reason kept)
+  [chromium] › stage4.spec.mjs:207:3 › 4.3 · real browser › E13 the 4.3 Direction Card fits at 390px and the guidance prompts are not focusable
+  [chromium] › stage4.spec.mjs:216:3 › 4.3 · real browser › E14 every page requests its shared assets with ?v=4.3.0 and all load
+Total: 37 tests in 1 file
+
+Run locally: cd tests && npm ci && npx playwright install chromium && npm run test:e2e
