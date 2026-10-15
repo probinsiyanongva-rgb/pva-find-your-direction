@@ -30,18 +30,19 @@ describe('4.3 · migration, schema v3 and round trip', () => {
     assert.deepEqual(plain(p.S._state()), goldenNow('profileV2Tampered.load.json'));
     assert.equal(m43(p), undefined);
   });
-  test('M3 first save after loading v2 writes schema 3 and keeps 4.1/4.2 exactly', () => {
+  /* Deliberate update for the 4.4 release: the current schema is EXPECTED.schema (4), not 3. */
+  test('M3 first save after loading v2 writes the current schema and keeps 4.1/4.2 exactly', () => {
     const p = withProfile(F.profileV2Full);
     p.S.m43.examine('dir-ndis');
     const s = p.stored();
-    assert.equal(s.schemaVersion, 3);
+    assert.equal(s.schemaVersion, F.EXPECTED.schema);
     assert.deepEqual(s.modules['4-1'], goldenNow('profileV2Full.load.json').modules['4-1']);
     assert.deepEqual(s.modules['4-2'], goldenNow('profileV2Full.load.json').modules['4-2']);
     assert.deepEqual(s.workClues, goldenNow('profileV2Full.load.json').workClues);
   });
-  test('M4 a valid v3 profile loads unchanged (normalization is idempotent)', () => {
+  test('M4 a valid v3 profile loads unchanged apart from the schema version (normalization is idempotent)', () => {
     const p = withProfile(F.profileV3Full);
-    assert.deepEqual(plain(p.S._state()), F.profileV3Full);
+    assert.deepEqual(plain(p.S._state()), { ...F.profileV3Full, schemaVersion: F.EXPECTED.schema });
     p.S.m43.examine('dir-ndis');
     const again = withProfile(p.stored());
     assert.deepEqual(plain(again.S._state()), p.stored());
@@ -51,15 +52,15 @@ describe('4.3 · migration, schema v3 and round trip', () => {
     a.S.exportProgress();
     const text = await a.downloadText(0);
     const b = JSON.parse(text);
-    assert.equal(b.version, 3);
-    assert.equal(b.data.schemaVersion, 3);
+    assert.equal(b.version, F.EXPECTED.backup);
+    assert.equal(b.data.schemaVersion, F.EXPECTED.schema);
     const fresh = openPage({ page: 'state' });
     assert.equal(await fresh.restoreText(text), 'restored');
     const s = fresh.stored(); const want = plain(a.S._state());
     delete s._meta; delete want._meta;
     assert.deepEqual(s, want);
   });
-  test('M6 wrappers v1–v3 restore; wrapper v4 and data schema 4 are rejected with state unchanged', async () => {
+  test('M6 wrappers v1–v3 restore; a newer wrapper and newer data are rejected with state unchanged', async () => {
     const p = openPage({ page: 'state' });
     for (const b of [F.backups.v1, F.backups.v2, F.backups.v3]) assert.equal(p.S.validateBackup(b).ok, true);
     assert.equal(p.S.validateBackup(F.backups.futureWrapper).ok, false);
@@ -345,9 +346,10 @@ describe('4.3 · learning questions and source records', () => {
 });
 
 describe('4.3 · shared backup summary', () => {
-  test('SU1 the combined summary has exactly the six specified fields; 4.3 adds only module43Complete', () => {
+  /* Deliberate update for the 4.4 release: module44Complete added (4.4 spec R-BK-2). */
+  test('SU1 the combined summary has exactly the specified fields; 4.3 adds only module43Complete', () => {
     const p = withProfile(F.profileV3Full);
-    assert.deepEqual(plain(p.S.SUMMARY(p.S._state())), { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: true, experiences: 2, schemaVersion: 3 });
+    assert.deepEqual(plain(p.S.SUMMARY(p.S._state())), { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: true, module44Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });
   });
   test('SU2 exportProgress() without a page function uses the shared summary', async () => {
     const p = withProfile(F.profileV3Full);

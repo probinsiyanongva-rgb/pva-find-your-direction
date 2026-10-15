@@ -51,7 +51,7 @@ describe('RELEASE · versioned asset URLs (cache-busting for the 4.3 release)', 
     const { openPage } = await import('../helpers/env.mjs');
     for (const name of Object.keys(PAGE_FILES)) {
       const p = openPage({ page: name });
-      assert.ok(p.S && p.S.SCHEMA_VERSION === 3, name + ' loaded state.js');
+      assert.ok(p.S && p.S.SCHEMA_VERSION === EXPECTED.schema, name + ' loaded state.js');
       assert.deepEqual(p.errors, [], name);
     }
   });

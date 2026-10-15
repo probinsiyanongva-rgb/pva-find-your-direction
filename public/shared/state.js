@@ -20,15 +20,21 @@
                   examinedDirectionIds[], decisionReached, undecided, undecidedNote,
                   selectedDirectionIds[],                                     // 0–2, the only store of the choice
                   directionExplorations: [{ directionId, judgment|null, reason, reasonSkipped,
-                    relatedEvidenceIds[], whatMayBeNew, learningQuestions[], savedAt }] }
+                    relatedEvidenceIds[], whatMayBeNew, learningQuestions[], savedAt }] },
+         "4-4": { lastSection, completedAt, whereIAmNow,                       // schema v4
+                  mapDirections: [{ directionId, nextStep }],                  // 0–2, learner order
+                  stillExploring, investigationStep }                          // step kept in every state
        },
        _meta: { updatedAt }
      }
 
    Schema history: v1 = 4.1 only. v2 = adds modules["4-2"]. v3 = adds
-   modules["4-3"] (Production Specification v1.5). Older data and backups
-   migrate unchanged (4.1/4.2 fields are never altered); a "4-3" key found in
-   v1/v2 data cannot be genuine 4.3 data and is dropped by the migration.
+   modules["4-3"] (Production Specification v1.5). v4 = adds modules["4-4"]
+   (4.4 Production Specification v1.0). Older data and backups migrate
+   unchanged (earlier fields are never altered); a "4-3" key found in v1/v2
+   data, or a "4-4" key found in v1–v3 data, cannot be genuine and is dropped.
+   4.4 stores only the map's own choices and text; it reads 4.1–4.3 and never
+   writes them.
    4.3 stores only learner choices and learner text: it references 4.2 tasks
    by ID (relatedEvidenceIds) and never copies Work Clues or tasks. Judgments
    (explore_further / unsure / not_now) are separate from Work Clue reactions.
@@ -53,13 +59,13 @@
 
   var STORAGE_KEY = 'pva-stage4-progress';
   var BACKUP_FORMAT = 'pva-stage4-progress-backup';
-  var BACKUP_VERSION = 3;          // backup wrapper; v1–v3 wrappers are accepted
-  var SCHEMA_VERSION = 3;          // data schema; v1/v2 data is migrated on load/restore
+  var BACKUP_VERSION = 4;          // backup wrapper; v1–v4 wrappers are accepted
+  var SCHEMA_VERSION = 4;          // data schema; v1–v3 data is migrated on load/restore
   var COURSE_NAME = 'PVA Academy — Stage 4: Find Your Direction';
 
   var SOURCE_TYPES = ['scenario', 'direction'];
   var REACTIONS = ['explore', 'unsure', 'not_for_me'];
-  var MODULE_IDS = ['4-1', '4-2', '4-3'];     // 4-4 is added here when built
+  var MODULE_IDS = ['4-1', '4-2', '4-3', '4-4'];
   var PATTERN_IDS = ['organize', 'communicate', 'research', 'create', 'operate'];
   var EVIDENCE = ['regularly', 'done_before', 'some_exposure', 'not_done_yet'];   // named answers, NOT levels
   var EXP_SOURCES = ['work', 'business', 'school', 'freelance', 'community', 'family', 'previous-va', 'other'];
@@ -73,6 +79,7 @@
     'dir-social-content', 'dir-executive-assistant', 'dir-real-estate', 'dir-lead-generation', 'dir-technical', 'dir-ndis'];
   var JUDGMENTS = ['explore_further', 'unsure', 'not_now'];   // never written to workClues
   var LIMITS_43 = { reason: 300, whatMayBeNew: 1000, question: 140, questions: 10, undecidedNote: 300, selected: 2 };
+  var LIMITS_44 = { whereIAmNow: 300, nextStep: 300, investigationStep: 300, directions: 2 };   // 4.4 spec R-DATA-1
 
   var storageOK = true;
   var state = fresh();
@@ -155,6 +162,7 @@
       if (isObj(raw.modules['4-2'])) out.modules['4-2'] = normalize42(raw.modules['4-2']);
       /* after 4.2, so references to deleted or invalid 4.2 tasks are dropped */
       if (isObj(raw.modules['4-3'])) out.modules['4-3'] = normalize43(raw.modules['4-3'], out.modules['4-2']);
+      if (isObj(raw.modules['4-4'])) out.modules['4-4'] = normalize44(raw.modules['4-4']);
     }
     if (isObj(raw._meta)) out._meta.updatedAt = strOrNull(raw._meta.updatedAt);
     return out;
@@ -273,9 +281,31 @@
     return out;
   }
 
+  /* ---- 4.4 validation (spec v1.0 §8.2). A map direction is kept whether or not it
+     has a saved 4.3 reflection: the map's own choices never change because of other
+     records. The investigation step is kept in every map state. ---- */
+  function normalize44(e) {
+    var out = defaultModule('4-4');
+    out.lastSection = isId(e.lastSection) ? e.lastSection : null;
+    out.completedAt = strOrNull(e.completedAt);
+    out.whereIAmNow = cleanText(e.whereIAmNow, LIMITS_44.whereIAmNow);
+    if (Array.isArray(e.mapDirections)) {
+      var seen = {};
+      e.mapDirections.forEach(function (d) {
+        if (out.mapDirections.length >= LIMITS_44.directions) return;
+        if (!isObj(d) || DIRECTION_IDS.indexOf(d.directionId) < 0 || seen[d.directionId]) return;
+        seen[d.directionId] = 1;
+        out.mapDirections.push({ directionId: d.directionId, nextStep: cleanText(d.nextStep, LIMITS_44.nextStep) });
+      });
+    }
+    out.stillExploring = e.stillExploring === true && out.mapDirections.length === 0;   // never both; the directions stand
+    out.investigationStep = cleanText(e.investigationStep, LIMITS_44.investigationStep);
+    return out;
+  }
+
   /* Schema migration. v1 (4.1 only) → v2 (adds modules["4-2"]) → v3 (adds
-     modules["4-3"]): earlier fields never change meaning, so each step only bumps
-     the version. Unknown or newer versions are rejected. */
+     modules["4-3"]) → v4 (adds modules["4-4"]): earlier fields never change meaning,
+     so each step only bumps the version. Unknown or newer versions are rejected. */
   function migrate(raw) {
     if (!isObj(raw)) return null;
     var v = raw.schemaVersion;
@@ -291,6 +321,15 @@
         m.modules = mods;
       }
       m.schemaVersion = 3;
+    }
+    if (m.schemaVersion < 4) {
+      /* v3 → v4: nothing in v1–v3 changes meaning. No release before 4.4 wrote "4-4". */
+      if (isObj(m.modules) && m.modules['4-4'] !== undefined) {
+        var mods4 = {};
+        Object.keys(m.modules).forEach(function (k) { if (k !== '4-4') mods4[k] = m.modules[k]; });
+        m.modules = mods4;
+      }
+      m.schemaVersion = 4;
     }
     return m;
   }
@@ -436,6 +475,7 @@
     if (id === '4-2') return { lastSection: null, snapshotReached: false, completedAt: null, experiences: [] };
     if (id === '4-3') return { lastSection: null, completedAt: null, reviewedWorkClues: false, reviewedEvidence: false,
       examinedDirectionIds: [], directionExplorations: [], decisionReached: false, undecided: false, undecidedNote: '', selectedDirectionIds: [] };
+    if (id === '4-4') return { lastSection: null, completedAt: null, whereIAmNow: '', mapDirections: [], stillExploring: false, investigationStep: '' };
     return { lastSection: null, directionsReviewed: false, completedAt: null };
   }
   function mod(id) {
@@ -590,6 +630,71 @@
     return out;
   }
 
+  /* ---------- 4.4 (spec v1.0 §6, §9). Only the map's own choices and text are written;
+     4.1–4.3 are read through findExploration / isSavedExploration and never changed. ---------- */
+  function m44() { return mod('4-4'); }
+  function mapState() {
+    var m = state.modules['4-4'];
+    if (!m) return 'empty';
+    if (m.stillExploring) return 'exploring';
+    return m.mapDirections.length ? 'directions' : 'empty';
+  }
+  function findMapDirection(dirId) {
+    var m = state.modules['4-4']; if (!m) return null;
+    for (var i = 0; i < m.mapDirections.length; i++) if (m.mapDirections[i].directionId === dirId) return m.mapDirections[i];
+    return null;
+  }
+  function written(v) { return !!cleanText(v, 100000); }
+  function hasWrittenStep(dirId) { var d = findMapDirection(dirId); return !!(d && written(d.nextStep)); }
+  function anyWrittenStep() { var m = state.modules['4-4']; return !!(m && m.mapDirections.some(function (d) { return written(d.nextStep); })); }
+  /* T1–T3, T8: only a direction with a saved 4.3 reflection; at most two; never twice.
+     Adding while still exploring keeps the investigation step unchanged. */
+  function addDirection(dirId) {
+    if (DIRECTION_IDS.indexOf(dirId) < 0 || !isSavedExploration(findExploration(dirId)) || findMapDirection(dirId)) return 'refused';
+    var cur = state.modules['4-4'];
+    if (cur && cur.mapDirections.length >= LIMITS_44.directions) return 'refused';
+    var m = m44();
+    m.stillExploring = false;
+    m.mapDirections.push({ directionId: dirId, nextStep: '' });
+    persist(); return 'added';
+  }
+  /* T4–T5: a written step is only discarded with { confirmed: true } after the learner confirms. */
+  function removeDirection(dirId, opts) {
+    var d = findMapDirection(dirId); if (!d) return 'refused';
+    if (written(d.nextStep) && !(opts && opts.confirmed === true)) return 'needs-confirm';
+    var m = m44();
+    m.mapDirections = m.mapDirections.filter(function (x) { return x.directionId !== dirId; });
+    persist(); return 'removed';
+  }
+  /* T6, T7, T10 (on) and T9 (off). The investigation step is never touched here. */
+  function setStillExploring(on, opts) {
+    if (on) {
+      if (anyWrittenStep() && !(opts && opts.confirmed === true)) return 'needs-confirm';
+      var m = m44();
+      m.mapDirections = []; m.stillExploring = true;
+      persist(); return 'exploring';
+    }
+    if (state.modules['4-4'] && state.modules['4-4'].stillExploring) { m44().stillExploring = false; persist(); }
+    return mapState();
+  }
+  function setNextStep(dirId, text) {
+    var d = findMapDirection(dirId); if (!d) return false;   // T13
+    d.nextStep = cleanText(text, LIMITS_44.nextStep); persist(); return true;
+  }
+  function setInvestigationStep(text) {
+    if (mapState() !== 'exploring') return false;              // T12: hidden text cannot be edited
+    m44().investigationStep = cleanText(text, LIMITS_44.investigationStep); persist(); return true;
+  }
+  function setWhereIAmNow(text) { m44().whereIAmNow = cleanText(text, LIMITS_44.whereIAmNow); persist(); return true; }
+  /* R-COMP-1 (read-only). */
+  function completionMet() {
+    var m = state.modules['4-4'], st = mapState();
+    if (st === 'directions') return m.mapDirections.every(function (d) { return written(d.nextStep); });
+    if (st === 'exploring') return written(m.investigationStep);
+    return false;
+  }
+  function plainCopy(v) { return JSON.parse(JSON.stringify(v)); }
+
   /* ---------- observations ---------- */
   function findObs(list, key, id) { for (var i = 0; i < list.length; i++) if (list[i][key] === id) return list[i]; return null; }
   function getScenario(id) { return findObs(state.scenarioObservations, 'scenarioId', id); }
@@ -664,6 +769,7 @@
       module41Complete: !!(m['4-1'] && m['4-1'].completedAt),
       module42Complete: !!(m['4-2'] && m['4-2'].completedAt),
       module43Complete: !!(m['4-3'] && m['4-3'].completedAt),
+      module44Complete: !!(m['4-4'] && m['4-4'].completedAt),
       experiences: m['4-2'] ? m['4-2'].experiences.length : 0,
       schemaVersion: st.schemaVersion
     };
@@ -711,7 +817,8 @@
         '\nModule 4.2: ' + (r.modules['4-2'] && r.modules['4-2'].completedAt ? 'complete' : 'in progress or not started') +
         ' (' + (r.modules['4-2'] ? r.modules['4-2'].experiences.length : 0) + ' experiences)' +
         '\nModule 4.3: ' + (r.modules['4-3'] && r.modules['4-3'].completedAt ? 'complete' : 'in progress or not started') +
-        '\n\nRestoring REPLACES the Stage 4 progress currently saved in this browser.' +
+        '\nModule 4.4: ' + (r.modules['4-4'] && r.modules['4-4'].completedAt ? 'complete' : 'in progress or not started') +
+        '\n\nRestoring REPLACES the Stage 4 progress currently saved in this browser, including your Direction Map.' +
         (blocked ? '\n\n' + GUARD.replaceWarning : '') +
         '\n\nPress OK to replace and restore, or Cancel.';
       if (!confirm(msg)) return;
@@ -773,7 +880,7 @@
     directionsWithReaction: directionsWithReaction,
     exportProgress: exportProgress, validateBackup: validateBackup, restoreFromFile: restoreFromFile, clearProgress: clearProgress,
     wireTools: wireTools,
-    DIRECTION_IDS: DIRECTION_IDS.slice(), JUDGMENTS: JUDGMENTS.slice(), LIMITS_43: LIMITS_43,
+    DIRECTION_IDS: DIRECTION_IDS.slice(), JUDGMENTS: JUDGMENTS.slice(), LIMITS_43: LIMITS_43, LIMITS_44: LIMITS_44,
     m43: {
       exploration: findExploration, isSaved: isSavedExploration, relatedTasks: relatedTasks,
       setReviewedWorkClues: function () { flag43('reviewedWorkClues'); },
@@ -784,6 +891,14 @@
       setEvidence: setEvidence, setWhatMayBeNew: setWhatMayBeNew,
       addQuestion: addQuestion, updateQuestion: updateQuestion, removeQuestion: removeQuestion,
       saveReflection: saveReflection, setSelected: setSelected, setUndecided: setUndecided, setUndecidedNote: setUndecidedNote
+    },
+    m44: {
+      state: mapState,
+      /* read-only copy of the map's own data (never creates 4.4 state) */
+      map: function () { return plainCopy(state.modules['4-4'] || defaultModule('4-4')); },
+      hasWrittenStep: hasWrittenStep, completionMet: completionMet,
+      addDirection: addDirection, removeDirection: removeDirection, setStillExploring: setStillExploring,
+      setNextStep: setNextStep, setInvestigationStep: setInvestigationStep, setWhereIAmNow: setWhereIAmNow
     },
     _state: function () { return state; }
   };

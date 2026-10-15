@@ -53,12 +53,12 @@ describe('BASELINE · Stage 4 hub and Progress page', () => {
     assert.equal(b.format, F.BACKUP_FORMAT);
     /* Deliberate update (spec v1.5 decision 5, 4.3 Step C): the one combined summary adds
        module43Complete. Previously { workClues, module41Complete, module42Complete, experiences, schemaVersion }. */
-    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });
+    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, module44Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });   // module44Complete: deliberate 4.4 update
   });
 });
 
 describe('SUMMARY · one shared backup summary from every page (spec v1.5 decision 5)', () => {
-  const WANT = { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema };
+  const WANT = { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: false, module44Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema };   // module44Complete: deliberate 4.4 update
   const exportsFrom = [
     ['hub', 'index', null, '[data-export]'],
     ['Progress page', 'progress', null, '[data-export]'],

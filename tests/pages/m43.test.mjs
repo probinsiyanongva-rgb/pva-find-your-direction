@@ -413,7 +413,7 @@ describe('4.3 · provisional decision, comparison and review', () => {
     const p = openPage({ page: '4-3', storage: seed(F.profileV3Full) });
     p.click('.s4-tools [data-export]');
     const b = JSON.parse(await p.downloadText(0));
-    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: true, experiences: 2, schemaVersion: F.EXPECTED.schema });
+    assert.deepEqual(b.summary, { workClues: 4, module41Complete: true, module42Complete: true, module43Complete: true, module44Complete: false, experiences: 2, schemaVersion: F.EXPECTED.schema });   // module44Complete: deliberate 4.4 update
   });
 });
 
